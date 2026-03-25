@@ -261,6 +261,36 @@ export async function getHomepageSectionsOnce(): Promise<HomepageSection[]> {
   }
 }
 
+// ─── Hero Slides ──────────────────────────────────────────────────────────────
+
+export interface HeroSlide {
+  id: string;
+  imageUrl?: string;
+  image?: string;
+  url?: string;
+  order?: number;
+  isActive?: boolean;
+}
+
+export async function getHeroSlidesOnce(): Promise<HeroSlide[]> {
+  try {
+    const slidesRef = collection(db, "hero_slides");
+    const q = query(
+      slidesRef,
+      where("isActive", "==", true),
+      orderBy("order", "asc")
+    );
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    })) as HeroSlide[];
+  } catch (error) {
+    console.error("Error fetching hero slides:", error);
+    return [];
+  }
+}
+
 // ─── Filter Helpers ───────────────────────────────────────────────────────────
 
 export function filterPropertiesByCriteria(

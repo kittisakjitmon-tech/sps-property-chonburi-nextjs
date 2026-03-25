@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import Image from "next/image";
 import {
   Building2,
   Award,
@@ -18,7 +17,6 @@ import {
   Handshake,
   TrendingUp,
   CalendarDays,
-  Play,
 } from "lucide-react";
 import {
   getPropertiesOnce,
@@ -26,7 +24,6 @@ import {
   getFeaturedBlogs,
   getPopularLocationsOnce,
   getHomepageSectionsOnce,
-  filterPropertiesByCriteria,
   getLocationString,
   type Property,
   type Blog,
@@ -34,6 +31,10 @@ import {
   type HomepageSection,
 } from "@/lib/firestore";
 import { DynamicSections } from "@/components/DynamicPropertySection";
+import Navbar from "@/components/Navbar";
+import HeroSlider from "@/components/HeroSlider";
+import HomeSearch from "@/components/HomeSearch";
+import Footer from "@/components/Footer";
 
 // Metadata for SEO
 export const metadata: Metadata = {
@@ -276,21 +277,14 @@ async function DynamicPropertiesSection() {
 // Main Page Component
 export default async function HomePage() {
   return (
-    <main className="min-h-screen">
-      {/* ── Hero Section ── */}
-      <section className="relative bg-gradient-to-br from-blue-900 via-blue-800 to-blue-900 min-h-[90vh] flex items-center">
-        <div className="absolute inset-0 opacity-10">
-          <div
-            className="absolute inset-0"
-            style={{
-              backgroundImage: "radial-gradient(circle, #fff 1px, transparent 1px)",
-              backgroundSize: "32px 32px",
-            }}
-          />
-        </div>
+    <>
+      <Navbar />
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 w-full">
-          <div className="text-center mb-12">
+      <main className="min-h-screen">
+        {/* ── Hero Section with Slider ── */}
+        <HeroSlider>
+          {/* Hero Content */}
+          <div className="text-center mb-8">
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white mb-4">
               รวมภาระหนี้{" "}
               <span className="text-yellow-400 drop-shadow">ผ่อนบ้านทางเดียว</span>
@@ -299,8 +293,11 @@ export default async function HomePage() {
               อสังหาริมทรัพย์คุณภาพ อมตะซิตี้ · ชลบุรี
             </p>
           </div>
+          {/* Search Box */}
+          <HomeSearch />
 
-          <div className="max-w-4xl mx-auto mb-8">
+          {/* Service Highlights */}
+          <div className="max-w-4xl mt-4 mx-auto mb-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
               {serviceHighlights.map((item) => {
                 const IconComponent = item.icon;
@@ -321,130 +318,125 @@ export default async function HomePage() {
             </div>
           </div>
 
-          <div className="flex items-center justify-center gap-2 text-gray-300 text-sm">
+
+
+          {/* Location Tag */}
+          <div className="flex items-center justify-center gap-2 text-gray-300 text-sm mt-6">
             <MapPin className="h-4 w-4" />
             <p>พื้นที่ให้บริการ: ชลบุรี ฉะเชิงเทรา ระยอง ปทุมธานี กทม.</p>
           </div>
-        </div>
-      </section>
+        </HeroSlider>
 
-      {/* ── Stats Strip ── */}
-      <section className="bg-blue-900 py-8 sm:py-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-            {stats.map((stat) => {
-              const Icon = stat.icon;
-              return (
-                <div key={stat.label} className="flex flex-col items-center gap-2">
-                  <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center mb-1">
-                    <Icon className="h-5 w-5 text-yellow-400" />
+        {/* ── Stats Strip ── */}
+        <section className="bg-blue-900 py-8 sm:py-10">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+              {stats.map((stat) => {
+                const Icon = stat.icon;
+                return (
+                  <div key={stat.label} className="flex flex-col items-center gap-2">
+                    <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center mb-1">
+                      <Icon className="h-5 w-5 text-yellow-400" />
+                    </div>
+                    <span className="text-3xl sm:text-4xl font-extrabold text-yellow-400 leading-none">
+                      {stat.value}
+                    </span>
+                    <span className="text-sm text-blue-200 font-medium">{stat.label}</span>
                   </div>
-                  <span className="text-3xl sm:text-4xl font-extrabold text-yellow-400 leading-none">
-                    {stat.value}
-                  </span>
-                  <span className="text-sm text-blue-200 font-medium">{stat.label}</span>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
 
 
-      {/* ── Featured Blogs (Server Component) ── */}
-      <FeaturedBlogsSection />
-      {/* ── Dynamic Property Sections (from homepage_sections) ── */}
-      <DynamicPropertiesSection />
+        {/* ── Featured Blogs (Server Component) ── */}
+        <FeaturedBlogsSection />
 
-      {/* ── CTA Banner ── */}
-      <section className="relative overflow-hidden bg-blue-900 py-12 sm:py-16">
-        <div className="absolute inset-0 opacity-[0.07]">
-          <div
-            className="absolute inset-0"
-            style={{
-              backgroundImage: "radial-gradient(circle, #fff 1px, transparent 1px)",
-              backgroundSize: "24px 24px",
-            }}
-          />
-        </div>
+        {/* ── Dynamic Property Sections (from homepage_sections) ── */}
+        <DynamicPropertiesSection />
 
-        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-8">
-            <div className="md:max-w-xl">
-              <div className="inline-flex items-center gap-2 bg-yellow-400/20 border border-yellow-400/40 text-yellow-300 text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full mb-4">
-                <MessageCircle className="h-3.5 w-3.5" />
-                ปรึกษาฟรี ไม่มีค่าใช้จ่าย
-              </div>
-              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-3 leading-tight">
-                ต้องการความช่วยเหลือ<br className="hidden sm:block" />ในการหาบ้าน?
+        {/* ── Why Choose Us ── */}
+        <section className="py-12 sm:py-16 bg-slate-50">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-10">
+              <span className="inline-block text-xs font-bold text-blue-600 uppercase tracking-widest bg-blue-50 px-3 py-1 rounded-full mb-3">
+                ทำไมต้องเลือก SPS
+              </span>
+              <h2 className="text-2xl sm:text-3xl font-bold text-slate-900">
+                ครบ · เร็ว · เชื่อใจได้
               </h2>
-              <p className="text-blue-200 text-sm sm:text-base leading-relaxed">
-                ทีมงานผู้เชี่ยวชาญพร้อมให้คำปรึกษา ตอบทุกคำถาม ตลอด 24 ชั่วโมง
+              <p className="text-slate-500 mt-2 text-sm sm:text-base max-w-xl mx-auto">
+                เราดูแลทุกขั้นตอนตั้งแต่ค้นหาจนถึงโอนกรรมสิทธิ์
               </p>
             </div>
 
-            <div className="flex flex-col sm:flex-row md:flex-col lg:flex-row items-stretch sm:items-center gap-3 md:shrink-0">
-              <a
-                href="https://www.facebook.com/houseamata"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 border border-white/25 text-white font-semibold px-7 py-3.5 rounded-xl transition-all duration-300 text-sm whitespace-nowrap"
-              >
-                <MessageCircle className="h-4 w-4" />
-                ติดต่อผ่าน Facebook
-              </a>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
+              {whyChooseUs.map(({ Icon, title, desc, color }) => (
+                <div
+                  key={title}
+                  className="flex flex-col items-center text-center px-6 py-8 rounded-2xl hover:bg-white hover:shadow-md transition-all duration-300"
+                >
+                  <div
+                    className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-5 ${color}`}
+                  >
+                    <Icon className="h-7 w-7" />
+                  </div>
+                  <h3 className="text-base font-bold text-slate-900 mb-2">{title}</h3>
+                  <p className="text-sm text-slate-500 leading-relaxed">{desc}</p>
+                </div>
+              ))}
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* ── Why Choose Us ── */}
-      <section className="py-12 sm:py-16 bg-slate-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-10">
-            <span className="inline-block text-xs font-bold text-blue-600 uppercase tracking-widest bg-blue-50 px-3 py-1 rounded-full mb-3">
-              ทำไมต้องเลือก SPS
-            </span>
-            <h2 className="text-2xl sm:text-3xl font-bold text-slate-900">
-              ครบ · เร็ว · เชื่อใจได้
-            </h2>
-            <p className="text-slate-500 mt-2 text-sm sm:text-base max-w-xl mx-auto">
-              เราดูแลทุกขั้นตอนตั้งแต่ค้นหาจนถึงโอนกรรมสิทธิ์
-            </p>
+        {/* ── Popular Locations (Server Component) ── */}
+        <PopularLocationsSection />
+
+        {/* ── CTA Banner ── */}
+        <section className="relative overflow-hidden bg-blue-900 py-12 sm:py-16">
+          <div className="absolute inset-0 opacity-[0.07]">
+            <div
+              className="absolute inset-0"
+              style={{
+                backgroundImage: "radial-gradient(circle, #fff 1px, transparent 1px)",
+                backgroundSize: "24px 24px",
+              }}
+            />
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
-            {whyChooseUs.map(({ Icon, title, desc, color }) => (
-              <div
-                key={title}
-                className="flex flex-col items-center text-center px-6 py-8 rounded-2xl hover:bg-white hover:shadow-md transition-all duration-300"
-              >
-                <div
-                  className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-5 ${color}`}
-                >
-                  <Icon className="h-7 w-7" />
+          <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-8">
+              <div className="md:max-w-xl">
+                <div className="inline-flex items-center gap-2 bg-yellow-400/20 border border-yellow-400/40 text-yellow-300 text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full mb-4">
+                  <MessageCircle className="h-3.5 w-3.5" />
+                  ปรึกษาฟรี ไม่มีค่าใช้จ่าย
                 </div>
-                <h3 className="text-base font-bold text-slate-900 mb-2">{title}</h3>
-                <p className="text-sm text-slate-500 leading-relaxed">{desc}</p>
+                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-3 leading-tight">
+                  ต้องการความช่วยเหลือ<br className="hidden sm:block" />ในการหาบ้าน?
+                </h2>
+                <p className="text-blue-200 text-sm sm:text-base leading-relaxed">
+                  ทีมงานผู้เชี่ยวชาญพร้อมให้คำปรึกษา ตอบทุกคำถาม ตลอด 24 ชั่วโมง
+                </p>
               </div>
-            ))}
+
+              <div className="flex flex-col sm:flex-row md:flex-col lg:flex-row items-stretch sm:items-center gap-3 md:shrink-0">
+                <a
+                  href="https://www.facebook.com/houseamata"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 border border-white/25 text-white font-semibold px-7 py-3.5 rounded-xl transition-all duration-300 text-sm whitespace-nowrap"
+                >
+                  <MessageCircle className="h-4 w-4" />
+                  ติดต่อผ่าน Facebook
+                </a>
+              </div>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </main>
 
-      {/* ── Popular Locations (Server Component) ── */}
-      <PopularLocationsSection />
-
-
-
-      {/* ── Footer ── */}
-      <footer className="bg-slate-900 py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <p className="text-slate-400 text-sm">
-            © 2026 SPS Property Solution. สงวนลิขสิทธิ์.
-          </p>
-        </div>
-      </footer>
-    </main>
+      <Footer />
+    </>
   );
 }

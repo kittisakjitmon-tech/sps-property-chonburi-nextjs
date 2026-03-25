@@ -17,6 +17,14 @@
       ]
     },
     {
+      "collectionGroup": "hero_slides",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "isActive", "order": "ASCENDING" },
+        { "fieldPath": "order", "order": "ASCENDING" }
+      ]
+    },
+    {
       "collectionGroup": "properties",
       "queryScope": "COLLECTION",
       "fields": [
@@ -38,14 +46,6 @@
       "fields": [
         { "fieldPath": "published", "order": "ASCENDING" },
         { "fieldPath": "createdAt", "order": "DESCENDING" }
-      ]
-    },
-    {
-      "collectionGroup": "blogs",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "published", "order": "ASCENDING" },
-        { "fieldPath": "featured", "order": "ASCENDING" }
       ]
     },
     {

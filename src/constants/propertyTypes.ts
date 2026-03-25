@@ -1,4 +1,3 @@
-// Property Types
 export const PROPERTY_TYPES = [
   { id: 'SPS-S-1CLASS-ID', label: 'บ้านเดี่ยว 1 ชั้น' },
   { id: 'SPS-S-2CLASS-ID', label: 'บ้านเดี่ยว 2 ชั้น' },
@@ -12,8 +11,8 @@ export const PROPERTY_TYPES = [
   { id: 'SPS-RP-ID', label: 'บ้านเช่า/ผ่อนตรง' },
 ];
 
-export function getPropertyLabel(idOrLabel: string | undefined): string {
+export function getPropertyLabel(idOrLabel: string) {
   if (!idOrLabel) return '';
-  const match = PROPERTY_TYPES.find(pt => pt.id === idOrLabel || pt.label === idOrLabel);
+  const match = PROPERTY_TYPES.find(pt => pt.id === idOrLabel);
   return match ? match.label : idOrLabel;
 }

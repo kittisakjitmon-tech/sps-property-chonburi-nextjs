@@ -278,8 +278,6 @@ async function DynamicPropertiesSection() {
 export default async function HomePage() {
   return (
     <>
-      <Navbar />
-
       <main className="min-h-screen">
         {/* ── Hero Section with Slider ── */}
         <HeroSlider>
@@ -356,43 +354,6 @@ export default async function HomePage() {
         {/* ── Dynamic Property Sections (from homepage_sections) ── */}
         <DynamicPropertiesSection />
 
-        {/* ── Why Choose Us ── */}
-        <section className="py-12 sm:py-16 bg-slate-50">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-10">
-              <span className="inline-block text-xs font-bold text-blue-600 uppercase tracking-widest bg-blue-50 px-3 py-1 rounded-full mb-3">
-                ทำไมต้องเลือก SPS
-              </span>
-              <h2 className="text-2xl sm:text-3xl font-bold text-slate-900">
-                ครบ · เร็ว · เชื่อใจได้
-              </h2>
-              <p className="text-slate-500 mt-2 text-sm sm:text-base max-w-xl mx-auto">
-                เราดูแลทุกขั้นตอนตั้งแต่ค้นหาจนถึงโอนกรรมสิทธิ์
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
-              {whyChooseUs.map(({ Icon, title, desc, color }) => (
-                <div
-                  key={title}
-                  className="flex flex-col items-center text-center px-6 py-8 rounded-2xl hover:bg-white hover:shadow-md transition-all duration-300"
-                >
-                  <div
-                    className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-5 ${color}`}
-                  >
-                    <Icon className="h-7 w-7" />
-                  </div>
-                  <h3 className="text-base font-bold text-slate-900 mb-2">{title}</h3>
-                  <p className="text-sm text-slate-500 leading-relaxed">{desc}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ── Popular Locations (Server Component) ── */}
-        <PopularLocationsSection />
-
         {/* ── CTA Banner ── */}
         <section className="relative overflow-hidden bg-blue-900 py-12 sm:py-16">
           <div className="absolute inset-0 opacity-[0.07]">
@@ -434,9 +395,47 @@ export default async function HomePage() {
             </div>
           </div>
         </section>
+
+        {/* ── Why Choose Us ── */}
+        <section className="py-12 sm:py-16 bg-slate-50">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-10">
+              <span className="inline-block text-xs font-bold text-blue-600 uppercase tracking-widest bg-blue-50 px-3 py-1 rounded-full mb-3">
+                ทำไมต้องเลือก SPS
+              </span>
+              <h2 className="text-2xl sm:text-3xl font-bold text-slate-900">
+                ครบ · เร็ว · เชื่อใจได้
+              </h2>
+              <p className="text-slate-500 mt-2 text-sm sm:text-base max-w-xl mx-auto">
+                เราดูแลทุกขั้นตอนตั้งแต่ค้นหาจนถึงโอนกรรมสิทธิ์
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
+              {whyChooseUs.map(({ Icon, title, desc, color }) => (
+                <div
+                  key={title}
+                  className="flex flex-col items-center text-center px-6 py-8 rounded-2xl hover:bg-white hover:shadow-md transition-all duration-300"
+                >
+                  <div
+                    className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-5 ${color}`}
+                  >
+                    <Icon className="h-7 w-7" />
+                  </div>
+                  <h3 className="text-base font-bold text-slate-900 mb-2">{title}</h3>
+                  <p className="text-sm text-slate-500 leading-relaxed">{desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ── Popular Locations (Server Component) ── */}
+        <PopularLocationsSection />
+
+
       </main>
 
-      <Footer />
     </>
   );
 }

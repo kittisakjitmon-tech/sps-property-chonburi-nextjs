@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Prompt } from "next/font/google";
 import { FirebaseProvider } from "@/lib/providers/FirebaseProvider";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 import "./globals.css";
 
 const prompt = Prompt({
@@ -30,7 +32,9 @@ export default function RootLayout({
     <html lang="th" className="h-full antialiased">
       <body className={`${prompt.variable} font-sans min-h-full flex flex-col`}>
         <FirebaseProvider>
-          {children}
+          <Navbar />
+          <main className="flex-1">{children}</main>
+          <Footer />
         </FirebaseProvider>
       </body>
     </html>

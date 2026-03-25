@@ -9,26 +9,55 @@ import {
   limit,
   Timestamp,
 } from "firebase/firestore";
+
+// Re-export Timestamp for convenience
+export { Timestamp };
 import { db } from "./firebase";
 
 // Types
 export interface Property {
   id: string;
-  title: string;
-  slug: string;
+  title?: string;
+  slug?: string;
   price: number;
-  propertyType: string;
+  propertyType?: string;
+  type?: string; // Same as propertyType in some cases
   bedrooms?: number;
   bathrooms?: number;
   area: number;
-  location: string | { subDistrict?: string; district?: string; province?: string };
+  areaSqWa?: number;
+  location: string | { subDistrict?: string; district?: string; province?: string } | null;
   district?: string;
   province: string;
   images: string[];
+  coverImageUrl?: string;
   status: "available" | "sold" | "pending";
+  // Location coordinates (for map)
+  lat?: number;
+  lng?: number;
+  // Location details
+  address?: string;
+  locationText?: string;
   featured?: boolean;
-  createdAt?: Timestamp;
+  createdAt?: Timestamp | number;
   updatedAt?: Timestamp;
+  // Listing type
+  listingType?: 'sale' | 'rent';
+  isRental?: boolean;
+  subListingType?: string;
+  directInstallment?: boolean;
+  // Property details
+  propertyCondition?: string;
+  availability?: string;
+  hotDeal?: boolean;
+  showPrice?: boolean;
+  description?: string;
+  // Agent
+  agentContact?: {
+    name?: string;
+    phone?: string;
+    lineId?: string;
+  };
 }
 
 // Helper to get location string
@@ -307,7 +336,7 @@ export function filterPropertiesByCriteria(
       return false;
 
     // Bedrooms filter
-    if (criteria.bedrooms && property.bedrooms < criteria.bedrooms) return false;
+    if (criteria.bedrooms && property.bedrooms != null && property.bedrooms < criteria.bedrooms) return false;
 
     // Location filter
     if (criteria.province && property.province !== criteria.province) return false;

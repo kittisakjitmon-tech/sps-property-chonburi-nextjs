@@ -1,0 +1,177 @@
+rules_version = '2';
+// โปรเจกต์นี้ใช้ 2 App: public (หน้าบ้าน) + admin (หลังบ้าน)
+// เมื่อเรียกจากหลังบ้านต้องใช้ adminDb/adminAuth เพื่อให้ request.auth ตรงกับผู้ใช้ที่ล็อกอิน
+// getUserRole() อ่าน users/(request.auth.uid) — ต้องมี doc นี้ (แอป sync ให้ตอนล็อกอิน)
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper functions for role checking
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function getUserRole() {
+      return exists(/databases/$(database)/documents/users/$(request.auth.uid)) 
+        ? get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role 
+        : 'member';
+    }
+    
+    function isSuperAdmin() {
+      return isAuthenticated() && getUserRole() == 'super_admin';
+    }
+    
+    function isAdmin() {
+      return isAuthenticated() && (getUserRole() == 'admin' || getUserRole() == 'super_admin');
+    }
+    
+    function isMember() {
+      return isAuthenticated() && getUserRole() == 'member';
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    // users: อ่านได้ถ้าเป็น doc ของตัวเอง (รวมกรณี doc ยังไม่มี) / doc ที่ email ตรงกับที่ล็อกอิน / หรือเป็น admin
+    // อย่าเข้าถึง resource.data เมื่อ doc ไม่มี (จะทำให้ permission denied) — ใช้ resource == null ก่อน
+    match /users/{userId} {
+      allow read: if isAuthenticated() && (
+        request.auth.uid == userId
+        || (resource != null && resource.data.email == request.auth.token.email)
+        || (resource != null && (getUserRole() == 'super_admin' || getUserRole() == 'admin'))
+      );
+      allow create: if isSuperAdmin() || (isAuthenticated() && request.auth.uid == userId);
+      // Allow update if: 
+      // 1. is super admin, OR
+      // 2. updating own role to super_admin (for initial setup), OR
+      // 3. user updating own profile (but not role/status/email)
+      allow update: if isSuperAdmin() || 
+                     (isAuthenticated() && 
+                      request.auth.uid == userId && 
+                      request.resource.data.role == 'super_admin' &&
+                      (!resource.exists || resource.data.role != 'super_admin')) ||
+                     (isAuthenticated() && 
+                      request.auth.uid == userId &&
+                      !request.resource.data.diff(resource.data).changedKeys().hasAny(['role', 'status', 'email']));
+      allow delete: if isSuperAdmin();
+    }
+    
+    // properties: อ่านได้ทุกคน, เขียนได้เฉพาะ Admin
+    match /properties/{id} {
+      allow read: if true;
+      allow create: if isAuthenticated() && (
+        isAdmin() || 
+        (isMember() && request.resource.data.createdBy == request.auth.uid)
+      );
+      allow update, delete: if isAuthenticated() && (
+        isAdmin() || 
+        (isMember() && resource.data.createdBy == request.auth.uid)
+      );
+    }
+
+    // share_links: ลิงก์แชร์ชั่วคราว (หมดอายุได้)
+    match /share_links/{token} {
+      // ใครที่มี token อ่านได้จนกว่าจะหมดอายุ หรือ admin อ่านได้
+      allow get: if resource.data.expiresAt > request.time || isAdmin();
+      // list: ให้ agent/admin ใช้ได้ตามเดิม และ allow anonymous เฉพาะลิงก์ public_share
+      allow list: if isAuthenticated() ||
+        (!isAuthenticated() && resource.data.createdBy == 'public_share');
+      // สร้างลิงก์แชร์ได้ 3 เคส:
+      // 1) admin
+      // 2) user ที่ล็อกอินและใช้ uid เป็น createdBy (เดิม)
+      // 3) public client ไม่ล็อกอิน แต่ต้องเป็นลิงก์แบบ generic ที่เรากำหนด
+      allow create: if
+        // เคสเดิม: admin หรือ owner ที่ล็อกอิน
+        isAdmin() ||
+        (isAuthenticated() && request.resource.data.createdBy == request.auth.uid) ||
+        // เคสใหม่: public share (ไม่มี request.auth)
+        (!isAuthenticated() &&
+          request.resource.data.createdBy == 'public_share' &&
+          request.resource.data.propertyId is string &&
+          request.resource.data.propertyId.size() > 0 &&
+          request.resource.data.expiresAt is timestamp &&
+          request.resource.data.expiresAt > request.time &&
+          request.resource.data.expiresAt < request.time + duration.value(48, 'h')
+        );
+      allow update: if isAdmin() ||
+        (isAuthenticated() && resource.data.createdBy == request.auth.uid);
+      allow delete: if isAdmin() ||
+        (isAuthenticated() && resource.data.createdBy == request.auth.uid);
+    }
+
+    // loan_requests: ข้อมูลการเงิน (PDPA) - สร้างได้ทุกคน (ฟอร์มส่ง), อ่าน/เขียนได้เฉพาะ Super Admin
+    match /loan_requests/{id} {
+      allow create: if true;
+      allow read, update, delete: if isSuperAdmin();
+    }
+    // leads: อ่าน/เขียนได้เฉพาะ Admin และ Member, สร้างได้ทุกคน (ฟอร์มส่งข้อความ)
+    match /leads/{id} {
+      allow read: if isAdmin() || isMember();
+      allow write: if isAdmin();
+      allow create: if true;
+    }
+    // viewing_requests: อ่านได้เฉพาะ Admin, สร้างได้ทุกคน (ฟอร์มจองเยี่ยมชม)
+    match /viewing_requests/{id} {
+      allow read, write: if request.auth != null;
+      allow create: if true;
+    }
+    // appointments: นัดหมายเข้าชม - สร้างได้ทุกคน, อ่าน/เขียนได้เฉพาะผู้ที่ login
+    match /appointments/{id} {
+      allow create: if true;
+      allow read, update, delete: if request.auth != null;
+    }
+    // inquiries: อ่านได้เฉพาะ Admin, สร้างได้ทุกคน (ฟอร์มติดต่อเรา)
+    match /inquiries/{id} {
+      allow read, write: if request.auth != null;
+      allow create: if true;
+    }
+    // hero_slides: อ่านได้ทุกคน, เขียนได้เฉพาะ Admin
+    match /hero_slides/{id} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+    // popular_locations: อ่านได้ทุกคน, เขียนได้เฉพาะ Admin
+    match /popular_locations/{id} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+    // homepage_sections: อ่านได้ทุกคน, เขียนได้เฉพาะ Admin
+    match /homepage_sections/{id} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+    // blogs: อ่านได้ทุกคน (เฉพาะ published), เขียนได้เฉพาะ Admin
+    match /blogs/{id} {
+      // อ่านได้ทุกคนถ้า published: true, หรือ Admin อ่านได้ทั้งหมด
+      allow read: if resource.data.published == true || isAdmin();
+      // สร้าง/แก้ไข/ลบได้เฉพาะ Admin
+      allow create, update, delete: if isAdmin();
+    }
+    // pending_properties: สร้างได้ทุกคน (ฟอร์มลงประกาศ), อ่าน/เขียนได้เฉพาะ Admin
+    match /pending_properties/{id} {
+      allow read: if isAdmin();
+      allow write: if isAdmin();
+      allow create: if true;
+    }
+    // audit_logs: อ่าน/เขียนได้เฉพาะ Super Admin
+    match /audit_logs/{id} {
+      allow read, write: if isSuperAdmin();
+    }
+    // activities: สร้างได้เฉพาะผู้ที่ login, อ่านได้เฉพาะ Admin
+    match /activities/{id} {
+      allow create: if isAuthenticated();
+      allow read: if isAdmin();
+      allow update, delete: if isSuperAdmin();
+    }
+    // property_views: บันทึกการเข้าชมหน้ารายละเอียดทรัพย์ (สร้างได้ทุกคน), อ่านได้เฉพาะ Admin (Dashboard)
+    match /property_views/{id} {
+      allow create: if true;
+      allow read: if isAdmin();
+      allow update, delete: if false;
+    }
+    // system_settings: อ่านได้ทุกคน, เขียนได้เฉพาะ Super Admin
+    match /system_settings/{id} {
+      allow read: if true;
+      allow write: if isSuperAdmin();
+    }
+  }
+}

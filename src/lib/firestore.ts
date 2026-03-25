@@ -21,7 +21,7 @@ export interface Property {
   bedrooms?: number;
   bathrooms?: number;
   area: number;
-  location: string;
+  location: string | { subDistrict?: string; district?: string; province?: string };
   district?: string;
   province: string;
   images: string[];
@@ -29,6 +29,14 @@ export interface Property {
   featured?: boolean;
   createdAt?: Timestamp;
   updatedAt?: Timestamp;
+}
+
+// Helper to get location string
+export function getLocationString(location: Property["location"]): string {
+  if (typeof location === "string") return location;
+  if (!location) return "";
+  const parts = [location.subDistrict, location.district, location.province].filter(Boolean);
+  return parts.join(", ");
 }
 
 export interface Blog {
@@ -129,17 +137,24 @@ export async function getPropertyBySlug(slug: string): Promise<Property | null> 
 export async function getFeaturedProperties(limitCount = 4): Promise<Property[]> {
   try {
     const propertiesRef = collection(db, "properties");
+    // Fetch available properties and filter featured in JS
+    // This avoids needing a composite index for status + featured
     const q = query(
       propertiesRef,
       where("status", "==", "available"),
-      where("featured", "==", true),
-      limit(limitCount)
+      orderBy("createdAt", "desc"),
+      limit(200)
     );
     const snapshot = await getDocs(q);
-    return snapshot.docs.map((doc) => ({
+    const allProperties = snapshot.docs.map((doc) => ({
       id: doc.id,
       ...doc.data(),
     })) as Property[];
+    
+    // Filter featured properties in JavaScript
+    return allProperties
+      .filter((p) => p.featured === true)
+      .slice(0, limitCount);
   } catch (error) {
     console.error("Error fetching featured properties:", error);
     return [];
@@ -171,10 +186,12 @@ export async function getBlogsOnce(limitCount = 10): Promise<Blog[]> {
 export async function getFeaturedBlogs(limitCount = 4): Promise<Blog[]> {
   try {
     const blogsRef = collection(db, "blogs");
+    // Note: Old project uses `isFeatured` field
     const q = query(
       blogsRef,
       where("published", "==", true),
-      where("featured", "==", true),
+      where("isFeatured", "==", true),
+      orderBy("createdAt", "desc"),
       limit(limitCount)
     );
     const snapshot = await getDocs(q);
@@ -206,7 +223,7 @@ export async function getBlogBySlug(slug: string): Promise<Blog | null> {
 
 export async function getPopularLocationsOnce(): Promise<PopularLocation[]> {
   try {
-    const locationsRef = collection(db, "popularLocations");
+    const locationsRef = collection(db, "popular_locations");
     const q = query(
       locationsRef,
       where("isActive", "==", true),
@@ -227,7 +244,7 @@ export async function getPopularLocationsOnce(): Promise<PopularLocation[]> {
 
 export async function getHomepageSectionsOnce(): Promise<HomepageSection[]> {
   try {
-    const sectionsRef = collection(db, "homepageSections");
+    const sectionsRef = collection(db, "homepage_sections");
     const q = query(
       sectionsRef,
       where("isActive", "==", true),

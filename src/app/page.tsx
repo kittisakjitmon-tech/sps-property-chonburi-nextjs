@@ -21,16 +21,19 @@ import {
   Play,
 } from "lucide-react";
 import {
+  getPropertiesOnce,
   getFeaturedProperties,
   getFeaturedBlogs,
   getPopularLocationsOnce,
   getHomepageSectionsOnce,
   filterPropertiesByCriteria,
+  getLocationString,
   type Property,
   type Blog,
   type PopularLocation,
   type HomepageSection,
 } from "@/lib/firestore";
+import { DynamicSections } from "@/components/DynamicPropertySection";
 
 // Metadata for SEO
 export const metadata: Metadata = {
@@ -85,7 +88,7 @@ async function FeaturedPropertiesSection() {
                 </h3>
                 <p className="text-sm text-slate-500 mb-2 flex items-center gap-1">
                   <MapPin className="h-3 w-3" />
-                  {property.district || property.location}, {property.province}
+                  {getLocationString(property.location)}, {property.province}
                 </p>
                 <p className="text-xl font-bold text-blue-900">
                   ฿{property.price.toLocaleString()}
@@ -251,6 +254,25 @@ const whyChooseUs = [
   { Icon: Trophy, title: "ประสบการณ์กว่า 12 ปี", desc: "ไว้วางใจโดยลูกค้ากว่า 1,200 ราย", color: "bg-rose-50 text-rose-700" },
 ];
 
+// Dynamic Property Sections (from homepage_sections)
+async function DynamicPropertiesSection() {
+  try {
+    const [properties, sections] = await Promise.all([
+      getPropertiesOnce(false),
+      getHomepageSectionsOnce(),
+    ]);
+
+    if (sections.length === 0 || properties.length === 0) {
+      return null;
+    }
+
+    return <DynamicSections sections={sections} properties={properties} />;
+  } catch (error) {
+    console.error("Error loading dynamic sections:", error);
+    return null;
+  }
+}
+
 // Main Page Component
 export default async function HomePage() {
   return (
@@ -328,48 +350,11 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ── Featured Properties (Server Component) ── */}
-      <FeaturedPropertiesSection />
 
       {/* ── Featured Blogs (Server Component) ── */}
       <FeaturedBlogsSection />
-
-      {/* ── Why Choose Us ── */}
-      <section className="py-12 sm:py-16 bg-slate-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-10">
-            <span className="inline-block text-xs font-bold text-blue-600 uppercase tracking-widest bg-blue-50 px-3 py-1 rounded-full mb-3">
-              ทำไมต้องเลือก SPS
-            </span>
-            <h2 className="text-2xl sm:text-3xl font-bold text-slate-900">
-              ครบ · เร็ว · เชื่อใจได้
-            </h2>
-            <p className="text-slate-500 mt-2 text-sm sm:text-base max-w-xl mx-auto">
-              เราดูแลทุกขั้นตอนตั้งแต่ค้นหาจนถึงโอนกรรมสิทธิ์
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
-            {whyChooseUs.map(({ Icon, title, desc, color }) => (
-              <div
-                key={title}
-                className="flex flex-col items-center text-center px-6 py-8 rounded-2xl hover:bg-white hover:shadow-md transition-all duration-300"
-              >
-                <div
-                  className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-5 ${color}`}
-                >
-                  <Icon className="h-7 w-7" />
-                </div>
-                <h3 className="text-base font-bold text-slate-900 mb-2">{title}</h3>
-                <p className="text-sm text-slate-500 leading-relaxed">{desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── Popular Locations (Server Component) ── */}
-      <PopularLocationsSection />
+      {/* ── Dynamic Property Sections (from homepage_sections) ── */}
+      <DynamicPropertiesSection />
 
       {/* ── CTA Banner ── */}
       <section className="relative overflow-hidden bg-blue-900 py-12 sm:py-16">
@@ -412,6 +397,45 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* ── Why Choose Us ── */}
+      <section className="py-12 sm:py-16 bg-slate-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-10">
+            <span className="inline-block text-xs font-bold text-blue-600 uppercase tracking-widest bg-blue-50 px-3 py-1 rounded-full mb-3">
+              ทำไมต้องเลือก SPS
+            </span>
+            <h2 className="text-2xl sm:text-3xl font-bold text-slate-900">
+              ครบ · เร็ว · เชื่อใจได้
+            </h2>
+            <p className="text-slate-500 mt-2 text-sm sm:text-base max-w-xl mx-auto">
+              เราดูแลทุกขั้นตอนตั้งแต่ค้นหาจนถึงโอนกรรมสิทธิ์
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
+            {whyChooseUs.map(({ Icon, title, desc, color }) => (
+              <div
+                key={title}
+                className="flex flex-col items-center text-center px-6 py-8 rounded-2xl hover:bg-white hover:shadow-md transition-all duration-300"
+              >
+                <div
+                  className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-5 ${color}`}
+                >
+                  <Icon className="h-7 w-7" />
+                </div>
+                <h3 className="text-base font-bold text-slate-900 mb-2">{title}</h3>
+                <p className="text-sm text-slate-500 leading-relaxed">{desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Popular Locations (Server Component) ── */}
+      <PopularLocationsSection />
+
+
 
       {/* ── Footer ── */}
       <footer className="bg-slate-900 py-8">

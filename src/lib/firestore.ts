@@ -3,11 +3,13 @@ import {
   doc,
   getDoc,
   getDocs,
+  addDoc,
   query,
   where,
   orderBy,
   limit,
   Timestamp,
+  serverTimestamp,
 } from "firebase/firestore";
 
 // Re-export Timestamp for convenience
@@ -343,4 +345,64 @@ export function filterPropertiesByCriteria(
 
     return true;
   });
+}
+
+// ─── Appointments ─────────────────────────────────────────────────────────────
+
+export async function createAppointment(data: {
+  type: 'Customer' | 'Agent';
+  contactName: string;
+  tel: string;
+  date: string;
+  time: string;
+  propertyId: string;
+  propertyTitle: string;
+  agentName?: string;
+}): Promise<void> {
+  try {
+    const appointmentsRef = collection(db, "appointments");
+    await addDoc(appointmentsRef, {
+      ...data,
+      status: 'pending',
+      createdAt: serverTimestamp(),
+    });
+  } catch (error) {
+    console.error("Error creating appointment:", error);
+    throw error;
+  }
+}
+
+// ─── Property Views Tracking ─────────────────────────────────────────────────
+
+export async function recordPropertyView(data: {
+  propertyId: string;
+  type?: string;
+}): Promise<void> {
+  try {
+    const viewsRef = collection(db, "property_views");
+    await addDoc(viewsRef, {
+      ...data,
+      viewedAt: serverTimestamp(),
+    });
+  } catch (error) {
+    // Silently fail - tracking is non-critical
+    console.error("Error recording property view:", error);
+  }
+}
+
+// ─── Share Links ─────────────────────────────────────────────────────────────
+
+export async function createOrReuseShareLink(data: {
+  propertyId: string;
+  createdBy: string;
+  ttlHours: number;
+}): Promise<{ id: string }> {
+  // For now, create a simple link ID
+  const linksRef = collection(db, "share_links");
+  const newLink = await addDoc(linksRef, {
+    ...data,
+    createdAt: serverTimestamp(),
+    expiresAt: new Date(Date.now() + data.ttlHours * 60 * 60 * 1000),
+  });
+  return { id: newLink.id };
 }

@@ -11,10 +11,11 @@ import {
   Timestamp,
   serverTimestamp,
 } from "firebase/firestore";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 // Re-export Timestamp for convenience
 export { Timestamp };
-import { db } from "./firebase";
+import { db, storage } from "./firebase";
 
 // Types
 export interface Property {
@@ -405,4 +406,38 @@ export async function createOrReuseShareLink(data: {
     expiresAt: new Date(Date.now() + data.ttlHours * 60 * 60 * 1000),
   });
   return { id: newLink.id };
+}
+
+// ─── Image Uploads ─────────────────────────────────────────────────────────────
+
+/**
+ * Upload a property image to Firebase Storage
+ * @param {File} file - Image file to upload
+ * @param {string} propertyId - Property ID
+ * @returns {Promise<string>} Download URL
+ */
+export async function uploadPropertyImage(
+  file: File,
+  propertyId: string
+): Promise<string> {
+  const name = `properties/${propertyId}/${Date.now()}_${file.name}`;
+  const storageRef = ref(storage, name);
+  await uploadBytes(storageRef, file);
+  return getDownloadURL(storageRef);
+}
+
+/**
+ * Upload a pending property image to Firebase Storage
+ * @param {File} file - Image file to upload
+ * @param {string} pendingId - Pending property ID
+ * @returns {Promise<string>} Download URL
+ */
+export async function uploadPendingPropertyImage(
+  file: File,
+  pendingId: string
+): Promise<string> {
+  const name = `pending_properties/${pendingId}/${Date.now()}_${file.name}`;
+  const storageRef = ref(storage, name);
+  await uploadBytes(storageRef, file);
+  return getDownloadURL(storageRef);
 }

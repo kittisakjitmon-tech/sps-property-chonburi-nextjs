@@ -1,65 +1,426 @@
+import type { Metadata } from "next";
+import Link from "next/link";
 import Image from "next/image";
+import {
+  Building2,
+  Award,
+  Users,
+  Clock,
+  MapPin,
+  MessageCircle,
+  Home as HomeIcon,
+  Wallet,
+  BadgeCheck,
+  Zap,
+  Trophy,
+  CheckCircle2,
+  Lightbulb,
+  Handshake,
+  TrendingUp,
+  CalendarDays,
+  Play,
+} from "lucide-react";
+import {
+  getFeaturedProperties,
+  getFeaturedBlogs,
+  getPopularLocationsOnce,
+  getHomepageSectionsOnce,
+  filterPropertiesByCriteria,
+  type Property,
+  type Blog,
+  type PopularLocation,
+  type HomepageSection,
+} from "@/lib/firestore";
 
-export default function Home() {
+// Metadata for SEO
+export const metadata: Metadata = {
+  title: "SPS Property Solution | บ้านคอนโดสวย อมตะซิตี้ ชลบุรี",
+  description: "SPS Property Solution บ้านคอนโดสวย อมตะซิตี้ ชลบุรี - ค้นหาบ้านและคอนโดที่ใช่สำหรับคุณในอมตะซิตี้ ชลบุรี",
+};
+
+// Server Component - Fetch data on server
+async function FeaturedPropertiesSection() {
+  const properties = await getFeaturedProperties(4);
+
+  if (properties.length === 0) {
+    return (
+      <section className="py-12 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <p className="text-slate-500">ยังไม่มีทรัพย์เด่นในขณะนี้</p>
+        </div>
+      </section>
+    );
+  }
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+    <section className="py-12 bg-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 className="text-2xl font-bold text-slate-900 mb-6">ทรัพย์เด่น</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {properties.map((property) => (
+            <Link
+              key={property.id}
+              href={`/properties/${property.slug || property.id}`}
+              className="group bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+              <div className="relative aspect-video bg-slate-100">
+                {property.images?.[0] ? (
+                  <img
+                    src={property.images[0]}
+                    alt={property.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-blue-50">
+                    <Building2 className="h-12 w-12 text-blue-300" />
+                  </div>
+                )}
+                <div className="absolute top-3 right-3 bg-blue-900 text-white text-xs font-semibold px-2 py-1 rounded">
+                  {property.propertyType}
+                </div>
+              </div>
+              <div className="p-4">
+                <h3 className="font-bold text-slate-900 mb-2 line-clamp-2 group-hover:text-blue-900 transition-colors">
+                  {property.title}
+                </h3>
+                <p className="text-sm text-slate-500 mb-2 flex items-center gap-1">
+                  <MapPin className="h-3 w-3" />
+                  {property.district || property.location}, {property.province}
+                </p>
+                <p className="text-xl font-bold text-blue-900">
+                  ฿{property.price.toLocaleString()}
+                </p>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// Featured Blogs Section
+async function FeaturedBlogsSection() {
+  const blogs = await getFeaturedBlogs(4);
+
+  if (blogs.length === 0) {
+    return null;
+  }
+
+  const formatDate = (timestamp: any) => {
+    if (!timestamp) return "";
+    const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+    return date.toLocaleDateString("th-TH", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  };
+
+  return (
+    <section className="py-12 bg-slate-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-2xl font-bold text-slate-900">บทความน่าสนใจ</h2>
+          <Link
+            href="/blogs"
+            className="text-blue-900 font-medium hover:underline flex items-center gap-1"
+          >
+            ดูทั้งหมด →
+          </Link>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {blogs.slice(0, 4).map((blog) => (
+            <Link
+              key={blog.id}
+              href={`/blogs/${blog.slug || blog.id}`}
+              className="group bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
             >
-              Learning
-            </a>{" "}
-            center.
+              <div className="relative aspect-video bg-slate-100">
+                {blog.images?.[0] ? (
+                  <img
+                    src={blog.images[0]}
+                    alt={blog.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-blue-50">
+                    <span className="text-blue-400 text-sm">ไม่มีรูปภาพ</span>
+                  </div>
+                )}
+              </div>
+              <div className="p-5">
+                <h3 className="text-base font-bold text-slate-900 mb-2 line-clamp-2 group-hover:text-blue-900 transition-colors">
+                  {blog.title}
+                </h3>
+                <p className="text-sm text-slate-500 mb-4 line-clamp-2">
+                  {blog.content?.substring(0, 100)}...
+                </p>
+                <div className="flex items-center gap-2 text-xs text-slate-400">
+                  <CalendarDays className="h-3.5 w-3.5" />
+                  <span>{formatDate(blog.createdAt)}</span>
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// Popular Locations Section
+async function PopularLocationsSection() {
+  const locations = await getPopularLocationsOnce();
+
+  if (locations.length === 0) {
+    return null;
+  }
+
+  return (
+    <section className="py-12 bg-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-3">
+            <span className="w-1 h-7 bg-yellow-400 rounded-full" />
+            <div>
+              <h2 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+                ทำเลยอดฮิต
+              </h2>
+              <p className="text-slate-500 text-sm">พื้นที่แนะนำในชลบุรีและใกล้เคียง</p>
+            </div>
+          </div>
+          <Link
+            href="/properties"
+            className="inline-flex items-center gap-1 text-sm font-semibold text-blue-900 border border-blue-200 bg-blue-50 hover:bg-blue-900 hover:text-white px-4 py-1.5 rounded-full transition-all"
+          >
+            ดูทั้งหมด →
+          </Link>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5">
+          {locations.slice(0, 6).map((loc) => (
+            <Link
+              key={loc.id}
+              href={`/properties?location=${encodeURIComponent(loc.district || loc.province)}`}
+              className="group relative aspect-video rounded-2xl overflow-hidden shadow-sm hover:-translate-y-1 hover:shadow-md transition-all"
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-600 to-blue-500 flex items-center justify-center">
+                <MapPin className="h-16 w-16 text-white/40" />
+              </div>
+              {loc.imageUrl && (
+                <img
+                  src={loc.imageUrl}
+                  alt={loc.displayName}
+                  className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+              )}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+              <span className="absolute bottom-4 left-4 right-4 text-white text-xl font-bold drop-shadow">
+                {loc.displayName}
+              </span>
+            </Link>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// Stats data
+const stats = [
+  { icon: Building2, value: "500+", label: "ทรัพย์สินทั้งหมด" },
+  { icon: Award, value: "12+", label: "ปีประสบการณ์" },
+  { icon: Users, value: "1,200+", label: "ลูกค้าที่ไว้วางใจ" },
+  { icon: Clock, value: "24/7", label: "บริการตลอดเวลา" },
+];
+
+const serviceHighlights = [
+  { icon: CheckCircle2, title: "รับปิดหนี้ รวมหนี้ ผ่อนทางเดียว", color: "text-emerald-300" },
+  { icon: Building2, title: "บริการสินเชื่อครบวงจร", color: "text-blue-200" },
+  { icon: Lightbulb, title: "รับปรึกษาภาระหนี้สินเกินรายได้", color: "text-amber-300" },
+  { icon: Handshake, title: "บริการครบวงจรทุกขั้นตอน", color: "text-purple-200" },
+  { icon: TrendingUp, title: "รับนักลงทุนพร้อมบริหารงานเช่า", color: "text-cyan-200" },
+];
+
+const whyChooseUs = [
+  { Icon: HomeIcon, title: "ทรัพย์ครบทุกประเภท", desc: "บ้านเดี่ยว ทาวน์โฮม คอนโด ในพื้นที่อมตะซิตี้และชลบุรี", color: "bg-blue-50 text-blue-700" },
+  { Icon: Wallet, title: "รับปิดหนี้ รวมหนี้", desc: "บริการปรึกษาและจัดการภาระหนี้ ผ่อนบ้านทางเดียว", color: "bg-emerald-50 text-emerald-700" },
+  { Icon: BadgeCheck, title: "บริการครบวงจร", desc: "ดูแลตั้งแต่ต้นจนจบ ทำสัญญา โอนกรรมสิทธิ์", color: "bg-purple-50 text-purple-700" },
+  { Icon: MapPin, title: "รู้จักทำเลดี", desc: "ทีมงานชำนาญพื้นที่ ชลบุรี ฉะเชิงเทรา ระยอง", color: "bg-amber-50 text-amber-700" },
+  { Icon: Zap, title: "ตอบสนองรวดเร็ว", desc: "ทีมงานพร้อมให้คำปรึกษา 24/7 ผ่าน Facebook", color: "bg-cyan-50 text-cyan-700" },
+  { Icon: Trophy, title: "ประสบการณ์กว่า 12 ปี", desc: "ไว้วางใจโดยลูกค้ากว่า 1,200 ราย", color: "bg-rose-50 text-rose-700" },
+];
+
+// Main Page Component
+export default async function HomePage() {
+  return (
+    <main className="min-h-screen">
+      {/* ── Hero Section ── */}
+      <section className="relative bg-gradient-to-br from-blue-900 via-blue-800 to-blue-900 min-h-[90vh] flex items-center">
+        <div className="absolute inset-0 opacity-10">
+          <div
+            className="absolute inset-0"
+            style={{
+              backgroundImage: "radial-gradient(circle, #fff 1px, transparent 1px)",
+              backgroundSize: "32px 32px",
+            }}
+          />
+        </div>
+
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 w-full">
+          <div className="text-center mb-12">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white mb-4">
+              รวมภาระหนี้{" "}
+              <span className="text-yellow-400 drop-shadow">ผ่อนบ้านทางเดียว</span>
+            </h1>
+            <p className="text-lg sm:text-xl text-blue-200">
+              อสังหาริมทรัพย์คุณภาพ อมตะซิตี้ · ชลบุรี
+            </p>
+          </div>
+
+          <div className="max-w-4xl mx-auto mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+              {serviceHighlights.map((item) => {
+                const IconComponent = item.icon;
+                return (
+                  <div
+                    key={item.title}
+                    className="flex items-start gap-3 p-3 sm:p-4 rounded-xl bg-white/15 border border-white/25"
+                  >
+                    <div className="w-8 h-8 rounded-full bg-white/15 flex items-center justify-center shrink-0">
+                      <IconComponent className={`h-4 w-4 ${item.color}`} />
+                    </div>
+                    <p className="text-white text-base sm:text-lg leading-relaxed font-medium">
+                      {item.title}
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="flex items-center justify-center gap-2 text-gray-300 text-sm">
+            <MapPin className="h-4 w-4" />
+            <p>พื้นที่ให้บริการ: ชลบุรี ฉะเชิงเทรา ระยอง ปทุมธานี กทม.</p>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Stats Strip ── */}
+      <section className="bg-blue-900 py-8 sm:py-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+            {stats.map((stat) => {
+              const Icon = stat.icon;
+              return (
+                <div key={stat.label} className="flex flex-col items-center gap-2">
+                  <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center mb-1">
+                    <Icon className="h-5 w-5 text-yellow-400" />
+                  </div>
+                  <span className="text-3xl sm:text-4xl font-extrabold text-yellow-400 leading-none">
+                    {stat.value}
+                  </span>
+                  <span className="text-sm text-blue-200 font-medium">{stat.label}</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Featured Properties (Server Component) ── */}
+      <FeaturedPropertiesSection />
+
+      {/* ── Featured Blogs (Server Component) ── */}
+      <FeaturedBlogsSection />
+
+      {/* ── Why Choose Us ── */}
+      <section className="py-12 sm:py-16 bg-slate-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-10">
+            <span className="inline-block text-xs font-bold text-blue-600 uppercase tracking-widest bg-blue-50 px-3 py-1 rounded-full mb-3">
+              ทำไมต้องเลือก SPS
+            </span>
+            <h2 className="text-2xl sm:text-3xl font-bold text-slate-900">
+              ครบ · เร็ว · เชื่อใจได้
+            </h2>
+            <p className="text-slate-500 mt-2 text-sm sm:text-base max-w-xl mx-auto">
+              เราดูแลทุกขั้นตอนตั้งแต่ค้นหาจนถึงโอนกรรมสิทธิ์
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
+            {whyChooseUs.map(({ Icon, title, desc, color }) => (
+              <div
+                key={title}
+                className="flex flex-col items-center text-center px-6 py-8 rounded-2xl hover:bg-white hover:shadow-md transition-all duration-300"
+              >
+                <div
+                  className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-5 ${color}`}
+                >
+                  <Icon className="h-7 w-7" />
+                </div>
+                <h3 className="text-base font-bold text-slate-900 mb-2">{title}</h3>
+                <p className="text-sm text-slate-500 leading-relaxed">{desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Popular Locations (Server Component) ── */}
+      <PopularLocationsSection />
+
+      {/* ── CTA Banner ── */}
+      <section className="relative overflow-hidden bg-blue-900 py-12 sm:py-16">
+        <div className="absolute inset-0 opacity-[0.07]">
+          <div
+            className="absolute inset-0"
+            style={{
+              backgroundImage: "radial-gradient(circle, #fff 1px, transparent 1px)",
+              backgroundSize: "24px 24px",
+            }}
+          />
+        </div>
+
+        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-8">
+            <div className="md:max-w-xl">
+              <div className="inline-flex items-center gap-2 bg-yellow-400/20 border border-yellow-400/40 text-yellow-300 text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full mb-4">
+                <MessageCircle className="h-3.5 w-3.5" />
+                ปรึกษาฟรี ไม่มีค่าใช้จ่าย
+              </div>
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-3 leading-tight">
+                ต้องการความช่วยเหลือ<br className="hidden sm:block" />ในการหาบ้าน?
+              </h2>
+              <p className="text-blue-200 text-sm sm:text-base leading-relaxed">
+                ทีมงานผู้เชี่ยวชาญพร้อมให้คำปรึกษา ตอบทุกคำถาม ตลอด 24 ชั่วโมง
+              </p>
+            </div>
+
+            <div className="flex flex-col sm:flex-row md:flex-col lg:flex-row items-stretch sm:items-center gap-3 md:shrink-0">
+              <a
+                href="https://www.facebook.com/houseamata"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 border border-white/25 text-white font-semibold px-7 py-3.5 rounded-xl transition-all duration-300 text-sm whitespace-nowrap"
+              >
+                <MessageCircle className="h-4 w-4" />
+                ติดต่อผ่าน Facebook
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Footer ── */}
+      <footer className="bg-slate-900 py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <p className="text-slate-400 text-sm">
+            © 2026 SPS Property Solution. สงวนลิขสิทธิ์.
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+      </footer>
+    </main>
   );
 }

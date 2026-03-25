@@ -36,6 +36,10 @@ export default function Navbar() {
   const [buyMenuOpen, setBuyMenuOpen] = useState(false);
   const [serviceMenuOpen, setServiceMenuOpen] = useState(false);
   const desktopMenuRef = useRef<HTMLDivElement>(null);
+  
+  // Timeout refs for dropdown close delay
+  const buyTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const serviceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Close menus when clicking outside
   useEffect(() => {
@@ -48,6 +52,36 @@ export default function Navbar() {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  // Cleanup timeouts on unmount
+  useEffect(() => {
+    return () => {
+      if (buyTimeoutRef.current) clearTimeout(buyTimeoutRef.current);
+      if (serviceTimeoutRef.current) clearTimeout(serviceTimeoutRef.current);
+    };
+  }, []);
+
+  const handleBuyMouseEnter = () => {
+    if (buyTimeoutRef.current) clearTimeout(buyTimeoutRef.current);
+    setBuyMenuOpen(true);
+  };
+
+  const handleBuyMouseLeave = () => {
+    buyTimeoutRef.current = setTimeout(() => {
+      setBuyMenuOpen(false);
+    }, 1000); // 1 second delay
+  };
+
+  const handleServiceMouseEnter = () => {
+    if (serviceTimeoutRef.current) clearTimeout(serviceTimeoutRef.current);
+    setServiceMenuOpen(true);
+  };
+
+  const handleServiceMouseLeave = () => {
+    serviceTimeoutRef.current = setTimeout(() => {
+      setServiceMenuOpen(false);
+    }, 1000); // 1 second delay
+  };
 
   return (
     <header className="sticky top-0 z-[100] w-full bg-white border-b border-gray-200">
@@ -76,8 +110,8 @@ export default function Navbar() {
                 setBuyMenuOpen(!buyMenuOpen);
                 setServiceMenuOpen(false);
               }}
-              onMouseEnter={() => setBuyMenuOpen(true)}
-              onMouseLeave={() => setBuyMenuOpen(false)}
+              onMouseEnter={handleBuyMouseEnter}
+              onMouseLeave={handleBuyMouseLeave}
               className="nav-link inline-flex items-center gap-1 text-[15px] font-medium text-gray-600 hover:text-blue-600 transition-colors duration-200 whitespace-nowrap bg-transparent border-0 cursor-pointer py-2"
             >
               ซื้อบ้าน
@@ -85,6 +119,8 @@ export default function Navbar() {
             </button>
 
             <div
+              onMouseEnter={handleBuyMouseEnter}
+              onMouseLeave={handleBuyMouseLeave}
               className={`absolute left-0 top-full mt-2 w-72 bg-white rounded-xl shadow-lg border border-slate-200 py-2 z-50 transition-all duration-200 ${
                 buyMenuOpen ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 -translate-y-1 pointer-events-none"
               }`}
@@ -124,8 +160,8 @@ export default function Navbar() {
                 setServiceMenuOpen(!serviceMenuOpen);
                 setBuyMenuOpen(false);
               }}
-              onMouseEnter={() => setServiceMenuOpen(true)}
-              onMouseLeave={() => setServiceMenuOpen(false)}
+              onMouseEnter={handleServiceMouseEnter}
+              onMouseLeave={handleServiceMouseLeave}
               className="nav-link inline-flex items-center gap-1 text-[15px] font-medium text-gray-600 hover:text-blue-600 transition-colors duration-200 whitespace-nowrap bg-transparent border-0 cursor-pointer py-2"
             >
               บริการของเรา
@@ -133,6 +169,8 @@ export default function Navbar() {
             </button>
 
             <div
+              onMouseEnter={handleServiceMouseEnter}
+              onMouseLeave={handleServiceMouseLeave}
               className={`absolute left-0 top-full mt-2 w-72 bg-white rounded-xl shadow-lg border border-slate-200 py-2 z-50 transition-all duration-200 ${
                 serviceMenuOpen ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 -translate-y-1 pointer-events-none"
               }`}

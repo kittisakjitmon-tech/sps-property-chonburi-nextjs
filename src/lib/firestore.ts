@@ -329,7 +329,32 @@ export async function getHeroSlidesOnce(): Promise<HeroSlide[]> {
       id: doc.id,
       ...doc.data(),
     })) as HeroSlide[];
-  } catch (error) {
+  } catch (error: any) {
+    // If index error, try without order
+    if (error?.code === 'failed-precondition' || error?.message?.includes('index')) {
+      console.warn('HeroSlides: Missing index, trying simple query');
+      try {
+        const slidesRef = collection(db, "hero_slides");
+        const q = query(slidesRef, where("isActive", "==", true));
+        const snapshot = await getDocs(q);
+        return snapshot.docs
+          .map((doc) => ({ id: doc.id, ...doc.data() }))
+          .sort((a: any, b: any) => (a.order || 0) - (b.order || 0)) as HeroSlide[];
+      } catch (e2) {
+        console.error('HeroSlides: Simple query also failed', e2);
+        // Last resort: get all slides
+        try {
+          const slidesRef = collection(db, "hero_slides");
+          const snapshot = await getDocs(slidesRef);
+          return snapshot.docs
+            .map((doc) => ({ id: doc.id, ...doc.data() }))
+            .sort((a: any, b: any) => (a.order || 0) - (b.order || 0)) as HeroSlide[];
+        } catch (e3) {
+          console.error('HeroSlides: All queries failed', e3);
+          return [];
+        }
+      }
+    }
     console.error("Error fetching hero slides:", error);
     return [];
   }

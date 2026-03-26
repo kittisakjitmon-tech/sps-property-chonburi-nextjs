@@ -11,6 +11,7 @@ import { getPropertiesOnce, type Property } from '@/lib/firestore';
 import { PROPERTY_TYPES } from '@/constants/propertyTypes';
 import PropertyCard from '@/components/PropertyCard';
 import RecommendedPropertiesSection from '@/components/RecommendedPropertiesSection';
+import Dropdown from '@/components/ui/Dropdown';
 
 const PropertiesMap = dynamic(() => import('@/components/PropertiesMap'), {
   ssr: false,
@@ -209,58 +210,54 @@ function PropertiesContent() {
           {/* Filter Row */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {/* ประเภทอสังหาฯ */}
-            <select
+            <Dropdown
+              options={PROPERTY_TYPES.map((pt) => ({ value: pt.id, label: pt.label }))}
               value={propertyType}
-              onChange={(e) => { setPropertyType(e.target.value); setCurrentPage(1); }}
-              className="px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-900/20 bg-white text-sm"
-            >
-              <option value="">ประเภทอสังหาฯ</option>
-              {PROPERTY_TYPES.map((pt) => (
-                <option key={pt.id} value={pt.id}>{pt.label}</option>
-              ))}
-            </select>
+              onChange={(val) => { setPropertyType(val); setCurrentPage(1); }}
+              placeholder="ประเภทอสังหาฯ"
+            />
 
             {/* พื้นที่/ทำเล */}
-            <select
+            <Dropdown
+              options={[
+                { value: 'ชลบุรี', label: 'ชลบุรี' },
+                { value: 'พานทอง', label: 'พานทอง' },
+                { value: 'บ้านบึง', label: 'บ้านบึง' },
+                { value: 'ศรีราชา', label: 'ศรีราชา' },
+                { value: 'ฉะเชิงเทรา', label: 'ฉะเชิงเทรา' },
+                { value: 'ระยอง', label: 'ระยอง' },
+              ]}
               value={location}
-              onChange={(e) => { setLocation(e.target.value); setCurrentPage(1); }}
-              className="px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-900/20 bg-white text-sm"
-            >
-              <option value="">พื้นที่/ทำเล</option>
-              <option value="ชลบุรี">ชลบุรี</option>
-              <option value="พานทอง">พานทอง</option>
-              <option value="บ้านบึง">บ้านบึง</option>
-              <option value="ศรีราชา">ศรีราชา</option>
-              <option value="ฉะเชิงเทรา">ฉะเชิงเทรา</option>
-              <option value="ระยอง">ระยอง</option>
-            </select>
+              onChange={(val) => { setLocation(val); setCurrentPage(1); }}
+              placeholder="พื้นที่/ทำเล"
+            />
 
             {/* ช่วงราคา */}
-            <select
+            <Dropdown
+              options={[
+                { value: '0-1000000', label: 'ต่ำกว่า 1 ล้าน' },
+                { value: '1000000-3000000', label: '1-3 ล้าน' },
+                { value: '3000000-5000000', label: '3-5 ล้าน' },
+                { value: '5000000-10000000', label: '5-10 ล้าน' },
+                { value: '10000000-', label: 'มากกว่า 10 ล้าน' },
+              ]}
               value={priceRange}
-              onChange={(e) => { setPriceRange(e.target.value); setCurrentPage(1); }}
-              className="px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-900/20 bg-white text-sm"
-            >
-              <option value="">ช่วงราคา</option>
-              <option value="0-1000000">ต่ำกว่า 1 ล้าน</option>
-              <option value="1000000-3000000">1-3 ล้าน</option>
-              <option value="3000000-5000000">3-5 ล้าน</option>
-              <option value="5000000-10000000">5-10 ล้าน</option>
-              <option value="10000000-">มากกว่า 10 ล้าน</option>
-            </select>
+              onChange={(val) => { setPriceRange(val); setCurrentPage(1); }}
+              placeholder="ช่วงราคา"
+            />
 
             {/* จำนวนห้องนอน */}
-            <select
+            <Dropdown
+              options={[
+                { value: '1', label: '1 ห้องนอน+' },
+                { value: '2', label: '2 ห้องนอน+' },
+                { value: '3', label: '3 ห้องนอน+' },
+                { value: '4', label: '4 ห้องนอน+' },
+              ]}
               value={bedrooms}
-              onChange={(e) => { setBedrooms(e.target.value); setCurrentPage(1); }}
-              className="px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-900/20 bg-white text-sm"
-            >
-              <option value="">จำนวนห้องนอน</option>
-              <option value="1">1 ห้องนอน+</option>
-              <option value="2">2 ห้องนอน+</option>
-              <option value="3">3 ห้องนอน+</option>
-              <option value="4">4 ห้องนอน+</option>
-            </select>
+              onChange={(val) => { setBedrooms(val); setCurrentPage(1); }}
+              placeholder="จำนวนห้องนอน"
+            />
           </div>
         </div>
       </div>
@@ -272,18 +269,17 @@ function PropertiesContent() {
           <aside className="hidden lg:block w-72 shrink-0 space-y-4">
             {/* Sort Dropdown */}
             <div className="bg-white rounded-xl p-4 shadow-sm border border-slate-100">
-              <label className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 block">
-                จัดเรียงตาม
-              </label>
-              <select
+              <Dropdown
+                options={[
+                  { value: 'latest', label: 'ล่าสุด' },
+                  { value: 'price-low', label: 'ราคาต่ำ-สูง' },
+                  { value: 'price-high', label: 'ราคาสูง-ต่ำ' },
+                ]}
                 value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm"
-              >
-                <option value="latest">ล่าสุด</option>
-                <option value="price-low">ราคาต่ำ-สูง</option>
-                <option value="price-high">ราคาสูง-ต่ำ</option>
-              </select>
+                onChange={setSortBy}
+                placeholder="จัดเรียงตาม"
+                label="จัดเรียงตาม"
+              />
             </div>
 
             {/* Recommended Properties */}

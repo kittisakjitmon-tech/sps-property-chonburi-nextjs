@@ -11,6 +11,8 @@ const prompt = Prompt({
   variable: "--font-prompt",
 });
 
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://sps-property-nextjs.vercel.app";
+
 export const metadata: Metadata = {
   title: "SPS Property Solution",
   description: "บริการรับฝาก ซื้อ-ขาย-เช่า-จำนอง-ขายฝาก อสังหาริมทรัพย์ในชลบุรี ฉะเชิงเทรา ระยอง",
@@ -20,6 +22,20 @@ export const metadata: Metadata = {
     description: "บริการรับฝาก ซื้อ-ขาย-เช่า-จำนอง-ขายฝาก อสังหาริมทรัพย์ในชลบุรี ฉะเชิงเทรา ระยอง",
     locale: "th_TH",
     type: "website",
+    images: [
+      {
+        url: `${BASE_URL}/logo.png`,
+        width: 1200,
+        height: 630,
+        alt: "SPS Property Solution",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "SPS Property Solution",
+    description: "บริการรับฝาก ซื้อ-ขาย-เช่า-จำนอง-ขายฝาก อสังหาริมทรัพย์ในชลบุรี ฉะเชิงเทรา ระยอง",
+    images: [`${BASE_URL}/logo.png`],
   },
 };
 

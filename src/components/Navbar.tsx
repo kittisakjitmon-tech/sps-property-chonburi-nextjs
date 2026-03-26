@@ -88,9 +88,7 @@ export default function Navbar() {
       <nav className="w-full mx-auto px-3 sm:px-4 md:px-6 lg:px-8 lg:max-w-7xl min-h-[60px] flex flex-wrap items-center justify-between gap-3 py-2">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 shrink min-w-0 max-w-[calc(100%-56px)] lg:max-w-none">
-          <div className="w-10 h-10 bg-blue-900 rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold text-sm">SPS</span>
-          </div>
+          <img src="/logo.png" alt="SPS Property Solution" className="w-10 h-10 object-contain rounded-lg" />
           <span className="text-base font-semibold text-gray-900 whitespace-nowrap truncate hidden sm:inline">
             SPS Property Solution
           </span>

@@ -3,7 +3,7 @@
 import { useState, useEffect, use } from 'react';
 import Link from 'next/link';
 import { Calendar, ArrowLeft } from 'lucide-react';
-import { getBlogBySlug } from '@/lib/firestore';
+import { getBlogById } from '@/lib/firestore';
 import { getCloudinaryLargeUrl, getCloudinaryMediumUrl, isValidImageUrl } from '@/lib/cloudinary';
 import { extractIdFromSlug, generateBlogSlug } from '@/lib/blogSlug';
 
@@ -62,7 +62,7 @@ export default function BlogDetailPage({ params }: BlogDetailPageProps) {
           return;
         }
 
-        const blogData = await getBlogBySlug(blogId);
+        const blogData = await getBlogById(blogId);
         
         if (!blogData) {
           setNotFound(true);

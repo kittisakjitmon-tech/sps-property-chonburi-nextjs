@@ -51,7 +51,9 @@ function PropertyDetailContent({ id }: { id: string }) {
     
     const fetchProperty = async () => {
       try {
-        const p = await getPropertyById(id);
+        // Extract actual Firestore ID from slug (format: {slug}--{id})
+        const propertyId = extractIdFromSlug(id) || id;
+        const p = await getPropertyById(propertyId);
         if (!cancelled) {
           setProperty(p);
           if (p?.id) {

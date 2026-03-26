@@ -1,11 +1,8 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Factory, ShoppingBag, Hospital, GraduationCap, MapPin, Car } from 'lucide-react';
-
-interface NeighborhoodDataProps {
-  property?: any;
-}
+import { fetchAndCacheNearbyPlaces, getCoordsFromProperty } from '@/lib/nearbyPlacesService';
 
 const TYPE_ICONS: Record<string, any> = {
   hospital: Hospital,
@@ -23,33 +20,69 @@ const TYPE_TITLES: Record<string, string> = {
   education: 'การศึกษา',
 };
 
+interface NeighborhoodDataProps {
+  property?: any;
+}
+
 export default function NeighborhoodData({ property }: NeighborhoodDataProps) {
-  const [places, setPlaces] = useState<any[]>([]);
+  const [places, setPlaces] = useState<any[]>(property?.nearbyPlaces || []);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const loc = typeof property?.location === 'object' ? property.location : {};
+  const coords = getCoordsFromProperty(property || {});
   const hasMapUrl = !!(property?.mapUrl);
-  const hasCoords = !!(loc?.lat && loc?.lng);
+  const hasCoords = !!coords;
 
   useEffect(() => {
-    // Use nearbyPlaces from property if available
-    if (property?.nearbyPlaces && Array.isArray(property.nearbyPlaces) && property.nearbyPlaces.length > 0) {
+    if (!property) return;
+    
+    // ถ้ามี nearbyPlaces อยู่แล้ว ใช้เลย
+    if (property.nearbyPlaces && Array.isArray(property.nearbyPlaces) && property.nearbyPlaces.length > 0) {
       setPlaces(property.nearbyPlaces);
       return;
     }
-    // For now, use mock data or empty
-    setPlaces([]);
-  }, [property?.nearbyPlaces]);
+    
+    // ต้องมีพิกัดถึงจะค้นหาได้
+    if (!coords) return;
 
-  const groupedPlaces = places.reduce((groups: Record<string, any[]>, place: any) => {
-    const type = place.type === 'shopping' ? 'mall' : place.type === 'school' ? 'education' : place.type;
-    if (!groups[type]) groups[type] = [];
-    groups[type].push({ ...place, type });
+    let cancelled = false;
+    setLoading(true);
+    setError(null);
+
+    // ส่ง property ที่มี lat/lng ไป fetch
+    const propertyWithCoords = { ...property, lat: coords.lat, lng: coords.lng };
+    fetchAndCacheNearbyPlaces(propertyWithCoords)
+      .then((result) => {
+        if (!cancelled) setPlaces(result);
+      })
+      .catch((e: any) => {
+        if (!cancelled) {
+          setError(e?.message || 'โหลดข้อมูลไม่สำเร็จ');
+          setPlaces([]);
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    return () => { cancelled = true; };
+  }, [property?.id, coords?.lat, coords?.lng, property?.nearbyPlaces?.length]);
+
+  const groupedPlaces = useMemo(() => {
+    const groups: Record<string, any[]> = {
+      industrial: [],
+      mall: [],
+      hospital: [],
+      education: [],
+    };
+    for (const place of places || []) {
+      const type = place.type === 'shopping' ? 'mall' : place.type === 'school' ? 'education' : place.type;
+      if (groups[type]) groups[type].push({ ...place, type });
+    }
     return groups;
-  }, { industrial: [], mall: [], hospital: [], education: [] });
+  }, [places]);
 
-  // Fallback: No map
+  // Fallback: ไม่มีลิงก์แผนที่
   if (!hasMapUrl) {
     return (
       <div className="bg-slate-100 rounded-xl border border-slate-200 p-6">
@@ -77,6 +110,8 @@ export default function NeighborhoodData({ property }: NeighborhoodDataProps) {
       ) : !hasCoords ? (
         <div className="py-6 text-center text-slate-500 text-sm">
           ข้อมูลสถานที่สำคัญจะปรากฏขึ้นเมื่อระบุพิกัดแผนที่
+          <br />
+          <span className="text-xs">ตรวจสอบจากแผนที่</span>
         </div>
       ) : places.length > 0 ? (
         <div className="space-y-4">
@@ -110,6 +145,8 @@ export default function NeighborhoodData({ property }: NeighborhoodDataProps) {
       ) : (
         <div className="py-6 text-center text-slate-500 text-sm">
           ข้อมูลสถานที่สำคัญจะปรากฏขึ้นเมื่อระบุพิกัดแผนที่
+          <br />
+          <span className="text-xs">ตรวจสอบจากแผนที่</span>
         </div>
       )}
     </div>

@@ -251,6 +251,18 @@ export async function getBlogBySlug(slug: string): Promise<Blog | null> {
   }
 }
 
+export async function getBlogById(id: string): Promise<Blog | null> {
+  try {
+    const docRef = doc(db, "blogs", id);
+    const docSnap = await getDoc(docRef);
+    if (!docSnap.exists()) return null;
+    return { id: docSnap.id, ...docSnap.data() } as Blog;
+  } catch (error) {
+    console.error("Error fetching blog by id:", error);
+    return null;
+  }
+}
+
 // ─── Popular Locations ───────────────────────────────────────────────────────
 
 export async function getPopularLocationsOnce(): Promise<PopularLocation[]> {

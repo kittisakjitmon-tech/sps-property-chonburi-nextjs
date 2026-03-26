@@ -35,6 +35,7 @@ import Navbar from "@/components/Navbar";
 import HeroSlider from "@/components/HeroSlider";
 import HomeSearch from "@/components/HomeSearch";
 import Footer from "@/components/Footer";
+import PropertyCard from "@/components/PropertyCard";
 
 // Metadata for SEO
 export const metadata: Metadata = {
@@ -59,43 +60,21 @@ async function FeaturedPropertiesSection() {
   return (
     <section className="py-12 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 className="text-2xl font-bold text-slate-900 mb-6">ทรัพย์เด่น</h2>
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-3">
+            <span className="w-1 h-7 bg-yellow-400 rounded-full" />
+            <h2 className="text-2xl font-bold text-slate-900">ทรัพย์เด่น</h2>
+          </div>
+          <Link
+            href="/properties?featured=true"
+            className="text-sm font-semibold text-blue-900 border border-blue-200 bg-blue-50 hover:bg-blue-900 hover:text-white px-4 py-1.5 rounded-full transition-all"
+          >
+            ดูทั้งหมด →
+          </Link>
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {properties.map((property) => (
-            <Link
-              key={property.id}
-              href={`/properties/${property.slug || property.id}`}
-              className="group bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
-            >
-              <div className="relative aspect-video bg-slate-100">
-                {property.images?.[0] ? (
-                  <img
-                    src={property.images[0]}
-                    alt={property.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-blue-50">
-                    <Building2 className="h-12 w-12 text-blue-300" />
-                  </div>
-                )}
-                <div className="absolute top-3 right-3 bg-blue-900 text-white text-xs font-semibold px-2 py-1 rounded">
-                  {property.propertyType}
-                </div>
-              </div>
-              <div className="p-4">
-                <h3 className="font-bold text-slate-900 mb-2 line-clamp-2 group-hover:text-blue-900 transition-colors">
-                  {property.title}
-                </h3>
-                <p className="text-sm text-slate-500 mb-2 flex items-center gap-1">
-                  <MapPin className="h-3 w-3" />
-                  {getLocationString(property.location)}, {property.province}
-                </p>
-                <p className="text-xl font-bold text-blue-900">
-                  ฿{property.price.toLocaleString()}
-                </p>
-              </div>
-            </Link>
+            <PropertyCard key={property.id} property={property} home />
           ))}
         </div>
       </div>
@@ -125,10 +104,13 @@ async function FeaturedBlogsSection() {
     <section className="py-12 bg-slate-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold text-slate-900">บทความน่าสนใจ</h2>
+          <div className="flex items-center gap-3">
+            <span className="w-1 h-7 bg-blue-600 rounded-full" />
+            <h2 className="text-2xl font-bold text-slate-900">บทความน่าสนใจ</h2>
+          </div>
           <Link
             href="/blogs"
-            className="text-blue-900 font-medium hover:underline flex items-center gap-1"
+            className="text-sm font-semibold text-blue-900 border border-blue-200 bg-blue-50 hover:bg-blue-900 hover:text-white px-4 py-1.5 rounded-full transition-all"
           >
             ดูทั้งหมด →
           </Link>
@@ -152,6 +134,7 @@ async function FeaturedBlogsSection() {
                     <span className="text-blue-400 text-sm">ไม่มีรูปภาพ</span>
                   </div>
                 )}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
               </div>
               <div className="p-5">
                 <h3 className="text-base font-bold text-slate-900 mb-2 line-clamp-2 group-hover:text-blue-900 transition-colors">

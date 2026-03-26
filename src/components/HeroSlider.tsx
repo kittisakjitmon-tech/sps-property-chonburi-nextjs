@@ -1,19 +1,27 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Autoplay, EffectFade, Pagination } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/effect-fade";
+import "swiper/css/pagination";
 import { getHeroSlidesOnce } from "@/lib/firestore";
-
-interface Slide {
-  id: string;
-  imageUrl?: string;
-  image?: string;
-  url?: string;
-}
+import { getOptimizedImageUrl, isValidImageUrl } from "@/lib/cloudinary";
 
 const DEFAULT_IMAGE = "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=800&q=75&auto=format";
 
-function getSlideImageUrl(slide: Slide): string {
-  return slide?.imageUrl || slide?.image || slide?.url || DEFAULT_IMAGE;
+const HERO_WIDTH = 800;
+const HERO_HEIGHT = 450;
+
+function getSlideImageUrl(slide: any): string {
+  const raw = slide?.imageUrl || slide?.image || slide?.url || DEFAULT_IMAGE;
+  if (raw === DEFAULT_IMAGE) return raw;
+  // Try to optimize with Cloudinary
+  if (isValidImageUrl(raw)) {
+    return getOptimizedImageUrl(raw, { width: HERO_WIDTH, height: HERO_HEIGHT, crop: "fill" }) || raw;
+  }
+  return raw;
 }
 
 interface HeroSliderProps {
@@ -21,85 +29,84 @@ interface HeroSliderProps {
   className?: string;
 }
 
+function HeroSkeleton({ children }: { children: React.ReactNode }) {
+  return (
+    <section className="relative flex items-center justify-center min-h-[85vh] overflow-hidden">
+      <img
+        src={DEFAULT_IMAGE}
+        alt=""
+        width={HERO_WIDTH}
+        height={HERO_HEIGHT}
+        fetchPriority="high"
+        decoding="async"
+        className="absolute inset-0 w-full h-full object-cover"
+        aria-hidden="true"
+      />
+      <div className="absolute inset-0 bg-gradient-to-b from-black/65 via-black/50 to-black/75 z-[1]" />
+      <div className="relative z-[2] w-full flex flex-col items-center justify-center min-h-[85vh] py-16 md:py-20 px-4">
+        {children}
+      </div>
+    </section>
+  );
+}
+
 export default function HeroSlider({ children, className = "" }: HeroSliderProps) {
-  const [slides, setSlides] = useState<Slide[] | null>(null);
-  const [currentSlide, setCurrentSlide] = useState(0);
+  const [slides, setSlides] = useState<any[] | null>(null);
+  const preloadedRef = useRef(false);
 
   useEffect(() => {
     getHeroSlidesOnce()
       .then((list) => {
-        const finalSlides = list.length > 0 ? list : [{ id: "default", imageUrl: DEFAULT_IMAGE }];
-        setSlides(finalSlides as Slide[]);
+        const finalSlides = list.length > 0 ? list : [{ id: "default", imageUrl: DEFAULT_IMAGE, order: 0 }];
+        setSlides(finalSlides);
       })
       .catch(() => {
-        setSlides([{ id: "default", imageUrl: DEFAULT_IMAGE }]);
+        setSlides([{ id: "default", imageUrl: DEFAULT_IMAGE, order: 0 }]);
       });
   }, []);
 
-  // Auto-rotate slides
-  useEffect(() => {
-    if (!slides || slides.length <= 1) return;
-    const interval = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % slides.length);
-    }, 5000);
-    return () => clearInterval(interval);
-  }, [slides]);
-
-  // Loading state
+  // Loading state - show skeleton with default image
   if (slides === null) {
-    return (
-      <section className={`relative flex items-center justify-center min-h-[85vh] overflow-hidden ${className}`}>
-        <img
-          src={DEFAULT_IMAGE}
-          alt=""
-          className="absolute inset-0 w-full h-full object-cover"
-          aria-hidden="true"
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/65 via-black/50 to-black/75 z-[1]" />
-        <div className="relative z-[2] w-full flex flex-col items-center justify-center min-h-[85vh] py-16 md:py-20 px-4">
-          {children}
-        </div>
-      </section>
-    );
+    return <HeroSkeleton>{children}</HeroSkeleton>;
   }
 
   return (
     <section className={`relative min-h-[85vh] flex items-center justify-center ${className}`}>
-      {/* Background Images */}
-      {slides.map((slide, index) => (
-        <div
-          key={slide.id}
-          className={`absolute inset-0 transition-opacity duration-1000 ${
-            index === currentSlide ? "opacity-100 z-0" : "opacity-0 z-[-1]"
-          }`}
-        >
-          <img
-            src={getSlideImageUrl(slide)}
-            alt=""
-            className="w-full h-full object-cover"
-            loading={index === 0 ? "eager" : "lazy"}
-          />
-        </div>
-      ))}
+      <Swiper
+        modules={[Autoplay, EffectFade, Pagination]}
+        effect="fade"
+        autoplay={{ delay: 5000, disableOnInteraction: false }}
+        pagination={{
+          clickable: true,
+          bulletClass: "swiper-pagination-bullet !bg-white/50 !w-2 !h-2 !mx-1",
+          bulletActiveClass: "!bg-yellow-400 !w-6",
+        }}
+        loop={slides.length > 1}
+        className="!absolute !inset-0 !w-full !h-full"
+        style={{ height: "100%", minHeight: "85vh" }}
+      >
+        {slides.map((slide, index) => {
+          const imageUrl = getSlideImageUrl(slide);
+          return (
+            <SwiperSlide key={slide.id} style={{ height: "100%", minHeight: "85vh" }}>
+              <img
+                src={imageUrl}
+                alt=""
+                width={HERO_WIDTH}
+                height={HERO_HEIGHT}
+                className="absolute inset-0 w-full h-full object-cover"
+                loading={index === 0 ? "eager" : "lazy"}
+                fetchPriority={index === 0 ? "high" : "auto"}
+                decoding="async"
+                aria-hidden="true"
+              />
+            </SwiperSlide>
+          );
+        })}
+      </Swiper>
 
       {/* Overlay */}
       <div className="absolute inset-0 bg-gradient-to-b from-black/65 via-black/50 to-black/75 z-[1]" />
-
-      {/* Pagination Dots */}
-      {slides.length > 1 && (
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-[3] flex gap-2">
-          {slides.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => setCurrentSlide(index)}
-              className={`w-2 h-2 rounded-full transition-all ${
-                index === currentSlide ? "bg-yellow-400 w-6" : "bg-white/50"
-              }`}
-              aria-label={`Go to slide ${index + 1}`}
-            />
-          ))}
-        </div>
-      )}
 
       {/* Content */}
       <div className="relative z-[2] w-full flex flex-col items-center justify-center min-h-[85vh] py-16 md:py-20 px-4">

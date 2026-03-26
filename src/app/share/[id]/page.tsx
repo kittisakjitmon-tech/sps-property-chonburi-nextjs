@@ -2,92 +2,17 @@
 
 import { useState, useEffect, use } from 'react';
 import Link from 'next/link';
-import { 
-  MapPin, Bed, Bath, Maximize2, Copy, Check, Home, 
-  ChevronLeft, ChevronRight, Car, Factory, ShoppingBag, Hospital, GraduationCap
-} from 'lucide-react';
+import { MapPin, Bed, Bath, Maximize2, Home, ChevronLeft, ChevronRight, Copy } from 'lucide-react';
 import { getPropertyById } from '@/lib/firestore';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
+import NeighborhoodData from '@/components/NeighborhoodData';
 import { formatPrice } from '@/lib/priceFormat';
 import { getPropertyLabel } from '@/constants/propertyTypes';
 import { getCloudinaryLargeUrl, getCloudinaryThumbUrl, isValidImageUrl } from '@/lib/cloudinary';
-import LeadForm from '@/components/LeadForm';
 
 interface SharePageProps {
   params: Promise<{ id: string }>;
-}
-
-const TYPE_ICONS: Record<string, any> = {
-  industrial: Factory,
-  mall: ShoppingBag,
-  hospital: Hospital,
-  education: GraduationCap,
-};
-
-const TYPE_ORDER = ['industrial', 'mall', 'hospital', 'education'];
-
-const TYPE_TITLES: Record<string, string> = {
-  industrial: 'นิคมอุตสาหกรรม',
-  mall: 'ห้างสรรพสินค้า',
-  hospital: 'โรงพยาบาล',
-  education: 'การศึกษา',
-};
-
-function NearbyPlacesCard({ property }: { property: any }) {
-  const [expandedCategory, setExpandedCategory] = useState<string | null>('industrial');
-  
-  const places = property?.nearbyPlaces || [];
-  const groupedPlaces = places.reduce((groups: Record<string, any[]>, place: any) => {
-    const type = place.type === 'shopping' ? 'mall' : place.type === 'school' ? 'education' : place.type;
-    if (!groups[type]) groups[type] = [];
-    groups[type].push({ ...place, type });
-    return groups;
-  }, { industrial: [], mall: [], hospital: [], education: [] });
-
-  return (
-    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-      <div className="p-4 border-b border-gray-100">
-        <h3 className="font-bold text-blue-900">สถานที่สำคัญใกล้เคียง</h3>
-      </div>
-      <div className="divide-y divide-gray-100">
-        {TYPE_ORDER.filter((type) => groupedPlaces[type]?.length > 0).map((type) => {
-          const Icon = TYPE_ICONS[type] || MapPin;
-          const isExpanded = expandedCategory === type;
-          return (
-            <div key={type}>
-              <button
-                onClick={() => setExpandedCategory(isExpanded ? null : type)}
-                className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center">
-                    <Icon className="h-4 w-4 text-blue-900" />
-                  </div>
-                  <span className="font-medium text-gray-800 text-sm">{TYPE_TITLES[type]}</span>
-                </div>
-                <ChevronRight className={`h-4 w-4 text-gray-400 transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
-              </button>
-              {isExpanded && (
-                <div className="px-4 pb-4 space-y-2">
-                  {groupedPlaces[type].map((place: any, idx: number) => (
-                    <div key={idx} className="flex items-center gap-2 text-sm text-gray-600 bg-gray-50 rounded-lg p-3">
-                      <MapPin className="h-3 w-3 text-gray-400 shrink-0" />
-                      <span className="flex-1">{place.name}</span>
-                      <span className="text-gray-400 text-xs">{place.distanceText || place.durationText || 'ตรวจสอบจากแผนที่'}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          );
-        })}
-      </div>
-      {places.length === 0 && (
-        <div className="p-6 text-center text-gray-500 text-sm">
-          ไม่มีข้อมูลสถานที่ใกล้เคียง
-        </div>
-      )}
-    </div>
-  );
 }
 
 export default function SharePage({ params }: SharePageProps) {
@@ -100,7 +25,30 @@ export default function SharePage({ params }: SharePageProps) {
   useEffect(() => {
     const fetchProperty = async () => {
       try {
-        const p = await getPropertyById(id);
+        // First, check if this ID is a share link
+        const shareLinkRef = doc(db, "share_links", id);
+        const shareLinkSnap = await getDoc(shareLinkRef);
+        
+        let propertyId = id;
+        
+        if (shareLinkSnap.exists()) {
+          // It's a share link - get the actual property ID
+          const shareLinkData = shareLinkSnap.data();
+          propertyId = shareLinkData.propertyId;
+          
+          // Check if link has expired
+          if (shareLinkData.expiresAt) {
+            const expiresAt = shareLinkData.expiresAt.toDate ? shareLinkData.expiresAt.toDate() : new Date(shareLinkData.expiresAt);
+            if (expiresAt < new Date()) {
+              setProperty(null);
+              setLoading(false);
+              return;
+            }
+          }
+        }
+        
+        // Now fetch the property - NeighborhoodData will handle nearby places
+        const p: any = await getPropertyById(propertyId);
         setProperty(p);
       } catch (error) {
         console.error('Error fetching property:', error);
@@ -111,16 +59,6 @@ export default function SharePage({ params }: SharePageProps) {
     };
     if (id) fetchProperty();
   }, [id]);
-
-  const handleCopyLink = async () => {
-    try {
-      await navigator.clipboard.writeText(window.location.href);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch (err) {
-      console.error('Copy error:', err);
-    }
-  };
 
   if (loading) {
     return (
@@ -183,24 +121,7 @@ export default function SharePage({ params }: SharePageProps) {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Mobile Header */}
-      <div className="sticky top-0 z-50 bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
-        <Link href="/properties" className="flex items-center gap-2 text-gray-600 hover:text-blue-900">
-          <ChevronLeft className="h-5 w-5" />
-          <span className="font-medium text-sm">กลับ</span>
-        </Link>
-        <button
-          onClick={handleCopyLink}
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition ${
-            copied ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'
-          }`}
-        >
-          {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-          {copied ? 'คัดลอกแล้ว' : 'คัดลอก'}
-        </button>
-      </div>
-
-      <div className="pb-24">
+      <div>
         {/* Image Gallery */}
         <div className="bg-white">
           <div className="aspect-[4/3] relative">
@@ -367,7 +288,7 @@ export default function SharePage({ params }: SharePageProps) {
         {/* Nearby Places */}
         <div className="mt-3">
           <div className="px-4 py-4">
-            <NearbyPlacesCard property={property} />
+            <NeighborhoodData property={property} />
           </div>
         </div>
 
@@ -387,23 +308,6 @@ export default function SharePage({ params }: SharePageProps) {
           </div>
         ) : null}
 
-        {/* Lead Form - Fixed Bottom */}
-        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 shadow-lg">
-          <div className="max-w-lg mx-auto">
-            <div className="text-center mb-3">
-              <p className="font-bold text-blue-900">สนใจติดต่อเจ้าของทรัพย์</p>
-            </div>
-            <LeadForm
-              propertyId={property.displayId || property.propertyId || property.id}
-              propertyTitle={property.title}
-              propertyPrice={property.price}
-              isRental={isRental}
-              onSuccess={(message) => {
-                alert(message || 'ส่งข้อมูลสำเร็จ!');
-              }}
-            />
-          </div>
-        </div>
       </div>
     </div>
   );

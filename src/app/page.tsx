@@ -30,6 +30,7 @@ import {
   type PopularLocation,
   type HomepageSection,
 } from "@/lib/firestore";
+import { generateBlogSlug } from "@/lib/blogSlug";
 import { DynamicSections } from "@/components/DynamicPropertySection";
 import Navbar from "@/components/Navbar";
 import HeroSlider from "@/components/HeroSlider";
@@ -130,7 +131,7 @@ async function FeaturedBlogsSection() {
           {blogs.slice(0, 4).map((blog) => (
             <Link
               key={blog.id}
-              href={`/blogs/${blog.slug || blog.id}`}
+              href={`/blogs/${generateBlogSlug(blog)}`}
               className="group bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden hover:shadow-sm hover:-translate-y-1 transition-all duration-300"
             >
               <div className="relative aspect-video bg-slate-100">

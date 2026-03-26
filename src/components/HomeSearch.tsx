@@ -2,9 +2,8 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Home, Building2, ChevronDown, KeyRound, Sparkles } from "lucide-react";
+import { Home, Building2, ChevronDown, KeyRound, Sparkles, Search, MapPin } from "lucide-react";
 import { PROPERTY_TYPES } from "@/constants/propertyTypes";
-import LocationAutocomplete from "./LocationAutocomplete";
 
 const PRICE_RANGES = [
   { label: "ทุกราคา", min: "", max: "" },
@@ -16,19 +15,22 @@ const PRICE_RANGES = [
   { label: "10 ล้านขึ้นไป", min: "10000000", max: "" },
 ];
 
-interface LocationData {
-  id: number;
-  province: string;
-  district: string;
-  subDistrict: string;
-  displayName: string;
-}
+// Quick search locations
+const QUICK_LOCATIONS = [
+  { label: "ชลบุรี", value: "ชลบุรี" },
+  { label: "อมตะ", value: "อมตะ" },
+  { label: "พานทอง", value: "พานทอง" },
+  { label: "ศรีราชา", value: "ศรีราชา" },
+  { label: "บ้านบึง", value: "บ้านบึง" },
+  { label: "ต่ำกว่า 2 ล้าน", value: "price-0-2000000" },
+  { label: "บ้านเดี่ยว", value: "บ้านเดี่ยว" },
+  { label: "คอนโด", value: "คอนโด" },
+];
 
 export default function HomeSearch() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("buy");
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedLocation, setSelectedLocation] = useState<LocationData | null>(null);
   const [propertyType, setPropertyType] = useState("");
   const [priceRange, setPriceRange] = useState(PRICE_RANGES[0]);
   const [isPriceOpen, setIsPriceOpen] = useState(false);
@@ -53,22 +55,14 @@ export default function HomeSearch() {
     if (activeTab === "buy") {
       // Default - no type param needed
     } else if (activeTab === "rent") {
-      params.set("type", "rent");
+      params.set("listingType", "rent");
     } else if (activeTab === "installment") {
-      params.set("type", "rent");
+      params.set("listingType", "rent");
       params.set("subListingType", "installment_only");
     }
 
-    // Handle location - use district/province from selected location or free text
-    if (selectedLocation) {
-      // Use selected location's district
-      if (selectedLocation.district) {
-        params.set("location", selectedLocation.district);
-      } else {
-        params.set("location", selectedLocation.province);
-      }
-    } else if (searchQuery.trim()) {
-      // Use free text search
+    // Handle location - use free text search
+    if (searchQuery.trim()) {
       params.set("q", searchQuery.trim());
     }
 
@@ -84,9 +78,41 @@ export default function HomeSearch() {
     router.push(queryString ? `/properties?${queryString}` : "/properties");
   };
 
-  const handleLocationSelect = (location: LocationData) => {
-    setSelectedLocation(location);
-    setSearchQuery(location.displayName);
+  const handleQuickSearch = (value: string) => {
+    const params = new URLSearchParams();
+
+    if (activeTab === "buy") {
+      // Default - no type param needed
+    } else if (activeTab === "rent") {
+      params.set("listingType", "rent");
+    } else if (activeTab === "installment") {
+      params.set("listingType", "rent");
+      params.set("subListingType", "installment_only");
+    }
+
+    // Check if it's a price quick search
+    if (value.startsWith("price-")) {
+      const parts = value.split("-");
+      if (parts[1]) params.set("priceMin", parts[1]);
+      if (parts[2]) params.set("priceMax", parts[2]);
+    } else {
+      // Check if it's a property type keyword
+      const propertyTypeKeywords: Record<string, string> = {
+        "บ้านเดี่ยว": "SPS-S-2CLASS-ID",
+        "คอนโด": "SPS-CD-ID",
+        "ทาวน์โฮม": "SPS-TH-2CLASS-ID",
+      };
+
+      if (propertyTypeKeywords[value]) {
+        params.set("propertyType", propertyTypeKeywords[value]);
+      } else {
+        // It's a location
+        params.set("location", value);
+      }
+    }
+
+    const queryString = params.toString();
+    router.push(queryString ? `/properties?${queryString}` : "/properties");
   };
 
   return (
@@ -116,25 +142,26 @@ export default function HomeSearch() {
       <div className="bg-white rounded-3xl sm:rounded-[2.5rem] shadow-2xl p-3 sm:p-4 border border-slate-100 relative z-10">
         <div className="flex flex-col lg:flex-row gap-3 items-stretch lg:items-center">
 
-          {/* Location Search with Autocomplete */}
+          {/* Location Search - Simple Input (No Autocomplete) */}
           <div className="flex-1 min-w-0">
             <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-4">
               ทำเล / โครงการ
             </div>
-            <LocationAutocomplete
-              value={searchQuery}
-              onChange={(v) => {
-                setSearchQuery(v);
-                // Clear selected location if text doesn't match
-                if (selectedLocation && v !== selectedLocation.displayName) {
-                  setSelectedLocation(null);
-                }
-              }}
-              onSelect={handleLocationSelect}
-              placeholder="ค้นหาทำเล, จังหวัด, อำเภอ..."
-              inputClassName="!bg-slate-50 !rounded-2xl !py-4 border-2 border-transparent focus:!border-blue-200"
-              enableTypingAnimation={true}
-            />
+            <div className="relative">
+              <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 pointer-events-none" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    handleSearch();
+                  }
+                }}
+                placeholder="ค้นหาทำเล, จังหวัด, อำเภอ..."
+                className="w-full pl-12 pr-4 py-4 rounded-2xl bg-slate-50 border-2 border-transparent focus:border-blue-200 focus:bg-white focus:outline-none transition-all text-sm font-medium"
+              />
+            </div>
           </div>
 
           {/* Property Type Dropdown */}
@@ -230,8 +257,24 @@ export default function HomeSearch() {
             onClick={handleSearch}
             className="lg:w-auto w-full flex items-center justify-center gap-2 px-8 py-4 rounded-2xl bg-blue-900 text-white font-bold hover:bg-blue-800 transition-colors shadow-sm"
           >
+            <Search className="h-5 w-5" />
             <span>ค้นหา</span>
           </button>
+        </div>
+      </div>
+
+      {/* Quick Search Buttons */}
+      <div className="mt-4 px-2">
+        <div className="flex flex-wrap gap-2 justify-center">
+          {QUICK_LOCATIONS.map((item) => (
+            <button
+              key={item.value}
+              onClick={() => handleQuickSearch(item.value)}
+              className="px-4 py-2 rounded-full bg-white/20 backdrop-blur-sm border border-white/30 text-white text-sm font-medium hover:bg-white/40 hover:border-white/50 transition-all duration-200"
+            >
+              {item.label}
+            </button>
+          ))}
         </div>
       </div>
     </div>

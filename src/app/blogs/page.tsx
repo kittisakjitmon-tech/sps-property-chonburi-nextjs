@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
 import { getBlogsOnce } from '@/lib/firestore';
 import type { Blog } from '@/lib/firestore';
+import { generateBlogSlug } from '@/lib/blogSlug';
 
 const ITEMS_PER_PAGE = 9;
 
@@ -39,7 +40,7 @@ function BlogCard({ blog }: { blog: Blog }) {
 
   return (
     <Link
-      href={`/blogs/${blog.slug || blog.id}`}
+      href={`/blogs/${generateBlogSlug(blog)}`}
       className="group flex flex-col bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-sm hover:-translate-y-1 transition-all duration-300"
     >
       {/* Image */}

@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import { CheckCircle2 } from 'lucide-react';
 import { createAppointment } from '@/lib/firestore';
+import { auth } from '@/lib/firebase';
+import { onAuthStateChanged, type User } from 'firebase/auth';
 
 interface LeadFormProps {
   propertyId?: string;
@@ -28,6 +30,8 @@ export default function LeadForm({
 }: LeadFormProps) {
   const [activeTab, setActiveTab] = useState<'customer' | 'agent'>('customer');
   const [today, setToday] = useState('');
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [authLoading, setAuthLoading] = useState(true);
   
   // Customer form fields
   const [customerName, setCustomerName] = useState('');
@@ -49,6 +53,21 @@ export default function LeadForm({
   // Set today's date on client only
   useEffect(() => {
     setToday(new Date().toISOString().split('T')[0]);
+  }, []);
+
+  // Listen for auth state changes
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setCurrentUser(user);
+      // If logged in, default to agent tab; otherwise customer tab
+      if (user) {
+        setActiveTab('agent');
+      } else {
+        setActiveTab('customer');
+      }
+      setAuthLoading(false);
+    });
+    return () => unsubscribe();
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -157,17 +176,19 @@ export default function LeadForm({
         >
           สำหรับลูกค้า
         </button>
-        <button
-          type="button"
-          onClick={() => setActiveTab('agent')}
-          className={`flex-1 px-4 py-2.5 text-sm font-medium rounded-t-lg transition-colors ${
-            activeTab === 'agent'
-              ? 'bg-blue-900 text-white'
-              : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-          }`}
-        >
-          สำหรับเอเจนท์
-        </button>
+        {currentUser && (
+          <button
+            type="button"
+            onClick={() => setActiveTab('agent')}
+            className={`flex-1 px-4 py-2.5 text-sm font-medium rounded-t-lg transition-colors ${
+              activeTab === 'agent'
+                ? 'bg-blue-900 text-white'
+                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+            }`}
+          >
+            สำหรับเอเจนท์
+          </button>
+        )}
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">

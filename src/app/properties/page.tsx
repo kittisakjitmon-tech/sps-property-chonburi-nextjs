@@ -43,19 +43,33 @@ function PropertiesContent() {
   const [listingType, setListingType] = useState('');
   const [propertyCondition, setPropertyCondition] = useState('');
   const [subListingType, setSubListingType] = useState('');
+  const [project, setProject] = useState('');
 
-  // Initialize filters from URL params
+  // Initialize filters from URL params - UPDATED to reset ALL filters when params change
   useEffect(() => {
     const sp = searchParams;
-    const lt = sp.get('listingType');
-    const pc = sp.get('propertyCondition');
-    const slt = sp.get('subListingType');
-    const project = sp.get('project');
+    const lt = sp.get('listingType') || '';
+    const pc = sp.get('propertyCondition') || '';
+    const slt = sp.get('subListingType') || '';
+    const proj = sp.get('project') || '';
+    const loc = sp.get('location') || '';
+    const pt = sp.get('propertyType') || '';
+    const pr = sp.get('priceRange') || '';
+    const bd = sp.get('bedrooms') || '';
 
-    if (lt) setListingType(lt);
-    if (pc) setPropertyCondition(pc);
-    if (slt) setSubListingType(slt);
-    if (project) setLocation(project);
+    // Always update ALL filter states based on current URL params
+    // This ensures going back properly resets filters
+    setListingType(lt);
+    setPropertyCondition(pc);
+    setSubListingType(slt);
+    setProject(proj);
+    setLocation(loc);
+    setPropertyType(pt);
+    setPriceRange(pr);
+    setBedrooms(bd);
+    
+    // Reset to page 1 when filters change
+    setCurrentPage(1);
   }, [searchParams]);
 
   // Fetch properties
@@ -141,9 +155,15 @@ function PropertiesContent() {
         if (p.subListingType !== subListingType) return false;
       }
 
+      // Project filter (NPA, etc.)
+      if (project) {
+        const propertyProject = (p as any).project;
+        if (propertyProject !== project) return false;
+      }
+
       return true;
     });
-  }, [properties, debouncedQuery, propertyType, location, priceRange, bedrooms, listingType, propertyCondition, subListingType]);
+  }, [properties, debouncedQuery, propertyType, location, priceRange, bedrooms, listingType, propertyCondition, subListingType, project]);
 
   // Sort properties
   const sortedProperties = useMemo(() => {
@@ -201,10 +221,11 @@ function PropertiesContent() {
     setListingType('');
     setPropertyCondition('');
     setSubListingType('');
+    setProject('');
     setCurrentPage(1);
   };
 
-  const hasActiveFilters = debouncedQuery || propertyType || location || priceRange || bedrooms;
+  const hasActiveFilters = debouncedQuery || propertyType || location || priceRange || bedrooms || listingType || propertyCondition || subListingType || project;
 
   return (
     <div className="min-h-screen bg-slate-50">

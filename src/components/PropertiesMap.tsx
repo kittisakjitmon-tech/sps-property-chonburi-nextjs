@@ -227,7 +227,7 @@ export default function PropertiesMap({ properties, className = '' }: Properties
 
   if (mapLoadError) {
     return (
-      <div className={`bg-slate-100 rounded-lg flex items-center justify-center ${className}`} style={{ minHeight: '500px' }}>
+      <div className={`bg-slate-100 rounded-xl flex items-center justify-center ${className}`} style={{ minHeight: '500px' }}>
         <div className="text-center px-4">
           <MapPin className="h-8 w-8 text-slate-400 mx-auto mb-2" />
           <p className="text-slate-700">{mapLoadError}</p>
@@ -238,7 +238,7 @@ export default function PropertiesMap({ properties, className = '' }: Properties
 
   if (!isMapReady) {
     return (
-      <div className={`bg-slate-100 rounded-lg flex items-center justify-center ${className}`} style={{ minHeight: '500px' }}>
+      <div className={`bg-slate-100 rounded-xl flex items-center justify-center ${className}`} style={{ minHeight: '500px' }}>
         <div className="text-center">
           <MapPin className="h-8 w-8 text-slate-400 mx-auto mb-2" />
           <p className="text-slate-600">กำลังโหลดแผนที่…</p>
@@ -251,7 +251,7 @@ export default function PropertiesMap({ properties, className = '' }: Properties
     <div className={`relative w-full h-full overflow-hidden ${className}`}>
       <div ref={mapRef} className="absolute inset-0 w-full h-full" />
       <div className="absolute bottom-4 left-4 right-4 z-10 pointer-events-none">
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/90 backdrop-blur-sm rounded-lg shadow-sm border border-slate-200 text-xs font-semibold text-slate-700 pointer-events-auto">
+        <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/90 backdrop-blur-sm rounded-xl shadow-sm border border-slate-200 text-xs font-semibold text-slate-700 pointer-events-auto">
           <MapPin className="h-3 w-3 text-blue-900" />
           {propertiesWithCoords.length > 0 
             ? `พบ ${propertiesWithCoords.length} ตำแหน่งบนแผนที่` 

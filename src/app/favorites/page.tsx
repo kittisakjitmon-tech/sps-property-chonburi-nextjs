@@ -95,7 +95,7 @@ export default function FavoritesPage() {
           <div className="space-y-4">
             {Array.from({ length: 3 }, (_, i) => (
               <div key={i} className="bg-white rounded-xl p-4 flex gap-4 animate-pulse">
-                <div className="w-32 h-24 bg-gray-200 rounded-lg" />
+                <div className="w-32 h-24 bg-gray-200 rounded-xl" />
                 <div className="flex-1 space-y-2">
                   <div className="h-5 bg-gray-200 rounded w-3/4" />
                   <div className="h-4 bg-gray-100 rounded w-1/2" />
@@ -116,11 +116,11 @@ export default function FavoritesPage() {
               return (
                 <div
                   key={property.id}
-                  className="bg-white rounded-xl p-4 flex gap-4 hover:shadow-md transition-shadow"
+                  className="bg-white rounded-xl p-4 flex gap-4 hover:shadow-sm transition-shadow"
                 >
                   {/* Image */}
                   <Link href={getPropertyPath(property)} className="shrink-0">
-                    <div className="w-32 h-24 rounded-lg overflow-hidden">
+                    <div className="w-32 h-24 rounded-xl overflow-hidden">
                       <img
                         src={getCloudinaryThumbUrl(coverImage) || coverImage}
                         alt={typeLabel}
@@ -171,7 +171,7 @@ export default function FavoritesPage() {
             <p className="text-gray-500 mb-6">เริ่มต้นเพิ่มทรัพย์ที่สนใจลงในรายการโปรด</p>
             <Link
               href="/properties"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-blue-900 text-white font-semibold rounded-lg hover:bg-blue-800 transition"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-blue-900 text-white font-semibold rounded-xl hover:bg-blue-800 transition"
             >
               <ChevronLeft className="h-5 w-5" />
               ดูรายการทรัพย์สิน

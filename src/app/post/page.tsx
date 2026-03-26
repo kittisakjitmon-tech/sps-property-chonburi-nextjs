@@ -217,7 +217,7 @@ export default function PostPropertyPage() {
     return (
       <div className="min-h-screen bg-slate-50">
         <div className="max-w-7xl mx-auto px-4 py-16">
-          <div className="bg-white rounded-2xl shadow-lg p-8 max-w-md mx-auto text-center">
+          <div className="bg-white rounded-2xl shadow-sm p-8 max-w-md mx-auto text-center">
             <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <Check className="h-8 w-8 text-green-600" />
             </div>
@@ -227,7 +227,7 @@ export default function PostPropertyPage() {
             </p>
             <Link
               href="/"
-              className="inline-block px-6 py-3 bg-blue-900 text-white font-semibold rounded-lg hover:bg-blue-800 transition"
+              className="inline-block px-6 py-3 bg-blue-900 text-white font-semibold rounded-xl hover:bg-blue-800 transition"
             >
               กลับหน้าหลัก
             </Link>
@@ -277,7 +277,7 @@ export default function PostPropertyPage() {
           <div className="grid grid-cols-1 lg:grid-cols-10 gap-8">
             {/* Form Column (7/10) */}
             <div className="lg:col-span-7">
-              <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+              <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
                 {/* Progress Stepper */}
                 <div className="bg-gradient-to-r from-blue-50 via-blue-50/80 to-blue-50 px-6 sm:px-8 py-6 border-b border-blue-200">
                   <div className="flex flex-col items-center justify-center">
@@ -292,7 +292,7 @@ export default function PostPropertyPage() {
                               <div
                                 className={`w-12 h-12 rounded-full flex items-center justify-center font-bold transition-all duration-300 relative z-10 ${
                                   isActive
-                                    ? 'bg-blue-900 text-white shadow-lg ring-4 ring-blue-900/20'
+                                    ? 'bg-blue-900 text-white shadow-sm ring-4 ring-blue-900/20'
                                     : isCompleted
                                     ? 'bg-blue-900 text-white'
                                     : 'bg-gray-200 text-gray-600'
@@ -332,7 +332,7 @@ export default function PostPropertyPage() {
                 <div className="p-6 sm:p-8">
                   {/* Error Message */}
                   {error && (
-                    <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
+                    <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl flex items-start gap-3">
                       <AlertCircle className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" />
                       <p className="text-red-800 flex-1">{error}</p>
                       <button
@@ -357,7 +357,7 @@ export default function PostPropertyPage() {
                           type="text"
                           value={form.title}
                           onChange={(e) => updateForm({ title: e.target.value })}
-                          className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-900/20"
+                          className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-900/20"
                           placeholder="เช่น คอนโดหรู ใกล้ BTS อารีย์"
                         />
                       </div>
@@ -371,7 +371,7 @@ export default function PostPropertyPage() {
                             id="post-type"
                             value={form.type}
                             onChange={(e) => updateForm({ type: e.target.value })}
-                            className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-900/20"
+                            className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-900/20"
                           >
                             {CATEGORIES.map((c) => (
                               <option key={c.value} value={c.value}>
@@ -391,7 +391,7 @@ export default function PostPropertyPage() {
                             value={form.price}
                             onChange={(e) => updateForm({ price: e.target.value })}
                             min="0"
-                            className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-900/20"
+                            className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-900/20"
                             placeholder="เช่น 5000000"
                           />
                         </div>
@@ -410,7 +410,7 @@ export default function PostPropertyPage() {
                             min="0"
                             step="0.5"
                             placeholder="เช่น 25"
-                            className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-900/20"
+                            className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-900/20"
                           />
                         </div>
 
@@ -424,7 +424,7 @@ export default function PostPropertyPage() {
                             value={form.bedrooms}
                             onChange={(e) => updateForm({ bedrooms: Number(e.target.value) })}
                             min="0"
-                            className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-900/20"
+                            className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-900/20"
                           />
                         </div>
 
@@ -438,7 +438,7 @@ export default function PostPropertyPage() {
                             value={form.bathrooms}
                             onChange={(e) => updateForm({ bathrooms: Number(e.target.value) })}
                             min="0"
-                            className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-900/20"
+                            className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-900/20"
                           />
                         </div>
                       </div>
@@ -452,7 +452,7 @@ export default function PostPropertyPage() {
                             id="post-province"
                             value={form.province}
                             onChange={(e) => updateForm({ province: e.target.value, district: '' })}
-                            className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-900/20"
+                            className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-900/20"
                           >
                             {PROVINCES.map((p) => (
                               <option key={p} value={p}>{p}</option>
@@ -468,7 +468,7 @@ export default function PostPropertyPage() {
                             id="post-district"
                             value={form.district}
                             onChange={(e) => updateForm({ district: e.target.value })}
-                            className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-900/20"
+                            className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-900/20"
                           >
                             <option value="">เลือกอำเภอ</option>
                             {(DISTRICTS[form.province] || []).map((d) => (
@@ -487,7 +487,7 @@ export default function PostPropertyPage() {
                           value={form.description}
                           onChange={(e) => updateForm({ description: e.target.value })}
                           rows={5}
-                          className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-900/20 resize-none"
+                          className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-900/20 resize-none"
                           placeholder="อธิบายรายละเอียดทรัพย์สิน..."
                         />
                       </div>
@@ -506,11 +506,11 @@ export default function PostPropertyPage() {
                               setShowTagSuggestions(true);
                             }}
                             onFocus={() => setShowTagSuggestions(true)}
-                            className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-900/20"
+                            className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-900/20"
                             placeholder="พิมพ์เพื่อค้นหาแท็ก..."
                           />
                           {showTagSuggestions && filteredTags.length > 0 && (
-                            <div className="absolute z-10 w-full mt-1 bg-white border border-slate-200 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                            <div className="absolute z-10 w-full mt-1 bg-white border border-slate-200 rounded-xl shadow-sm max-h-48 overflow-y-auto">
                               {filteredTags.map((tag) => (
                                 <button
                                   key={tag}
@@ -584,7 +584,7 @@ export default function PostPropertyPage() {
                           multiple
                           onChange={handleImageSelect}
                           disabled={uploadingImages || previewFiles.length >= 10}
-                          className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-900/20 disabled:opacity-50"
+                          className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-900/20 disabled:opacity-50"
                         />
                       </div>
 
@@ -592,7 +592,7 @@ export default function PostPropertyPage() {
                         <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                           {previewFiles.map((preview, index) => (
                             <div key={index} className="relative group">
-                              <div className="aspect-square rounded-lg overflow-hidden bg-slate-100">
+                              <div className="aspect-square rounded-xl overflow-hidden bg-slate-100">
                                 <img
                                   src={preview.preview}
                                   alt={`Preview ${index + 1}`}
@@ -635,7 +635,7 @@ export default function PostPropertyPage() {
                           type="text"
                           value={form.contactName}
                           onChange={(e) => updateForm({ contactName: e.target.value })}
-                          className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-900/20"
+                          className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-900/20"
                           placeholder="ชื่อของคุณ"
                         />
                       </div>
@@ -649,7 +649,7 @@ export default function PostPropertyPage() {
                           type="tel"
                           value={form.contactPhone}
                           onChange={(e) => updateForm({ contactPhone: e.target.value })}
-                          className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-900/20"
+                          className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-900/20"
                           placeholder="0812345678"
                         />
                       </div>
@@ -663,12 +663,12 @@ export default function PostPropertyPage() {
                           type="text"
                           value={form.contactLineId}
                           onChange={(e) => updateForm({ contactLineId: e.target.value })}
-                          className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-900/20"
+                          className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-900/20"
                           placeholder="@lineid หรือ ID"
                         />
                       </div>
 
-                      <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                      <div className="p-4 bg-blue-50 border border-blue-200 rounded-xl">
                         <label className="flex items-start gap-3 cursor-pointer">
                           <input
                             type="checkbox"
@@ -691,7 +691,7 @@ export default function PostPropertyPage() {
                       type="button"
                       onClick={prevStep}
                       disabled={step === 1}
-                      className="flex items-center gap-2 px-6 py-3 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition"
+                      className="flex items-center gap-2 px-6 py-3 border border-slate-300 text-slate-700 rounded-xl hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition"
                     >
                       <ChevronLeft className="h-5 w-5" />
                       ย้อนกลับ
@@ -701,7 +701,7 @@ export default function PostPropertyPage() {
                       <button
                         type="button"
                         onClick={nextStep}
-                        className="flex items-center gap-2 px-6 py-3 bg-blue-900 text-white font-semibold rounded-lg hover:bg-blue-800 transition"
+                        className="flex items-center gap-2 px-6 py-3 bg-blue-900 text-white font-semibold rounded-xl hover:bg-blue-800 transition"
                       >
                         ถัดไป
                         <ChevronRight className="h-5 w-5" />
@@ -711,7 +711,7 @@ export default function PostPropertyPage() {
                         type="button"
                         onClick={handleSubmit}
                         disabled={submitting}
-                        className="flex items-center gap-2 px-6 py-3 bg-yellow-400 text-yellow-900 font-semibold rounded-lg hover:bg-yellow-500 disabled:opacity-50 disabled:cursor-not-allowed transition"
+                        className="flex items-center gap-2 px-6 py-3 bg-yellow-400 text-yellow-900 font-semibold rounded-xl hover:bg-yellow-500 disabled:opacity-50 disabled:cursor-not-allowed transition"
                       >
                         {submitting ? (
                           <>
@@ -735,7 +735,7 @@ export default function PostPropertyPage() {
             <div className="lg:col-span-3">
               <div className="lg:sticky lg:top-24 space-y-6">
                 {/* Benefits Sidebar */}
-                <div className="bg-blue-50 rounded-xl border-2 border-blue-900/20 p-6 shadow-md">
+                <div className="bg-blue-50 rounded-xl border-2 border-blue-900/20 p-6 shadow-sm">
                   <h3 className="text-xl font-bold text-blue-900 mb-6 text-center">
                     ทำไมต้องลงประกาศกับเรา?
                   </h3>
@@ -744,7 +744,7 @@ export default function PostPropertyPage() {
                       const Icon = benefit.icon;
                       return (
                         <div key={idx} className="flex items-start gap-4">
-                          <div className="w-12 h-12 rounded-lg bg-blue-900 flex items-center justify-center shrink-0">
+                          <div className="w-12 h-12 rounded-xl bg-blue-900 flex items-center justify-center shrink-0">
                             <Icon className="h-6 w-6 text-white" />
                           </div>
                           <div className="flex-1">
@@ -762,7 +762,7 @@ export default function PostPropertyPage() {
 
                   {/* Contact Help */}
                   <div className="mt-8 pt-6 border-t border-blue-200">
-                    <div className="flex items-center gap-3 p-4 bg-white rounded-lg border border-blue-200">
+                    <div className="flex items-center gap-3 p-4 bg-white rounded-xl border border-blue-200">
                       <div className="flex-1 min-w-0">
                         <p className="text-xs text-slate-600 mb-1">ปรึกษาการลงประกาศ</p>
                         <Link href="/contact" className="text-base font-bold text-blue-900 hover:text-blue-700 transition">

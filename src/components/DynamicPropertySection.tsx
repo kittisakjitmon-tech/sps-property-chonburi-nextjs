@@ -1,7 +1,6 @@
-import Link from "next/link";
-import { Building2, MapPin } from "lucide-react";
+import PropertyCard from './PropertyCard';
 import type { Property, HomepageSection } from "@/lib/firestore";
-import { filterPropertiesByCriteria, getLocationString } from "@/lib/firestore";
+import { filterPropertiesByCriteria } from "@/lib/firestore";
 
 interface DynamicPropertySectionProps {
   section: HomepageSection;
@@ -38,51 +37,16 @@ export function DynamicPropertySection({ section, properties }: DynamicPropertyS
               <p className="text-slate-500 text-sm mt-1">{section.subtitle}</p>
             )}
           </div>
-          <Link
+          <a
             href="/properties"
-            className="text-blue-900 font-medium hover:underline flex items-center gap-1"
+            className="text-blue-900 font-semibold hover:text-blue-700 flex items-center gap-1 transition-colors"
           >
             ดูทั้งหมด →
-          </Link>
+          </a>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {sectionProperties.map((property) => (
-            <Link
-              key={property.id}
-              href={`/properties/${property.slug || property.id}`}
-              className="group bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
-            >
-              <div className="relative aspect-video bg-slate-100">
-                {property.images?.[0] ? (
-                  <img
-                    src={property.images[0]}
-                    alt={property.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-blue-50">
-                    <Building2 className="h-12 w-12 text-blue-300" />
-                  </div>
-                )}
-                {property.propertyType && (
-                  <div className="absolute top-3 right-3 bg-blue-900 text-white text-xs font-semibold px-2 py-1 rounded">
-                    {property.propertyType}
-                  </div>
-                )}
-              </div>
-              <div className="p-4">
-                <h3 className="font-bold text-slate-900 mb-2 line-clamp-2 group-hover:text-blue-900 transition-colors">
-                  {property.title}
-                </h3>
-                <p className="text-sm text-slate-500 mb-2 flex items-center gap-1">
-                  <MapPin className="h-3 w-3" />
-                  {getLocationString(property.location)}, {property.province}
-                </p>
-                <p className="text-xl font-bold text-blue-900">
-                  ฿{property.price?.toLocaleString?.() || property.price}
-                </p>
-              </div>
-            </Link>
+            <PropertyCard key={property.id} property={property} />
           ))}
         </div>
       </div>

@@ -200,7 +200,7 @@ export default function LocationAutocomplete({
       </div>
       {isOpen && suggestions.length > 0 && (
         <ul
-          className="absolute z-50 w-full mt-1 py-1 bg-white rounded-xl shadow-lg max-h-60 overflow-auto border border-slate-100"
+          className="absolute z-50 w-full mt-1 py-1 bg-white rounded-xl shadow-sm max-h-60 overflow-auto border border-slate-100"
           role="listbox"
         >
           {suggestions.map((loc, i) => (

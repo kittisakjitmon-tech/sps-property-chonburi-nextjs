@@ -75,13 +75,13 @@ function LoginForm() {
         </div>
 
         {/* Login Card */}
-        <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-200">
+        <div className="bg-white rounded-2xl shadow-sm p-8 border border-gray-200">
           <h2 className="text-xl font-bold text-gray-900 mb-6">เข้าสู่ระบบ</h2>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Error Message */}
             {error && (
-              <div className="p-3 rounded-lg bg-red-50 text-red-700 text-sm">
+              <div className="p-3 rounded-xl bg-red-50 text-red-700 text-sm">
                 {error}
               </div>
             )}
@@ -100,7 +100,7 @@ function LoginForm() {
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   placeholder="your@email.com"
-                  className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-900/20 focus:border-blue-900"
+                  className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-900/20 focus:border-blue-900"
                 />
               </div>
             </div>
@@ -119,7 +119,7 @@ function LoginForm() {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   placeholder="••••••••"
-                  className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-900/20 focus:border-blue-900"
+                  className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-900/20 focus:border-blue-900"
                 />
               </div>
             </div>
@@ -128,7 +128,7 @@ function LoginForm() {
             <button
               type="submit"
               disabled={submitting}
-              className="w-full flex items-center justify-center gap-2 py-3 rounded-lg bg-blue-900 text-white font-semibold hover:bg-blue-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-blue-900 text-white font-semibold hover:bg-blue-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               {submitting ? (
                 <>

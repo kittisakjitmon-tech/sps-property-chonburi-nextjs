@@ -90,7 +90,7 @@ export default function HomeSearch() {
   };
 
   return (
-    <div className="w-full max-w-5xl mx-auto px-4 sm:px-0">
+    <div className="w-full mb-5 max-w-5xl mx-auto px-4 sm:px-0">
       {/* Tabs */}
       <div className="flex gap-1 mb-0 ml-2 sm:ml-4">
         {[
@@ -101,11 +101,10 @@ export default function HomeSearch() {
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`flex items-center gap-2 px-6 py-3 rounded-t-2xl font-bold transition-all duration-200 ${
-              activeTab === tab.id
-                ? "bg-white text-blue-900 shadow-lg"
-                : "bg-blue-900/40 text-white/80 hover:bg-blue-900/60 backdrop-blur-sm"
-            }`}
+            className={`flex items-center gap-2 px-6 py-3 rounded-t-2xl font-bold transition-all duration-200 ${activeTab === tab.id
+              ? "bg-white text-blue-900 shadow-sm"
+              : "bg-blue-900/40 text-white/80 hover:bg-blue-900/60 backdrop-blur-sm"
+              }`}
           >
             <tab.icon className="h-4 w-4" />
             <span>{tab.label}</span>
@@ -148,9 +147,8 @@ export default function HomeSearch() {
                 setIsTypeOpen(!isTypeOpen);
                 setIsPriceOpen(false);
               }}
-              className={`w-full flex items-center justify-between gap-3 px-5 py-4 rounded-2xl bg-slate-50 hover:bg-slate-100 border-2 transition-all duration-200 ${
-                isTypeOpen ? "border-blue-200 bg-white ring-4 ring-blue-50" : "border-transparent"
-              }`}
+              className={`w-full flex items-center justify-between gap-3 px-5 py-4 rounded-2xl bg-slate-50 hover:bg-slate-100 border-2 transition-all duration-200 ${isTypeOpen ? "border-blue-200 bg-white ring-4 ring-blue-50" : "border-transparent"
+                }`}
             >
               <div className="flex items-center gap-3 min-w-0">
                 <Building2 className={`h-5 w-5 ${propertyType ? 'text-blue-600' : 'text-slate-400'}`} />
@@ -198,9 +196,8 @@ export default function HomeSearch() {
                 setIsPriceOpen(!isPriceOpen);
                 setIsTypeOpen(false);
               }}
-              className={`w-full flex items-center justify-between gap-3 px-5 py-4 rounded-2xl bg-slate-50 hover:bg-slate-100 border-2 transition-all duration-200 ${
-                isPriceOpen ? "border-blue-200 bg-white ring-4 ring-blue-50" : "border-transparent"
-              }`}
+              className={`w-full flex items-center justify-between gap-3 px-5 py-4 rounded-2xl bg-slate-50 hover:bg-slate-100 border-2 transition-all duration-200 ${isPriceOpen ? "border-blue-200 bg-white ring-4 ring-blue-50" : "border-transparent"
+                }`}
             >
               <div className="flex items-center gap-3 min-w-0">
                 <span className={`text-sm font-semibold ${priceRange.min || priceRange.max ? 'text-slate-900' : 'text-slate-500'}`}>
@@ -231,7 +228,7 @@ export default function HomeSearch() {
           {/* Search Button */}
           <button
             onClick={handleSearch}
-            className="lg:w-auto w-full flex items-center justify-center gap-2 px-8 py-4 rounded-2xl bg-blue-900 text-white font-bold hover:bg-blue-800 transition-colors shadow-lg"
+            className="lg:w-auto w-full flex items-center justify-center gap-2 px-8 py-4 rounded-2xl bg-blue-900 text-white font-bold hover:bg-blue-800 transition-colors shadow-sm"
           >
             <span>ค้นหา</span>
           </button>

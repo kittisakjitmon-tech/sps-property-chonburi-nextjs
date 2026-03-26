@@ -81,7 +81,7 @@ export default function AdvancedFiltersPanel({
             {/* ราคา */}
             <div>
               <label className="flex items-center gap-2 text-sm font-semibold text-slate-700 mb-3">
-                <div className="p-1.5 rounded-lg bg-green-100 text-green-700">
+                <div className="p-1.5 rounded-xl bg-green-100 text-green-700">
                   <DollarSign className="h-4 w-4" />
                 </div>
                 ราคา (บาท)
@@ -107,7 +107,7 @@ export default function AdvancedFiltersPanel({
             {/* พื้นที่ */}
             <div>
               <label className="flex items-center gap-2 text-sm font-semibold text-slate-700 mb-3">
-                <div className="p-1.5 rounded-lg bg-purple-100 text-purple-700">
+                <div className="p-1.5 rounded-xl bg-purple-100 text-purple-700">
                   <Maximize2 className="h-4 w-4" />
                 </div>
                 พื้นที่ (ตร.ว.)
@@ -133,7 +133,7 @@ export default function AdvancedFiltersPanel({
             {/* ห้องนอน */}
             <div>
               <label className="flex items-center gap-2 text-sm font-semibold text-slate-700 mb-3">
-                <div className="p-1.5 rounded-lg bg-blue-100 text-blue-700">
+                <div className="p-1.5 rounded-xl bg-blue-100 text-blue-700">
                   <Bed className="h-4 w-4" />
                 </div>
                 จำนวนห้องนอน
@@ -159,7 +159,7 @@ export default function AdvancedFiltersPanel({
             {/* ห้องน้ำ */}
             <div>
               <label className="flex items-center gap-2 text-sm font-semibold text-slate-700 mb-3">
-                <div className="p-1.5 rounded-lg bg-cyan-100 text-cyan-700">
+                <div className="p-1.5 rounded-xl bg-cyan-100 text-cyan-700">
                   <Bath className="h-4 w-4" />
                 </div>
                 จำนวนห้องน้ำ

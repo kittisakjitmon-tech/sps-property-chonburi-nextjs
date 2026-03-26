@@ -64,7 +64,7 @@ export default function SharePage({ params }: SharePageProps) {
     return (
       <div className="min-h-screen bg-gray-50">
         <div className="space-y-4 p-4">
-          <div className="aspect-[4/3] bg-gray-200 rounded-lg animate-pulse" />
+          <div className="aspect-[4/3] bg-gray-200 rounded-xl animate-pulse" />
           <div className="space-y-3">
             <div className="h-6 bg-gray-200 rounded animate-pulse w-3/4" />
             <div className="h-8 bg-gray-200 rounded animate-pulse w-1/2" />
@@ -136,13 +136,13 @@ export default function SharePage({ params }: SharePageProps) {
               <>
                 <button
                   onClick={() => setGalleryIndex((prev) => prev === 0 ? imgs.length - 1 : prev - 1)}
-                  className="absolute left-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/90 shadow-lg flex items-center justify-center"
+                  className="absolute left-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/90 shadow-sm flex items-center justify-center"
                 >
                   <ChevronLeft className="h-5 w-5" />
                 </button>
                 <button
                   onClick={() => setGalleryIndex((prev) => prev === imgs.length - 1 ? 0 : prev + 1)}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/90 shadow-lg flex items-center justify-center"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/90 shadow-sm flex items-center justify-center"
                 >
                   <ChevronRight className="h-5 w-5" />
                 </button>
@@ -162,7 +162,7 @@ export default function SharePage({ params }: SharePageProps) {
                 <button
                   key={i}
                   onClick={() => setGalleryIndex(i)}
-                  className={`shrink-0 w-16 h-12 rounded-lg overflow-hidden border-2 ${
+                  className={`shrink-0 w-16 h-12 rounded-xl overflow-hidden border-2 ${
                     i === galleryIndex ? 'border-blue-900' : 'border-transparent'
                   }`}
                 >

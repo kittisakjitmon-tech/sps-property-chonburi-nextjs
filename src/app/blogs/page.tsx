@@ -40,7 +40,7 @@ function BlogCard({ blog }: { blog: Blog }) {
   return (
     <Link
       href={`/blogs/${blog.slug || blog.id}`}
-      className="group flex flex-col bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
+      className="group flex flex-col bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-sm hover:-translate-y-1 transition-all duration-300"
     >
       {/* Image */}
       <div className="aspect-video relative w-full overflow-hidden">
@@ -122,7 +122,7 @@ function Pagination({
             onClick={() => onPageChange(n)}
             className={`w-10 h-10 rounded-xl text-sm font-bold transition-all ${
               currentPage === n
-                ? 'bg-blue-900 text-white shadow-lg'
+                ? 'bg-blue-900 text-white shadow-sm'
                 : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'
             }`}
           >
@@ -227,7 +227,7 @@ export default function BlogsPage() {
           {loading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {Array.from({ length: 6 }, (_, i) => (
-                <div key={i} className="bg-white rounded-xl shadow-md overflow-hidden">
+                <div key={i} className="bg-white rounded-xl shadow-sm overflow-hidden">
                   <div className="aspect-video bg-gray-200 animate-pulse" />
                   <div className="p-5 space-y-3">
                     <div className="h-5 bg-gray-200 rounded animate-pulse w-3/4" />

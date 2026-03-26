@@ -128,7 +128,7 @@ export default function LeadForm({
   };
 
   const fieldClass = (hasError: boolean) =>
-    `w-full px-4 py-2.5 rounded-lg border text-sm bg-white transition-colors ${
+    `w-full px-4 py-2.5 rounded-xl border text-sm bg-white transition-colors ${
       hasError ? 'border-red-400 focus:ring-red-200' : 'border-slate-200 focus:ring-blue-200'
     } focus:ring-2 focus:outline-none`;
 
@@ -236,7 +236,7 @@ export default function LeadForm({
                 type="text"
                 value={propertyId}
                 readOnly
-                className="w-full px-4 py-2.5 rounded-lg border border-slate-200 text-sm bg-slate-100 text-slate-500 cursor-not-allowed"
+                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm bg-slate-100 text-slate-500 cursor-not-allowed"
               />
             </div>
           </>
@@ -314,7 +314,7 @@ export default function LeadForm({
                 type="text"
                 value={propertyId}
                 readOnly
-                className="w-full px-4 py-2.5 rounded-lg border border-slate-200 text-sm bg-slate-100 text-slate-500 cursor-not-allowed"
+                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm bg-slate-100 text-slate-500 cursor-not-allowed"
               />
             </div>
           </>
@@ -323,7 +323,7 @@ export default function LeadForm({
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full py-3 rounded-lg bg-blue-900 text-white text-sm font-semibold hover:bg-blue-800 disabled:opacity-60 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
+          className="w-full py-3 rounded-xl bg-blue-900 text-white text-sm font-semibold hover:bg-blue-800 disabled:opacity-60 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
         >
           {isLoading ? (
             <>

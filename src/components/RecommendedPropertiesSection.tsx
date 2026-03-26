@@ -48,10 +48,10 @@ export default function RecommendedPropertiesSection({
           return (
             <Link
               key={property.id}
-              href={`/properties/${property.id}`}
-              className="flex gap-3 p-2 rounded-lg bg-white hover:bg-amber-100/50 transition group"
+              href={`/properties/${property.slug || property.id}`}
+              className="flex gap-3 p-2 rounded-xl bg-white hover:bg-amber-100/50 transition group"
             >
-              <div className="w-16 h-16 rounded-lg overflow-hidden shrink-0">
+              <div className="w-16 h-16 rounded-xl overflow-hidden shrink-0">
                 <img
                   src={coverImage}
                   alt={typeLabel}

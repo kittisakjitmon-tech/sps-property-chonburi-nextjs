@@ -72,7 +72,7 @@ async function FeaturedPropertiesSection() {
             ดูทั้งหมด →
           </Link>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           {properties.map((property) => (
             <PropertyCard key={property.id} property={property} home />
           ))}
@@ -115,12 +115,12 @@ async function FeaturedBlogsSection() {
             ดูทั้งหมด →
           </Link>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
           {blogs.slice(0, 4).map((blog) => (
             <Link
               key={blog.id}
               href={`/blogs/${blog.slug || blog.id}`}
-              className="group bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
+              className="group bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden hover:shadow-sm hover:-translate-y-1 transition-all duration-300"
             >
               <div className="relative aspect-video bg-slate-100">
                 {blog.images?.[0] ? (
@@ -184,12 +184,12 @@ async function PopularLocationsSection() {
             ดูทั้งหมด →
           </Link>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {locations.slice(0, 6).map((loc) => (
             <Link
               key={loc.id}
               href={`/properties?location=${encodeURIComponent(loc.district || loc.province)}`}
-              className="group relative aspect-video rounded-2xl overflow-hidden shadow-sm hover:-translate-y-1 hover:shadow-md transition-all"
+              className="group relative aspect-video rounded-2xl overflow-hidden shadow-sm hover:-translate-y-1 hover:shadow-sm transition-all"
             >
               <div className="absolute inset-0 bg-gradient-to-br from-blue-600 to-blue-500 flex items-center justify-center">
                 <MapPin className="h-16 w-16 text-white/40" />
@@ -398,7 +398,7 @@ export default async function HomePage() {
               {whyChooseUs.map(({ Icon, title, desc, color }) => (
                 <div
                   key={title}
-                  className="flex flex-col items-center text-center px-6 py-8 rounded-2xl hover:bg-white hover:shadow-md transition-all duration-300"
+                  className="flex flex-col items-center text-center px-6 py-8 rounded-2xl hover:bg-white hover:shadow-sm transition-all duration-300"
                 >
                   <div
                     className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-5 ${color}`}

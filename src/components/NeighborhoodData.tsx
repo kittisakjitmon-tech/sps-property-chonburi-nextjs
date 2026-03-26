@@ -120,14 +120,14 @@ export default function NeighborhoodData({ property }: NeighborhoodDataProps) {
             return (
               <div key={type} className="rounded-xl border border-slate-200 bg-gradient-to-br from-white to-slate-50 p-4">
                 <div className="flex items-center gap-2 mb-3">
-                  <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center">
+                  <div className="w-8 h-8 rounded-xl bg-blue-100 flex items-center justify-center">
                     <Icon className="h-4 w-4 text-blue-900" />
                   </div>
                   <h4 className="font-semibold text-blue-900">{TYPE_TITLES[type]}</h4>
                 </div>
                 <div className="space-y-2">
                   {groupedPlaces[type].map((place: any, index: number) => (
-                    <div key={`${place.name}-${index}`} className="rounded-lg bg-white border border-slate-100 p-3">
+                    <div key={`${place.name}-${index}`} className="rounded-xl bg-white border border-slate-100 p-3">
                       <p className="text-sm font-medium text-slate-800">
                         {place.name} - {place.distanceText || 'ตรวจสอบจากแผนที่'} ({place.durationText || 'ตรวจสอบจากแผนที่'})
                       </p>

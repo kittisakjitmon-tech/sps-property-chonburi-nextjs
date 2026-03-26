@@ -86,7 +86,7 @@ export default function BlogDetailPage({ params }: BlogDetailPageProps) {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="animate-pulse space-y-6">
             <div className="h-8 bg-slate-200 rounded w-1/3"></div>
-            <div className="h-64 bg-slate-200 rounded-lg"></div>
+            <div className="h-64 bg-slate-200 rounded-xl"></div>
             <div className="space-y-3">
               <div className="h-4 bg-slate-200 rounded w-full"></div>
               <div className="h-4 bg-slate-200 rounded w-5/6"></div>
@@ -157,7 +157,7 @@ export default function BlogDetailPage({ params }: BlogDetailPageProps) {
 
         {/* Cover Image */}
         {coverImage && (
-          <div className="mb-8 rounded-lg overflow-hidden">
+          <div className="mb-8 rounded-xl overflow-hidden">
             <img
               src={getCloudinaryLargeUrl(coverImage) || coverImage}
               alt={blog.title}
@@ -170,7 +170,7 @@ export default function BlogDetailPage({ params }: BlogDetailPageProps) {
 
         {/* YouTube Video */}
         {youtubeEmbedUrl && (
-          <div className="mb-8 aspect-video rounded-lg overflow-hidden">
+          <div className="mb-8 aspect-video rounded-xl overflow-hidden">
             <iframe
               src={youtubeEmbedUrl}
               title={blog.title}
@@ -194,7 +194,7 @@ export default function BlogDetailPage({ params }: BlogDetailPageProps) {
             <h2 className="text-2xl font-bold text-slate-900 mb-6">รูปภาพเพิ่มเติม</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {extraImages.map((imageUrl: string, index: number) => (
-                <div key={index} className="rounded-lg overflow-hidden">
+                <div key={index} className="rounded-xl overflow-hidden">
                   <img
                     src={getCloudinaryMediumUrl(imageUrl) || imageUrl}
                     alt={`${blog.title} - รูปภาพ ${index + 2}`}

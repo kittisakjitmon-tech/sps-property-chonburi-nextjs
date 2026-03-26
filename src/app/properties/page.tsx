@@ -202,7 +202,7 @@ function PropertiesContent() {
                 </button>
               )}
             </div>
-            <button className="px-6 py-3 rounded-xl bg-blue-900 hover:bg-blue-800 text-white font-semibold shadow-md transition">
+            <button className="px-6 py-3 rounded-xl bg-blue-900 hover:bg-blue-800 text-white font-semibold shadow-sm transition">
               ค้นหา
             </button>
           </div>
@@ -336,7 +336,7 @@ function PropertiesContent() {
                       <div className="h-4 bg-slate-200 rounded animate-pulse w-3/4" />
                       <div className="h-3 bg-slate-100 rounded animate-pulse w-1/2" />
                       <div className="h-3 bg-slate-100 rounded animate-pulse w-full" />
-                      <div className="h-9 bg-slate-200 rounded-lg animate-pulse w-full mt-3" />
+                      <div className="h-9 bg-slate-200 rounded-xl animate-pulse w-full mt-3" />
                     </div>
                   </div>
                 ))}
@@ -395,7 +395,7 @@ function PropertiesContent() {
                       onClick={() => handlePageChange(n)}
                       className={`w-10 h-10 rounded-xl text-sm font-bold transition-all ${
                         currentPage === n 
-                          ? 'bg-blue-900 text-white shadow-lg' 
+                          ? 'bg-blue-900 text-white shadow-sm' 
                           : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
                       }`}
                     >

@@ -114,18 +114,18 @@ function PropertyDetailContent({ id }: { id: string }) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2 space-y-6">
-              <div className="bg-white rounded-xl overflow-hidden shadow-md">
+              <div className="bg-white rounded-xl overflow-hidden shadow-sm">
                 <div className="aspect-video bg-slate-200 animate-pulse" />
                 <div className="flex gap-2 p-2">
                   {[1, 2, 3, 4].map((i) => (
-                    <div key={i} className="shrink-0 w-20 h-14 rounded-lg bg-slate-200 animate-pulse" />
+                    <div key={i} className="shrink-0 w-20 h-14 rounded-xl bg-slate-200 animate-pulse" />
                   ))}
                 </div>
               </div>
               <div className="bg-white rounded-xl p-6 space-y-4">
                 <div className="h-5 w-24 bg-slate-200 rounded-full animate-pulse" />
-                <div className="h-8 w-3/4 bg-slate-200 rounded-lg animate-pulse" />
-                <div className="h-6 w-1/3 bg-yellow-100 rounded-lg animate-pulse" />
+                <div className="h-8 w-3/4 bg-slate-200 rounded-xl animate-pulse" />
+                <div className="h-6 w-1/3 bg-yellow-100 rounded-xl animate-pulse" />
                 <div className="space-y-2">
                   <div className="h-4 bg-slate-100 rounded animate-pulse" />
                   <div className="h-4 bg-slate-100 rounded animate-pulse w-5/6" />
@@ -134,12 +134,12 @@ function PropertyDetailContent({ id }: { id: string }) {
               </div>
             </div>
             <div className="lg:col-span-1">
-              <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-md space-y-4">
+              <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm space-y-4">
                 <div className="h-5 w-32 bg-slate-200 rounded animate-pulse" />
                 {[1, 2, 3, 4].map((i) => (
-                  <div key={i} className="h-10 bg-slate-100 rounded-lg animate-pulse" />
+                  <div key={i} className="h-10 bg-slate-100 rounded-xl animate-pulse" />
                 ))}
-                <div className="h-12 bg-blue-100 rounded-lg animate-pulse" />
+                <div className="h-12 bg-blue-100 rounded-xl animate-pulse" />
               </div>
             </div>
           </div>
@@ -253,7 +253,7 @@ function PropertyDetailContent({ id }: { id: string }) {
           {/* Main Content - 65% */}
           <div className="lg:col-span-2 space-y-6">
             {/* Gallery */}
-            <div className="bg-white rounded-xl overflow-hidden shadow-md">
+            <div className="bg-white rounded-xl overflow-hidden shadow-sm">
               <ProtectedImageContainer propertyId={property.propertyId} className="aspect-video relative bg-slate-200">
                 <img
                   src={getCloudinaryLargeUrl(imgs[galleryIndex]) || imgs[galleryIndex]}
@@ -271,7 +271,7 @@ function PropertyDetailContent({ id }: { id: string }) {
                       key={i}
                       type="button"
                       onClick={() => setGalleryIndex(i)}
-                      className={`shrink-0 w-20 h-14 rounded-lg overflow-hidden border-2 ${
+                      className={`shrink-0 w-20 h-14 rounded-xl overflow-hidden border-2 ${
                         i === galleryIndex ? 'border-blue-900' : 'border-transparent'
                       }`}
                     >
@@ -444,7 +444,7 @@ function PropertyDetailContent({ id }: { id: string }) {
             </div>
 
             {/* Map */}
-            <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-md">
+            <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
               {mapEmbedUrl ? (
                 <div className="aspect-video">
                   <iframe
@@ -501,7 +501,7 @@ function PropertyDetailContent({ id }: { id: string }) {
           <div className="lg:col-span-1">
             <div className="lg:sticky lg:top-24 space-y-6">
               {/* Lead Form */}
-              <div className="bg-white rounded-xl border border-blue-100 p-6 shadow-md">
+              <div className="bg-white rounded-xl border border-blue-100 p-6 shadow-sm">
                 <div className="pt-4 border-slate-100">
                   <p className="text-sm font-medium text-slate-700 mb-2">จองเยี่ยมชม (ส่งข้อความ)</p>
                   <LeadForm

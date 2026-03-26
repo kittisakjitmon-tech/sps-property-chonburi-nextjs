@@ -88,7 +88,7 @@ export default function Navbar() {
       <nav className="w-full mx-auto px-3 sm:px-4 md:px-6 lg:px-8 lg:max-w-7xl min-h-[60px] flex flex-wrap items-center justify-between gap-3 py-2">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 shrink min-w-0 max-w-[calc(100%-56px)] lg:max-w-none">
-          <img src="/logo.png" alt="SPS Property Solution" className="w-10 h-10 object-contain rounded-lg" />
+          <img src="/logo.png" alt="SPS Property Solution" className="w-10 h-10 object-contain rounded-xl" />
           <span className="text-base font-semibold text-gray-900 whitespace-nowrap truncate hidden sm:inline">
             SPS Property Solution
           </span>
@@ -220,7 +220,7 @@ export default function Navbar() {
         <button
           type="button"
           onClick={() => setMobileOpen((o) => !o)}
-          className="lg:hidden min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg text-gray-600 hover:bg-gray-100 focus:outline-none"
+          className="lg:hidden min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl text-gray-600 hover:bg-gray-100 focus:outline-none"
           aria-label={mobileOpen ? "ปิดเมนู" : "เปิดเมนู"}
         >
           {mobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}

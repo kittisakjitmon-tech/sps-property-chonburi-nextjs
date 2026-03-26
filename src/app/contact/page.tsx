@@ -93,7 +93,7 @@ export default function ContactPage() {
                 <div className="space-y-4 mb-6">
                   {/* Address */}
                   <div className="flex gap-4">
-                    <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center shrink-0">
+                    <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center shrink-0">
                       <MapPin className="w-5 h-5 text-blue-900" />
                     </div>
                     <div>
@@ -108,7 +108,7 @@ export default function ContactPage() {
 
                   {/* Service Area */}
                   <div className="flex gap-4">
-                    <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center shrink-0">
+                    <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center shrink-0">
                       <Globe className="w-5 h-5 text-blue-900" />
                     </div>
                     <div>
@@ -126,8 +126,8 @@ export default function ContactPage() {
                   {contactMethods.map((method, idx) => {
                     const Icon = method.icon;
                     const content = (
-                      <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200 hover:border-blue-200 transition-colors">
-                        <div className="w-10 h-10 rounded-lg bg-blue-900 flex items-center justify-center shrink-0">
+                      <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border border-gray-200 hover:border-blue-200 transition-colors">
+                        <div className="w-10 h-10 rounded-xl bg-blue-900 flex items-center justify-center shrink-0">
                           <Icon className="w-5 h-5 text-white" />
                         </div>
                         <div>
@@ -175,7 +175,7 @@ export default function ContactPage() {
                   <p className="text-gray-600 mb-6">ขอบคุณที่ติดต่อ ทีมงานจะติดต่อกลับภายใน 24 ชั่วโมง</p>
                   <button
                     onClick={() => setSubmitted(false)}
-                    className="px-6 py-2 bg-blue-900 text-white rounded-lg hover:bg-blue-800 transition"
+                    className="px-6 py-2 bg-blue-900 text-white rounded-xl hover:bg-blue-800 transition"
                   >
                     ส่งข้อความใหม่
                   </button>
@@ -183,7 +183,7 @@ export default function ContactPage() {
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-4">
                   {error && (
-                    <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+                    <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm">
                       {error}
                     </div>
                   )}
@@ -198,7 +198,7 @@ export default function ContactPage() {
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                       placeholder="กรอกชื่อ-นามสกุล"
-                      className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-900/20 focus:border-blue-900 transition"
+                      className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-900/20 focus:border-blue-900 transition"
                     />
                   </div>
 
@@ -212,7 +212,7 @@ export default function ContactPage() {
                       value={formData.phone}
                       onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                       placeholder="เช่น 0812345678"
-                      className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-900/20 focus:border-blue-900 transition"
+                      className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-900/20 focus:border-blue-900 transition"
                     />
                   </div>
 
@@ -226,14 +226,14 @@ export default function ContactPage() {
                       onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                       rows={5}
                       placeholder="ระบุคำถามหรือความต้องการ..."
-                      className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-900/20 focus:border-blue-900 transition resize-none"
+                      className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-900/20 focus:border-blue-900 transition resize-none"
                     />
                   </div>
 
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full mt-6 py-3 bg-blue-900 hover:bg-blue-800 disabled:bg-blue-300 text-white font-semibold rounded-lg transition-colors flex items-center justify-center gap-2"
+                    className="w-full mt-6 py-3 bg-blue-900 hover:bg-blue-800 disabled:bg-blue-300 text-white font-semibold rounded-xl transition-colors flex items-center justify-center gap-2"
                   >
                     {isSubmitting ? (
                       <>
@@ -256,7 +256,7 @@ export default function ContactPage() {
                 <div className="flex gap-3">
                   <a
                     href="tel:0891234567"
-                    className="flex-1 flex items-center justify-center gap-2 py-3 bg-green-500 hover:bg-green-600 text-white font-medium rounded-lg transition-colors"
+                    className="flex-1 flex items-center justify-center gap-2 py-3 bg-green-500 hover:bg-green-600 text-white font-medium rounded-xl transition-colors"
                   >
                     <Phone className="w-5 h-5" />
                     โทรเลย
@@ -265,7 +265,7 @@ export default function ContactPage() {
                     href="https://line.me/ti/p/~spsproperty"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex-1 flex items-center justify-center gap-2 py-3 bg-green-400 hover:bg-green-500 text-white font-medium rounded-lg transition-colors"
+                    className="flex-1 flex items-center justify-center gap-2 py-3 bg-green-400 hover:bg-green-500 text-white font-medium rounded-xl transition-colors"
                   >
                     <MessageCircle className="w-5 h-5" />
                     แชท LINE

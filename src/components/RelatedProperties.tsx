@@ -107,7 +107,7 @@ export default function RelatedProperties({ currentPropertyId, district, type }:
   if (loading) {
     return (
       <div className="py-8">
-        <div className="h-6 w-40 bg-slate-200 rounded-lg mb-4 animate-pulse" />
+        <div className="h-6 w-40 bg-slate-200 rounded-xl mb-4 animate-pulse" />
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {[1, 2, 3].map((i) => (
             <div key={i} className="h-64 bg-slate-100 rounded-xl animate-pulse" />
@@ -138,7 +138,7 @@ export default function RelatedProperties({ currentPropertyId, district, type }:
             <Link
               key={property.id}
               href={getPropertyPath(property)}
-              className="group rounded-xl overflow-hidden border border-slate-200 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200"
+              className="group rounded-xl overflow-hidden border border-slate-200 hover:shadow-sm hover:-translate-y-0.5 transition-all duration-200"
             >
               <div className="aspect-[4/3] relative overflow-hidden">
                 <img

@@ -62,7 +62,7 @@ export default function Dropdown({
       </button>
 
       {isOpen && (
-        <div className="absolute top-[calc(100%+10px)] left-0 w-full min-w-[200px] bg-white rounded-2xl shadow-xl border border-slate-100 py-2 z-50">
+        <div className="absolute top-[calc(100%+10px)] left-0 w-full min-w-[200px] bg-white rounded-xl shadow-lg border border-slate-100 py-2 z-50">
           <button
             type="button"
             onClick={() => {

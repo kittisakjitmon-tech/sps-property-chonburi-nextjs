@@ -11,7 +11,7 @@ export default function Footer() {
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-8">
             {/* Logo & Brand */}
             <div className="flex items-center gap-4">
-              <img src="/logo.png" alt="SPS Property Solution" className="w-12 h-12 object-contain rounded-lg" />
+              <img src="/logo.png" alt="SPS Property Solution" className="w-12 h-12 object-contain rounded-xl" />
               <div>
                 <p className="font-bold text-lg">SPS Property Solution</p>
                 <p className="text-blue-200 text-sm">บ้านคอนโดสวย อมตะซิตี้ ชลบุรี</p>

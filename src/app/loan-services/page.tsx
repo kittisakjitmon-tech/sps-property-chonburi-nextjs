@@ -84,7 +84,7 @@ export default function LoanServicesPage() {
           {/* CTA Button */}
           <button 
             onClick={() => document.getElementById('calculator')?.scrollIntoView({ behavior: 'smooth' })}
-            className="mt-10 inline-flex items-center gap-2 px-8 py-4 bg-yellow-500 hover:bg-yellow-400 text-blue-900 font-bold rounded-lg shadow-lg transition-colors"
+            className="mt-10 inline-flex items-center gap-2 px-8 py-4 bg-yellow-500 hover:bg-yellow-400 text-blue-900 font-bold rounded-xl shadow-sm transition-colors"
           >
             <Calculator className="w-5 h-5" />
             ประเมินวงเงิน & ทักแชทปรึกษาฟรี
@@ -223,7 +223,7 @@ export default function LoanServicesPage() {
           </div>
 
           {submitted ? (
-            <div className="bg-white rounded-2xl shadow-lg p-8 text-center">
+            <div className="bg-white rounded-2xl shadow-sm p-8 text-center">
               <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Check className="w-8 h-8 text-green-600" />
               </div>
@@ -233,7 +233,7 @@ export default function LoanServicesPage() {
               </p>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-lg p-6 space-y-4">
+            <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-sm p-6 space-y-4">
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">ชื่อ-สกุล</label>
                 <input

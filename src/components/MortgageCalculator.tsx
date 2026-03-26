@@ -59,7 +59,7 @@ export default function MortgageCalculator({ price, directInstallment = false }:
             <button
               type="button"
               onClick={() => setLoanType('bank')}
-              className={`px-4 py-3 rounded-lg border-2 transition ${
+              className={`px-4 py-3 rounded-xl border-2 transition ${
                 loanType === 'bank'
                   ? 'border-blue-900 bg-blue-50 text-blue-900 font-semibold'
                   : 'border-slate-200 bg-white text-slate-600 hover:border-blue-300'
@@ -70,7 +70,7 @@ export default function MortgageCalculator({ price, directInstallment = false }:
             <button
               type="button"
               onClick={() => setLoanType('direct')}
-              className={`px-4 py-3 rounded-lg border-2 transition ${
+              className={`px-4 py-3 rounded-xl border-2 transition ${
                 loanType === 'direct'
                   ? 'border-blue-900 bg-blue-50 text-blue-900 font-semibold'
                   : 'border-slate-200 bg-white text-slate-600 hover:border-blue-300'
@@ -92,7 +92,7 @@ export default function MortgageCalculator({ price, directInstallment = false }:
             max="50"
             value={downPercent}
             onChange={(e) => setDownPercent(Number(e.target.value))}
-            className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-900"
+            className="w-full h-2 bg-slate-200 rounded-xl appearance-none cursor-pointer accent-blue-900"
           />
           <span className="text-sm text-slate-600">
             {downPercent}% = {(down / 1_000_000).toFixed(1)} ล้านบาท
@@ -105,7 +105,7 @@ export default function MortgageCalculator({ price, directInstallment = false }:
           <select
             value={years}
             onChange={(e) => setYears(Number(e.target.value))}
-            className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-900/20"
+            className="w-full px-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-900/20"
           >
             {[5, 10, 15, 20, 25, 30].map((y) => (
               <option key={y} value={y}>
@@ -134,7 +134,7 @@ export default function MortgageCalculator({ price, directInstallment = false }:
                 setBankInterestRate(val);
               }
             }}
-            className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-900/20"
+            className="w-full px-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-900/20"
           />
         </div>
 

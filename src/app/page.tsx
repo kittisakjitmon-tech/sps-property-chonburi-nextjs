@@ -72,7 +72,7 @@ async function FeaturedPropertiesSection() {
             ดูทั้งหมด →
           </Link>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
           {properties.map((property) => (
             <PropertyCard key={property.id} property={property} home />
           ))}
@@ -184,7 +184,7 @@ async function PopularLocationsSection() {
             ดูทั้งหมด →
           </Link>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5">
           {locations.slice(0, 6).map((loc) => (
             <Link
               key={loc.id}

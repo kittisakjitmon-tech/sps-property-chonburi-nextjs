@@ -44,7 +44,7 @@ export function DynamicPropertySection({ section, properties }: DynamicPropertyS
             ดูทั้งหมด →
           </a>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
           {sectionProperties.map((property) => (
             <PropertyCard key={property.id} property={property} />
           ))}

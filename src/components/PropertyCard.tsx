@@ -2,7 +2,7 @@
 
 import { useState, useEffect, memo } from 'react';
 import Link from 'next/link';
-import { MapPin, Heart, TrendingUp } from 'lucide-react';
+import { MapPin, Heart, Bed, Bath, Maximize2 } from 'lucide-react';
 import { isFavorite, toggleFavorite } from '@/lib/favorites';
 import { formatPriceShort } from '@/lib/priceFormat';
 import { getCloudinaryThumbUrl } from '@/lib/cloudinary';
@@ -16,27 +16,6 @@ interface PropertyCardProps {
   home?: boolean;
   searchQuery?: string;
 }
-
-// Icons like old project
-const BedIcon = () => <span className="text-[13px] leading-none" aria-hidden>🛏</span>;
-const BathIcon = () => <span className="text-[13px] leading-none" aria-hidden>🛁</span>;
-const AreaIcon = () => <span className="text-[13px] leading-none" aria-hidden>📐</span>;
-
-const HeartIcon = ({ active }: { active: boolean }) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill={active ? 'currentColor' : 'none'}
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className={`w-4 h-4 transition-all duration-200 ${active ? 'text-red-500' : 'text-slate-500'}`}
-    aria-hidden
-  >
-    <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
-  </svg>
-);
 
 function PropertyCard({ property, compact = false, home = false, searchQuery }: PropertyCardProps) {
   const propertyId = property?.id ?? null;
@@ -64,7 +43,7 @@ function PropertyCard({ property, compact = false, home = false, searchQuery }: 
 
   const loc = typeof property.location === 'object' ? property.location : null;
   const district = loc
-    ? [loc.district, loc.province].filter(Boolean).join(' ')
+    ? [loc.district, loc.province].filter(Boolean).join(', ')
     : (property.district || property.province || '');
   const subDistrict = loc?.subDistrict || '';
 
@@ -97,16 +76,18 @@ function PropertyCard({ property, compact = false, home = false, searchQuery }: 
   const coverImage = property.coverImageUrl || property.images?.[0] || 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=400';
 
   const isHome = home || false;
-  const isCompact = compact || false;
+
+  // Badge color
+  const badgeColor = isInstallment ? 'bg-emerald-500' : listingType === 'rent' ? 'bg-orange-500' : 'bg-blue-600';
+  const badgeLabel = isInstallment ? 'ผ่อนตรง' : listingType === 'rent' ? 'เช่า' : 'ขาย';
 
   return (
     <article
       className={`group flex flex-col h-full w-full bg-white overflow-hidden rounded-2xl transition-all duration-300 ${
         isHome
-          ? 'shadow-sm hover:shadow-lg hover:-translate-y-0.5'
-          : 'shadow-sm hover:shadow-lg hover:-translate-y-0.5'
+          ? 'shadow-sm hover:shadow-lg hover:-translate-y-1'
+          : 'shadow-sm hover:shadow-lg hover:-translate-y-1'
       }`}
-      style={!isHome ? { maxWidth: 'min(100%, 340px)' } : undefined}
     >
       {/* Image Section */}
       <Link href={propertyPath} className="block relative aspect-[4/3] overflow-hidden bg-slate-100 shrink-0">
@@ -124,23 +105,18 @@ function PropertyCard({ property, compact = false, home = false, searchQuery }: 
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
-            background: 'linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.2) 35%, transparent 55%)',
+            background: 'linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.1) 40%, transparent 60%)',
           }}
         />
 
-        {/* Status Badges */}
-        <div className="absolute top-2.5 left-2.5 flex gap-2 z-10 pointer-events-none">
-          <span
-            className="inline-flex items-center py-1 px-2.5 text-xs font-semibold text-white leading-none rounded-full shadow-sm"
-            style={{
-              backgroundColor: isInstallment ? '#059669' : listingType === 'rent' ? '#ea580c' : '#2563eb',
-            }}
-          >
-            {isInstallment ? 'ผ่อนตรง' : listingType === 'rent' ? 'เช่า' : 'ขาย'}
+        {/* Top Badges */}
+        <div className="absolute top-3 left-3 flex gap-2 z-10">
+          <span className={`inline-flex items-center py-1 px-2.5 text-xs font-semibold text-white rounded-full shadow-sm ${badgeColor}`}>
+            {badgeLabel}
           </span>
           {isNew && (
-            <span className="inline-flex items-center py-1 px-2.5 text-xs font-semibold text-white leading-none rounded-full shadow-sm bg-blue-500">
-              New
+            <span className="inline-flex items-center py-1 px-2.5 text-xs font-semibold text-white rounded-full shadow-sm bg-cyan-500">
+              ใหม่
             </span>
           )}
         </div>
@@ -148,98 +124,91 @@ function PropertyCard({ property, compact = false, home = false, searchQuery }: 
         {/* Favorite Button */}
         <button
           onClick={handleFavorite}
-          className="absolute top-2.5 right-2.5 z-10 w-9 h-9 flex items-center justify-center rounded-full bg-white/95 backdrop-blur-sm shadow-sm hover:bg-white hover:shadow hover:scale-105 active:scale-95 transition-all duration-200"
+          className="absolute top-3 right-3 z-10 w-9 h-9 flex items-center justify-center rounded-full bg-white/90 backdrop-blur-sm shadow-sm hover:bg-white hover:shadow-md active:scale-90 transition-all duration-200"
           aria-label={favorited ? 'ลบออกจากรายการโปรด' : 'เพิ่มในรายการโปรด'}
         >
-          <HeartIcon active={favorited} />
+          <Heart 
+            className={`w-4 h-4 transition-colors ${favorited ? 'fill-red-500 text-red-500' : 'text-slate-500'}`} 
+          />
         </button>
 
         {/* Price Overlay */}
-        <div className="absolute bottom-0 left-0 right-0 z-10 pointer-events-none p-2 pt-5">
+        <div className="absolute bottom-0 left-0 right-0 z-10 p-3 pt-8">
           {property.hotDeal && (
-            <div className="text-amber-300 text-[10px] font-bold uppercase tracking-wide mb-0.5 drop-shadow-sm">
-              🔥 ราคาดี
+            <div className="text-amber-400 text-[10px] font-bold uppercase tracking-wide mb-0.5">
+              🔥 ราคาพิเศษ
             </div>
           )}
-          <div
-            className="text-white font-bold text-sm leading-tight tracking-tight"
-            style={{
-              textShadow: '0 1px 2px rgba(0,0,0,0.8), 0 2px 8px rgba(0,0,0,0.6)',
-            }}
-          >
+          <div className="text-white font-bold text-lg leading-tight">
             {formatPriceShort(property.price, listingType === 'rent', property.showPrice !== false)}
           </div>
           {installmentPerMonth != null && (
-            <div
-              className="text-white/95 text-xs font-medium mt-0.5"
-              style={{ textShadow: '0 1px 2px rgba(0,0,0,0.6)' }}
-            >
-              ≈ ฿{installmentPerMonth.toLocaleString('th-TH')} / ด.
+            <div className="text-white/90 text-xs mt-0.5">
+              ≈ ฿{installmentPerMonth.toLocaleString('th-TH')}/ด.
             </div>
           )}
         </div>
       </Link>
 
       {/* Content Section */}
-      <div className="flex flex-col flex-1 min-w-0 p-3 gap-0.5">
-        <Link href={propertyPath} className="block mb-0.5">
-          <h3 className="font-semibold text-slate-900 leading-snug line-clamp-2 group-hover:text-blue-700 transition-colors text-sm">
+      <div className="flex flex-col flex-1 min-w-0 p-4">
+        {/* Title */}
+        <Link href={propertyPath} className="block mb-1">
+          <h3 className="font-semibold text-slate-900 leading-snug line-clamp-2 group-hover:text-blue-600 transition-colors text-sm">
             {titleText}
           </h3>
         </Link>
 
-        <p className="text-slate-500 text-xs font-medium mb-1.5">
-          <span aria-hidden>📍</span> {district || '—'}
-        </p>
+        {/* Location */}
+        <div className="flex items-center gap-1 text-slate-500 text-xs mb-3">
+          <MapPin className="w-3 h-3 shrink-0" />
+          <span className="truncate">{district || '—'}</span>
+        </div>
 
-        {/* Specs Row with Emoji Icons */}
-        <div className="flex items-center gap-1.5 text-slate-600 text-xs font-medium flex-wrap mb-2">
-          <span className="flex items-center gap-0.5">
-            <BedIcon /> {property.bedrooms ?? '-'}
-          </span>
-          <span className="text-slate-300" aria-hidden>|</span>
-          <span className="flex items-center gap-0.5">
-            <BathIcon /> {property.bathrooms ?? '-'}
-          </span>
+        {/* Specs Row */}
+        <div className="flex items-center gap-3 text-slate-600 text-xs mb-3">
+          <div className="flex items-center gap-1">
+            <Bed className="w-3.5 h-3.5" />
+            <span>{property.bedrooms ?? '-'}</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <Bath className="w-3.5 h-3.5" />
+            <span>{property.bathrooms ?? '-'}</span>
+          </div>
           {areaSqWa != null && (
-            <>
-              <span className="text-slate-300" aria-hidden>|</span>
-              <span className="flex items-center gap-0.5">
-                <AreaIcon /> {areaSqWa} ตร.ว.
-              </span>
-            </>
+            <div className="flex items-center gap-1">
+              <Maximize2 className="w-3.5 h-3.5" />
+              <span>{areaSqWa} ตร.ว.</span>
+            </div>
           )}
         </div>
 
-        {/* Tags */}
-        <div className="flex flex-wrap gap-1.5 mb-3">
-          <span
-            className={`inline-flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-full ${
-              property.availability === 'available'
-                ? 'bg-green-50 text-green-700'
-                : 'bg-amber-50 text-amber-800'
-            }`}
-          >
-            <span
-              className={`w-1 h-1 rounded-full ${
-                property.availability === 'available' ? 'bg-green-500' : 'bg-amber-500'
-              }`}
-              aria-hidden
-            />
-            {property.availability === 'available' ? 'ว่าง' : 'ติดจอง'}
-          </span>
-          <span className="inline-flex text-[10px] font-medium px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">
-            {property.propertyCondition || 'มือสอง'}
-          </span>
+        {/* Status & Condition Badges */}
+        <div className="flex items-center gap-2 mb-3">
+          {property.availability === 'available' ? (
+            <span className="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-600">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+              ว่าง
+            </span>
+          ) : (
+            <span className="inline-flex items-center gap-1.5 text-xs font-medium text-amber-600">
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+              ติดจอง
+            </span>
+          )}
+          {property.propertyCondition && (
+            <span className="inline-flex text-xs font-medium px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">
+              {property.propertyCondition}
+            </span>
+          )}
         </div>
 
-        {/* Detail Button */}
+        {/* CTA Button */}
         <Link
           href={propertyPath}
-          className="mt-auto inline-flex items-center justify-center gap-1 rounded-xl border-2 border-slate-200 text-slate-700 font-semibold text-xs hover:border-blue-600 hover:text-blue-700 hover:bg-blue-50/50 active:scale-[0.98] transition-all duration-200 min-h-[40px] py-2 px-3"
+          className="mt-auto inline-flex items-center justify-center gap-2 rounded-xl bg-blue-50 text-blue-700 font-semibold text-sm hover:bg-blue-100 active:scale-[0.98] transition-all duration-200 py-3 px-4"
         >
           ดูรายละเอียด
-          <span aria-hidden>→</span>
         </Link>
       </div>
     </article>

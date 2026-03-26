@@ -5,7 +5,7 @@ import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { 
   MapPin, Bed, Bath, Maximize2, Share2, Copy, Check, 
-  Home, ChevronLeft, ChevronRight, CheckCircle2
+  Home, ChevronLeft, ChevronRight, CheckCircle2, X, Calendar
 } from 'lucide-react';
 import { 
   getPropertyById, 
@@ -45,6 +45,9 @@ function PropertyDetailContent({ id }: { id: string }) {
   const [isSharing, setIsSharing] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
   const [showToast, setShowToast] = useState(false);
+  const [showMobileForm, setShowMobileForm] = useState(false);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
 
   useEffect(() => {
     let cancelled = false;
@@ -110,29 +113,44 @@ function PropertyDetailContent({ id }: { id: string }) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50">
+      <div className="min-h-screen bg-slate-50 pb-24 md:pb-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Main Content Skeleton */}
             <div className="lg:col-span-2 space-y-6">
+              {/* Gallery Skeleton */}
               <div className="bg-white rounded-xl overflow-hidden shadow-sm">
-                <div className="aspect-video bg-slate-200 animate-pulse" />
+                <div className="aspect-video bg-gradient-to-r from-slate-200 via-slate-100 to-slate-200 animate-pulse" />
                 <div className="flex gap-2 p-2">
-                  {[1, 2, 3, 4].map((i) => (
-                    <div key={i} className="shrink-0 w-20 h-14 rounded-xl bg-slate-200 animate-pulse" />
+                  {[1, 2, 3, 4, 5].map((i) => (
+                    <div key={i} className="shrink-0 w-20 h-14 rounded-xl bg-gradient-to-r from-slate-200 via-slate-100 to-slate-200 animate-pulse" style={{ animationDelay: `${i * 100}ms` }} />
                   ))}
                 </div>
               </div>
-              <div className="bg-white rounded-xl p-6 space-y-4">
-                <div className="h-5 w-24 bg-slate-200 rounded-full animate-pulse" />
-                <div className="h-8 w-3/4 bg-slate-200 rounded-xl animate-pulse" />
-                <div className="h-6 w-1/3 bg-yellow-100 rounded-xl animate-pulse" />
-                <div className="space-y-2">
+              
+              {/* Details Card Skeleton */}
+              <div className="bg-white rounded-xl border border-slate-200 p-6">
+                <div className="flex flex-wrap gap-2 mb-4">
+                  <div className="h-7 w-24 bg-slate-200 rounded-full animate-pulse" />
+                  <div className="h-7 w-16 bg-blue-100 rounded-full animate-pulse" />
+                </div>
+                <div className="h-9 w-3/4 bg-slate-200 rounded-xl mb-3 animate-pulse" />
+                <div className="h-7 w-1/3 bg-yellow-100 rounded-xl mb-4 animate-pulse" />
+                <div className="space-y-2 mb-4">
                   <div className="h-4 bg-slate-100 rounded animate-pulse" />
                   <div className="h-4 bg-slate-100 rounded animate-pulse w-5/6" />
                   <div className="h-4 bg-slate-100 rounded animate-pulse w-4/6" />
                 </div>
+                <div className="h-20 bg-slate-50 rounded-xl animate-pulse" />
+              </div>
+              
+              {/* Map Skeleton */}
+              <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+                <div className="aspect-video bg-gradient-to-r from-slate-200 via-slate-100 to-slate-200 animate-pulse" />
               </div>
             </div>
+            
+            {/* Sidebar Skeleton */}
             <div className="lg:col-span-1">
               <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm space-y-4">
                 <div className="h-5 w-32 bg-slate-200 rounded animate-pulse" />
@@ -254,7 +272,7 @@ function PropertyDetailContent({ id }: { id: string }) {
           <div className="lg:col-span-2 space-y-6">
             {/* Gallery */}
             <div className="bg-white rounded-xl overflow-hidden shadow-sm">
-              <ProtectedImageContainer propertyId={property.propertyId} className="aspect-video relative bg-slate-200">
+              <div className="relative aspect-video bg-slate-200 cursor-pointer" onClick={() => { setLightboxIndex(galleryIndex); setLightboxOpen(true); }}>
                 <img
                   src={getCloudinaryLargeUrl(imgs[galleryIndex]) || imgs[galleryIndex]}
                   alt={`${typeLabel} - รูปภาพที่ ${galleryIndex + 1}`}
@@ -262,7 +280,17 @@ function PropertyDetailContent({ id }: { id: string }) {
                   loading="lazy"
                   draggable={false}
                 />
-              </ProtectedImageContainer>
+                {/* Image counter badge */}
+                <div className="absolute bottom-4 right-4 px-3 py-1.5 rounded-full bg-black/60 backdrop-blur-sm text-white text-sm font-medium">
+                  {galleryIndex + 1} / {imgs.length}
+                </div>
+                {/* Expand icon */}
+                <div className="absolute top-4 right-4 w-10 h-10 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center">
+                  <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                  </svg>
+                </div>
+              </div>
               
               {imgs.length > 1 && (
                 <div className="flex gap-2 p-2 overflow-x-auto">
@@ -536,6 +564,130 @@ function PropertyDetailContent({ id }: { id: string }) {
         onClose={() => setShowToast(false)} 
         duration={3000} 
       />
+
+      {/* Image Lightbox Modal */}
+      {lightboxOpen && (
+        <div 
+          className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center"
+          onClick={() => setLightboxOpen(false)}
+        >
+          {/* Close button */}
+          <button
+            onClick={() => setLightboxOpen(false)}
+            className="absolute top-4 right-4 z-10 w-12 h-12 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+          >
+            <X className="w-6 h-6 text-white" />
+          </button>
+
+          {/* Counter */}
+          <div className="absolute top-4 left-1/2 -translate-x-1/2 px-4 py-2 rounded-full bg-white/10 text-white font-medium">
+            {lightboxIndex + 1} / {imgs.length}
+          </div>
+
+          {/* Navigation - Previous */}
+          {lightboxIndex > 0 && (
+            <button
+              onClick={(e) => { e.stopPropagation(); setLightboxIndex(lightboxIndex - 1); }}
+              className="absolute left-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+            >
+              <ChevronLeft className="w-6 h-6 text-white" />
+            </button>
+          )}
+
+          {/* Main Image */}
+          <div className="max-w-5xl max-h-[85vh] w-full mx-4" onClick={(e) => e.stopPropagation()}>
+            <img
+              src={getCloudinaryLargeUrl(imgs[lightboxIndex]) || imgs[lightboxIndex]}
+              alt={`${typeLabel} - รูปภาพที่ ${lightboxIndex + 1}`}
+              className="w-full h-full object-contain rounded-xl"
+            />
+          </div>
+
+          {/* Navigation - Next */}
+          {lightboxIndex < imgs.length - 1 && (
+            <button
+              onClick={(e) => { e.stopPropagation(); setLightboxIndex(lightboxIndex + 1); }}
+              className="absolute right-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+            >
+              <ChevronRight className="w-6 h-6 text-white" />
+            </button>
+          )}
+
+          {/* Thumbnail Strip */}
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 p-2 bg-black/50 backdrop-blur-sm rounded-xl max-w-[90vw] overflow-x-auto">
+            {imgs.map((img, i) => (
+              <button
+                key={i}
+                onClick={(e) => { e.stopPropagation(); setLightboxIndex(i); }}
+                className={`shrink-0 w-16 h-12 rounded-lg overflow-hidden border-2 transition-all ${
+                  i === lightboxIndex ? 'border-white scale-110' : 'border-transparent opacity-60 hover:opacity-100'
+                }`}
+              >
+                <img
+                  src={getCloudinaryThumbUrl(img) || img}
+                  alt={`รูปย่อที่ ${i + 1}`}
+                  className="w-full h-full object-cover"
+                />
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Mobile Floating CTA Button */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 p-4 bg-white/95 backdrop-blur-sm border-t border-slate-200 z-40">
+        <button
+          onClick={() => setShowMobileForm(true)}
+          className="w-full py-4 rounded-2xl bg-blue-600 text-white font-bold text-lg shadow-lg hover:bg-blue-700 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+        >
+          <Calendar className="w-5 h-5" />
+          จองเยี่ยมชม
+        </button>
+      </div>
+
+      {/* Mobile Form Bottom Sheet */}
+      {showMobileForm && (
+        <div className="md:hidden fixed inset-0 z-50">
+          {/* Backdrop */}
+          <div 
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            onClick={() => setShowMobileForm(false)}
+          />
+          
+          {/* Sheet */}
+          <div className="absolute bottom-0 left-0 right-0 max-h-[85vh] overflow-y-auto bg-white rounded-t-3xl shadow-xl">
+            {/* Header */}
+            <div className="sticky top-0 flex items-center justify-between p-4 border-b border-slate-100 bg-white">
+              <h2 className="text-lg font-bold text-slate-900">จองเยี่ยมชม</h2>
+              <button
+                onClick={() => setShowMobileForm(false)}
+                className="w-10 h-10 flex items-center justify-center rounded-full bg-slate-100 hover:bg-slate-200 transition-colors"
+              >
+                <X className="w-5 h-5 text-slate-600" />
+              </button>
+            </div>
+            
+            {/* Form Content */}
+            <div className="p-4">
+              <LeadForm
+                propertyId={property.displayId || property.propertyId || property.id}
+                propertyTitle={property.title}
+                propertyPrice={property.price}
+                isRental={isRental}
+                onSuccess={(message) => {
+                  setToastMessage(message || 'ส่งข้อมูลสำเร็จ เจ้าหน้าที่จะติดต่อกลับ');
+                  setShowToast(true);
+                  setShowMobileForm(false);
+                }}
+                onError={() => {
+                  setToastMessage('เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง');
+                  setShowToast(true);
+                }}
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

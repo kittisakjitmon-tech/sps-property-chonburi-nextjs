@@ -34,6 +34,7 @@ function PropertiesContent() {
   const [currentPage, setCurrentPage] = useState(1);
   const [showMap, setShowMap] = useState(true);
   const [sortBy, setSortBy] = useState('latest');
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   
   // Filters
   const [propertyType, setPropertyType] = useState('');
@@ -266,56 +267,122 @@ function PropertiesContent() {
           </div>
 
           {/* Filter Row */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            {/* ประเภทอสังหาฯ */}
-            <Dropdown
-              options={PROPERTY_TYPES.map((pt) => ({ value: pt.id, label: pt.label }))}
-              value={propertyType}
-              onChange={(val) => { setPropertyType(val); setCurrentPage(1); }}
-              placeholder="ประเภทอสังหาฯ"
-            />
+          <div className="space-y-3">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              {/* ประเภทอสังหาฯ */}
+              <Dropdown
+                options={PROPERTY_TYPES.map((pt) => ({ value: pt.id, label: pt.label }))}
+                value={propertyType}
+                onChange={(val) => { setPropertyType(val); setCurrentPage(1); }}
+                placeholder="ประเภทอสังหาฯ"
+              />
 
-            {/* พื้นที่/ทำเล */}
-            <Dropdown
-              options={[
-                { value: 'ชลบุรี', label: 'ชลบุรี' },
-                { value: 'พานทอง', label: 'พานทอง' },
-                { value: 'บ้านบึง', label: 'บ้านบึง' },
-                { value: 'ศรีราชา', label: 'ศรีราชา' },
-                { value: 'ฉะเชิงเทรา', label: 'ฉะเชิงเทรา' },
-                { value: 'ระยอง', label: 'ระยอง' },
-              ]}
-              value={location}
-              onChange={(val) => { setLocation(val); setCurrentPage(1); }}
-              placeholder="พื้นที่/ทำเล"
-            />
+              {/* พื้นที่/ทำเล */}
+              <Dropdown
+                options={[
+                  { value: 'ชลบุรี', label: 'ชลบุรี' },
+                  { value: 'พานทอง', label: 'พานทอง' },
+                  { value: 'บ้านบึง', label: 'บ้านบึง' },
+                  { value: 'ศรีราชา', label: 'ศรีราชา' },
+                  { value: 'ฉะเชิงเทรา', label: 'ฉะเชิงเทรา' },
+                  { value: 'ระยอง', label: 'ระยอง' },
+                ]}
+                value={location}
+                onChange={(val) => { setLocation(val); setCurrentPage(1); }}
+                placeholder="พื้นที่/ทำเล"
+              />
 
-            {/* ช่วงราคา */}
-            <Dropdown
-              options={[
-                { value: '0-1000000', label: 'ต่ำกว่า 1 ล้าน' },
-                { value: '1000000-3000000', label: '1-3 ล้าน' },
-                { value: '3000000-5000000', label: '3-5 ล้าน' },
-                { value: '5000000-10000000', label: '5-10 ล้าน' },
-                { value: '10000000-', label: 'มากกว่า 10 ล้าน' },
-              ]}
-              value={priceRange}
-              onChange={(val) => { setPriceRange(val); setCurrentPage(1); }}
-              placeholder="ช่วงราคา"
-            />
+              {/* ช่วงราคา */}
+              <Dropdown
+                options={[
+                  { value: '0-1000000', label: 'ต่ำกว่า 1 ล้าน' },
+                  { value: '1000000-3000000', label: '1-3 ล้าน' },
+                  { value: '3000000-5000000', label: '3-5 ล้าน' },
+                  { value: '5000000-10000000', label: '5-10 ล้าน' },
+                  { value: '10000000-', label: 'มากกว่า 10 ล้าน' },
+                ]}
+                value={priceRange}
+                onChange={(val) => { setPriceRange(val); setCurrentPage(1); }}
+                placeholder="ช่วงราคา"
+              />
 
-            {/* จำนวนห้องนอน */}
-            <Dropdown
-              options={[
-                { value: '1', label: '1 ห้องนอน+' },
-                { value: '2', label: '2 ห้องนอน+' },
-                { value: '3', label: '3 ห้องนอน+' },
-                { value: '4', label: '4 ห้องนอน+' },
-              ]}
-              value={bedrooms}
-              onChange={(val) => { setBedrooms(val); setCurrentPage(1); }}
-              placeholder="จำนวนห้องนอน"
-            />
+              {/* จำนวนห้องนอน */}
+              <Dropdown
+                options={[
+                  { value: '1', label: '1 ห้องนอน+' },
+                  { value: '2', label: '2 ห้องนอน+' },
+                  { value: '3', label: '3 ห้องนอน+' },
+                  { value: '4', label: '4 ห้องนอน+' },
+                ]}
+                value={bedrooms}
+                onChange={(val) => { setBedrooms(val); setCurrentPage(1); }}
+                placeholder="จำนวนห้องนอน"
+              />
+
+              {/* เพิ่มเติม Button */}
+              <button
+                onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
+                className={`flex items-center justify-center gap-2 px-4 py-3 rounded-xl border-2 text-sm font-medium transition-all ${
+                  showAdvancedFilters 
+                    ? 'border-blue-200 bg-blue-50 text-blue-700' 
+                    : 'border-slate-200 bg-white text-slate-600 hover:border-blue-200 hover:text-blue-700'
+                }`}
+              >
+                <span>เพิ่มเติม</span>
+                <ChevronDown className={`h-4 w-4 transition-transform ${showAdvancedFilters ? 'rotate-180' : ''}`} />
+              </button>
+            </div>
+
+            {/* Advanced Filters Panel */}
+            {showAdvancedFilters && (
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 p-4 bg-slate-50 rounded-xl border border-slate-200">
+                {/* ประเภทประกาศ (ซื้อ/เช่า) */}
+                <Dropdown
+                  options={[
+                    { value: '', label: 'ทั้งหมด' },
+                    { value: 'sale', label: 'ซื้อ' },
+                    { value: 'rent', label: 'เช่า' },
+                  ]}
+                  value={listingType}
+                  onChange={(val) => { setListingType(val); setCurrentPage(1); }}
+                  placeholder="ประเภทประกาศ"
+                />
+
+                {/* สภาพทรัพย์ (มือ 1/มือ 2) */}
+                <Dropdown
+                  options={[
+                    { value: '', label: 'ทั้งหมด' },
+                    { value: 'มือ 1', label: 'มือ 1 (ใหม่)' },
+                    { value: 'มือ 2', label: 'มือ 2' },
+                  ]}
+                  value={propertyCondition}
+                  onChange={(val) => { setPropertyCondition(val); setCurrentPage(1); }}
+                  placeholder="สภาพทรัพย์"
+                />
+
+                {/* ผ่อนตรง */}
+                <Dropdown
+                  options={[
+                    { value: '', label: 'ทั้งหมด' },
+                    { value: 'installment_only', label: 'ผ่อนตรงเท่านั้น' },
+                  ]}
+                  value={subListingType}
+                  onChange={(val) => { setSubListingType(val); setCurrentPage(1); }}
+                  placeholder="ผ่อนตรง"
+                />
+
+                {/* โครงการพิเศษ */}
+                <Dropdown
+                  options={[
+                    { value: '', label: 'ทั้งหมด' },
+                    { value: 'NPA', label: 'บ้าน NPA' },
+                  ]}
+                  value={project}
+                  onChange={(val) => { setProject(val); setCurrentPage(1); }}
+                  placeholder="โครงการพิเศษ"
+                />
+              </div>
+            )}
           </div>
         </div>
       </div>

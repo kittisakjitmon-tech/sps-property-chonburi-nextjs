@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { MapPin, Globe, Mail, Clock, Phone, MessageCircle, Send } from 'lucide-react';
+import { createInquiry } from '@/lib/firestore';
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -29,8 +30,11 @@ export default function ContactPage() {
     setError(null);
 
     try {
-      // TODO: Submit to Firebase/Firestore
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      await createInquiry({
+        name: formData.name.trim(),
+        phone: formData.phone.trim(),
+        message: formData.message.trim(),
+      });
       setSubmitted(true);
       setFormData({ name: '', phone: '', message: '' });
     } catch (err) {

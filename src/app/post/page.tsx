@@ -6,6 +6,7 @@ import {
   ChevronLeft, ChevronRight, Check, AlertCircle, Upload, X,
   Target, Zap, Shield, MapPin, MessageCircle
 } from 'lucide-react';
+import { createLead } from '@/lib/firestore';
 
 const CATEGORIES = [
   { value: 'SPS-S-1CLASS-ID', label: 'บ้านเดี่ยว 1 ชั้น' },
@@ -200,9 +201,13 @@ export default function PostPropertyPage() {
     setError(null);
 
     try {
-      // TODO: Upload to Firebase/Cloudinary and save to Firestore
-      // For now, simulate submission
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      // Submit as a lead with property info
+      await createLead({
+        name: form.contactName,
+        phone: form.contactPhone,
+        message: `ประกาศทรัพย์สิน: ${form.title}\nประเภท: ${form.type}\nราคา: ${form.price} บาท\nพื้นที่: ${form.area} ตร.ว.\nที่ตั้ง: ${form.district}, ${form.province}\nรายละเอียด: ${form.description}`,
+        source: 'post_property',
+      });
       setSuccess(true);
     } catch (err) {
       console.error('Error submitting:', err);

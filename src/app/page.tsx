@@ -92,7 +92,18 @@ async function FeaturedBlogsSection() {
 
   const formatDate = (timestamp: any) => {
     if (!timestamp) return "";
-    const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+    // Handle serialized ISO string, Date, or Firestore Timestamp
+    let date: Date;
+    if (typeof timestamp === 'string') {
+      date = new Date(timestamp);
+    } else if (timestamp instanceof Date) {
+      date = timestamp;
+    } else if (timestamp && typeof timestamp.toDate === 'function') {
+      // Firestore Timestamp
+      date = timestamp.toDate();
+    } else {
+      return "";
+    }
     return date.toLocaleDateString("th-TH", {
       year: "numeric",
       month: "short",

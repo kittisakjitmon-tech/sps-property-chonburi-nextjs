@@ -118,16 +118,17 @@ export function toDate(timestamp?: Timestamp): Date | undefined {
 
 // Helper function to convert all timestamps in an object to ISO strings for client components
 export function serializeProperty<T extends Record<string, any>>(data: T): T {
-  const result = { ...data };
+  const result = { ...data } as Record<string, any>;
   for (const key in result) {
     const value = result[key];
-    if (value instanceof Timestamp) {
-      result[key] = value.toDate().toISOString();
+    if (value && typeof value === 'object' && 'toDate' in value && typeof value.toDate === 'function') {
+      // It's a Firestore Timestamp
+      result[key] = (value as Timestamp).toDate().toISOString();
     } else if (value && typeof value === 'object' && !Array.isArray(value) && !(value instanceof Date)) {
       result[key] = serializeProperty(value);
     }
   }
-  return result;
+  return result as T;
 }
 
 // ─── Properties ───────────────────────────────────────────────────────────────
@@ -276,7 +277,7 @@ export async function getBlogById(id: string): Promise<Blog | null> {
     const docRef = doc(db, "blogs", id);
     const docSnap = await getDoc(docRef);
     if (!docSnap.exists()) return null;
-    return { id: docSnap.id, ...docSnap.data() } as Blog;
+    return serializeProperty({ id: docSnap.id, ...docSnap.data() }) as Blog;
   } catch (error) {
     console.error("Error fetching blog by id:", error);
     return null;
@@ -341,11 +342,13 @@ export async function getHeroSlidesOnce(): Promise<HeroSlide[]> {
     // Get all hero slides and sort in JavaScript (like old project)
     const slidesRef = collection(db, "hero_slides");
     const snapshot = await getDocs(slidesRef);
-    const slides = snapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    })) as HeroSlide[];
-    
+    const slides = snapshot.docs.map((doc) =>
+      serializeProperty({
+        id: doc.id,
+        ...doc.data(),
+      })
+    ) as HeroSlide[];
+
     // Sort by order field
     return slides.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
   } catch (error) {
@@ -471,4 +474,53 @@ export async function uploadPendingPropertyImage(
   const storageRef = ref(storage, name);
   await uploadBytes(storageRef, file);
   return getDownloadURL(storageRef);
+}
+
+// ─── Leads & Inquiries ───────────────────────────────────────────────────────
+
+export async function createInquiry(data: {
+  name: string;
+  phone: string;
+  message?: string;
+}): Promise<void> {
+  await addDoc(collection(db, "inquiries"), {
+    ...data,
+    read: false,
+    createdAt: serverTimestamp(),
+  });
+}
+
+export async function createLead(data: {
+  name: string;
+  phone: string;
+  propertyId?: string;
+  propertyTitle?: string;
+  message?: string;
+  source?: string;
+}): Promise<void> {
+  await addDoc(collection(db, "leads"), {
+    ...data,
+    read: false,
+    contacted: false,
+    createdAt: serverTimestamp(),
+  });
+}
+
+// ─── Loan Requests ───────────────────────────────────────────────────────────
+
+export async function createLoanRequest(data: {
+  name: string;
+  phone: string;
+  occupation: string;
+  monthlyIncome: number;
+  monthlyDebt?: number;
+  creditHistory: string;
+  lineId?: string;
+  additionalInfo?: string;
+}): Promise<void> {
+  await addDoc(collection(db, "loan_requests"), {
+    ...data,
+    status: "pending",
+    createdAt: serverTimestamp(),
+  });
 }

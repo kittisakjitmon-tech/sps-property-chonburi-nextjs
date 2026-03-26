@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Calculator, Check, MessageCircle } from 'lucide-react';
+import { createLoanRequest } from '@/lib/firestore';
 
 export default function LoanServicesPage() {
   // Calculator state
@@ -42,10 +43,22 @@ export default function LoanServicesPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    // TODO: Submit to API
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    setSubmitted(true);
-    setIsSubmitting(false);
+    try {
+      await createLoanRequest({
+        name: formData.name,
+        phone: formData.phone,
+        occupation: formData.occupation,
+        monthlyIncome: parseInt(formData.monthlyIncome) || 0,
+        monthlyDebt: parseInt(formData.monthlyDebt) || 0,
+        creditHistory: formData.creditHistory,
+        lineId: formData.lineId,
+      });
+      setSubmitted(true);
+    } catch (err) {
+      console.error('Error submitting:', err);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const checklists = [

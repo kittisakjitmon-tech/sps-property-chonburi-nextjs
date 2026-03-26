@@ -40,6 +40,23 @@ function PropertiesContent() {
   const [location, setLocation] = useState('');
   const [priceRange, setPriceRange] = useState('');
   const [bedrooms, setBedrooms] = useState('');
+  const [listingType, setListingType] = useState('');
+  const [propertyCondition, setPropertyCondition] = useState('');
+  const [subListingType, setSubListingType] = useState('');
+
+  // Initialize filters from URL params
+  useEffect(() => {
+    const sp = searchParams;
+    const lt = sp.get('listingType');
+    const pc = sp.get('propertyCondition');
+    const slt = sp.get('subListingType');
+    const project = sp.get('project');
+
+    if (lt) setListingType(lt);
+    if (pc) setPropertyCondition(pc);
+    if (slt) setSubListingType(slt);
+    if (project) setLocation(project);
+  }, [searchParams]);
 
   // Fetch properties
   useEffect(() => {
@@ -107,9 +124,26 @@ function PropertiesContent() {
         if (p.bedrooms == null || p.bedrooms < minBeds) return false;
       }
 
+      // Listing type filter (sale/rent)
+      if (listingType) {
+        const isRental = p.listingType === 'rent' || p.isRental;
+        if (listingType === 'sale' && isRental) return false;
+        if (listingType === 'rent' && !isRental) return false;
+      }
+
+      // Property condition filter (มือ 1, มือ 2)
+      if (propertyCondition) {
+        if (p.propertyCondition !== propertyCondition) return false;
+      }
+
+      // Sub listing type filter (installment_only)
+      if (subListingType) {
+        if (p.subListingType !== subListingType) return false;
+      }
+
       return true;
     });
-  }, [properties, debouncedQuery, propertyType, location, priceRange, bedrooms]);
+  }, [properties, debouncedQuery, propertyType, location, priceRange, bedrooms, listingType, propertyCondition, subListingType]);
 
   // Sort properties
   const sortedProperties = useMemo(() => {
@@ -164,6 +198,9 @@ function PropertiesContent() {
     setLocation('');
     setPriceRange('');
     setBedrooms('');
+    setListingType('');
+    setPropertyCondition('');
+    setSubListingType('');
     setCurrentPage(1);
   };
 

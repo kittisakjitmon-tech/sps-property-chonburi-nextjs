@@ -272,7 +272,7 @@ function PropertyDetailContent({ id }: { id: string }) {
           <div className="lg:col-span-2 space-y-6">
             {/* Gallery */}
             <div className="bg-white rounded-xl overflow-hidden shadow-sm">
-              <div className="relative aspect-video bg-slate-200 cursor-pointer" onClick={() => { setLightboxIndex(galleryIndex); setLightboxOpen(true); }}>
+              <div className="relative h-[450px] md:h-[500px] bg-slate-200 cursor-pointer" onClick={() => { setLightboxIndex(galleryIndex); setLightboxOpen(true); }}>
                 <img
                   src={getCloudinaryLargeUrl(imgs[galleryIndex]) || imgs[galleryIndex]}
                   alt={`${typeLabel} - รูปภาพที่ ${galleryIndex + 1}`}
@@ -299,7 +299,7 @@ function PropertyDetailContent({ id }: { id: string }) {
                       key={i}
                       type="button"
                       onClick={() => setGalleryIndex(i)}
-                      className={`shrink-0 w-20 h-14 rounded-xl overflow-hidden border-2 ${
+                      className={`shrink-0 w-[100px] h-[70px] rounded-xl overflow-hidden border-2 ${
                         i === galleryIndex ? 'border-blue-900' : 'border-transparent'
                       }`}
                     >

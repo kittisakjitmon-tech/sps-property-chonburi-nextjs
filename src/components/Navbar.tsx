@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import Link from "next/link";
 import {
   Menu,
@@ -30,6 +31,13 @@ const serviceLinks = [
 ];
 
 export default function Navbar() {
+  const pathname = usePathname();
+  
+  // Hide navbar on share pages
+  if (pathname?.startsWith('/share')) {
+    return null;
+  }
+
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileBuyOpen, setMobileBuyOpen] = useState(false);
   const [mobileServiceOpen, setMobileServiceOpen] = useState(false);

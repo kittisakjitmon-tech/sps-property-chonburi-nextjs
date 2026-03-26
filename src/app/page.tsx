@@ -49,7 +49,7 @@ async function FeaturedPropertiesSection() {
 
   if (properties.length === 0) {
     return (
-      <section className="py-12 bg-white">
+      <section className="py-8 sm:py-12 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <p className="text-slate-500">ยังไม่มีทรัพย์เด่นในขณะนี้</p>
         </div>
@@ -58,9 +58,9 @@ async function FeaturedPropertiesSection() {
   }
 
   return (
-    <section className="py-12 bg-white">
+    <section className="py-8 sm:py-12 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center justify-between mb-8 sm:mb-10">
           <div className="flex items-center gap-3">
             <span className="w-1 h-7 bg-yellow-400 rounded-full" />
             <h2 className="text-2xl font-bold text-slate-900">ทรัพย์เด่น</h2>
@@ -72,7 +72,7 @@ async function FeaturedPropertiesSection() {
             ดูทั้งหมด →
           </Link>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           {properties.map((property) => (
             <PropertyCard key={property.id} property={property} home />
           ))}
@@ -101,9 +101,9 @@ async function FeaturedBlogsSection() {
   };
 
   return (
-    <section className="py-12 bg-slate-50">
+    <section className="py-8 sm:py-12 bg-slate-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center justify-between mb-8 sm:mb-10">
           <div className="flex items-center gap-3">
             <span className="w-1 h-7 bg-blue-600 rounded-full" />
             <h2 className="text-2xl font-bold text-slate-900">บทความน่าสนใจ</h2>
@@ -115,7 +115,7 @@ async function FeaturedBlogsSection() {
             ดูทั้งหมด →
           </Link>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {blogs.slice(0, 4).map((blog) => (
             <Link
               key={blog.id}
@@ -136,7 +136,7 @@ async function FeaturedBlogsSection() {
                 )}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
               </div>
-              <div className="p-5">
+              <div className="p-3 sm:p-5">
                 <h3 className="text-base font-bold text-slate-900 mb-2 line-clamp-2 group-hover:text-blue-900 transition-colors">
                   {blog.title}
                 </h3>
@@ -165,9 +165,9 @@ async function PopularLocationsSection() {
   }
 
   return (
-    <section className="py-12 bg-white">
+    <section className="py-8 sm:py-12 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center justify-between mb-8 sm:mb-10">
           <div className="flex items-center gap-3">
             <span className="w-1 h-7 bg-yellow-400 rounded-full" />
             <div>
@@ -184,7 +184,7 @@ async function PopularLocationsSection() {
             ดูทั้งหมด →
           </Link>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5">
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
           {locations.slice(0, 6).map((loc) => (
             <Link
               key={loc.id}
@@ -319,7 +319,7 @@ export default async function HomePage() {
                     <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center mb-1">
                       <Icon className="h-5 w-5 text-yellow-400" />
                     </div>
-                    <span className="text-3xl sm:text-4xl font-extrabold text-yellow-400 leading-none">
+                    <span className="text-2xl sm:text-4xl font-extrabold text-yellow-400 leading-none">
                       {stat.value}
                     </span>
                     <span className="text-sm text-blue-200 font-medium">{stat.label}</span>
@@ -394,7 +394,7 @@ export default async function HomePage() {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
+            <div className="grid grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
               {whyChooseUs.map(({ Icon, title, desc, color }) => (
                 <div
                   key={title}

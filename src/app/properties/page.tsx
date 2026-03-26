@@ -328,7 +328,7 @@ function PropertiesContent() {
 
             {/* Property Grid */}
             {loading ? (
-              <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-4 sm:gap-6">
+              <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                 {Array.from({ length: 6 }, (_, i) => (
                   <div key={i} className="bg-white rounded-xl overflow-hidden shadow-sm border border-slate-100">
                     <div className="aspect-[4/3] bg-slate-200 animate-pulse" />
@@ -342,7 +342,7 @@ function PropertiesContent() {
                 ))}
               </div>
             ) : paginatedProperties.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-4 sm:gap-6">
+              <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                 {paginatedProperties.map((property) => (
                   <PropertyCard key={property.id} property={property} />
                 ))}

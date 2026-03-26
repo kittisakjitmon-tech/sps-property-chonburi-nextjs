@@ -116,6 +116,20 @@ export function toDate(timestamp?: Timestamp): Date | undefined {
   return timestamp.toDate();
 }
 
+// Helper function to convert all timestamps in an object to ISO strings for client components
+export function serializeProperty<T extends Record<string, any>>(data: T): T {
+  const result = { ...data };
+  for (const key in result) {
+    const value = result[key];
+    if (value instanceof Timestamp) {
+      result[key] = value.toDate().toISOString();
+    } else if (value && typeof value === 'object' && !Array.isArray(value) && !(value instanceof Date)) {
+      result[key] = serializeProperty(value);
+    }
+  }
+  return result;
+}
+
 // ─── Properties ───────────────────────────────────────────────────────────────
 
 export async function getPropertiesOnce(includeHidden = false): Promise<Property[]> {
@@ -130,10 +144,12 @@ export async function getPropertiesOnce(includeHidden = false): Promise<Property
         );
 
     const snapshot = await getDocs(q);
-    return snapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    })) as Property[];
+    return snapshot.docs.map((doc) =>
+      serializeProperty({
+        id: doc.id,
+        ...doc.data(),
+      })
+    ) as Property[];
   } catch (error) {
     console.error("Error fetching properties:", error);
     return [];
@@ -145,7 +161,7 @@ export async function getPropertyById(id: string): Promise<Property | null> {
     const docRef = doc(db, "properties", id);
     const docSnap = await getDoc(docRef);
     if (!docSnap.exists()) return null;
-    return { id: docSnap.id, ...docSnap.data() } as Property;
+    return serializeProperty({ id: docSnap.id, ...docSnap.data() }) as Property;
   } catch (error) {
     console.error("Error fetching property:", error);
     return null;
@@ -178,11 +194,13 @@ export async function getFeaturedProperties(limitCount = 4): Promise<Property[]>
       limit(200)
     );
     const snapshot = await getDocs(q);
-    const allProperties = snapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    })) as Property[];
-    
+    const allProperties = snapshot.docs.map((doc) =>
+      serializeProperty({
+        id: doc.id,
+        ...doc.data(),
+      })
+    ) as Property[];
+
     // Filter featured properties in JavaScript
     return allProperties
       .filter((p) => p.featured === true)
@@ -205,10 +223,12 @@ export async function getBlogsOnce(limitCount = 10): Promise<Blog[]> {
       limit(limitCount)
     );
     const snapshot = await getDocs(q);
-    return snapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    })) as Blog[];
+    return snapshot.docs.map((doc) =>
+      serializeProperty({
+        id: doc.id,
+        ...doc.data(),
+      })
+    ) as Blog[];
   } catch (error) {
     console.error("Error fetching blogs:", error);
     return [];

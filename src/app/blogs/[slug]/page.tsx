@@ -1,4 +1,6 @@
 import { getBlogById } from '@/lib/firestore';
+
+export const dynamic = 'force-dynamic';
 import { extractIdFromSlug } from '@/lib/blogSlug';
 import BlogDetailClient from './BlogDetailClient';
 

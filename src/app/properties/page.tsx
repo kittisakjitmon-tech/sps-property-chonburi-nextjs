@@ -1,4 +1,6 @@
 import { Suspense } from 'react';
+
+export const dynamic = 'force-dynamic';
 import { getPropertiesOnce, type Property } from '@/lib/firestore';
 import PropertiesClient from './PropertiesClient';
 

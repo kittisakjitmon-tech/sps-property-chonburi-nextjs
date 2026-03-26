@@ -1,4 +1,6 @@
 import { getBlogsOnce, type Blog } from '@/lib/firestore';
+
+export const dynamic = 'force-dynamic';
 import BlogsClient from './BlogsClient';
 
 export default async function BlogsPage() {

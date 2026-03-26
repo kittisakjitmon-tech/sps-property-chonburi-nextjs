@@ -1,4 +1,6 @@
 import { getPropertyById, recordPropertyView } from '@/lib/firestore';
+
+export const dynamic = 'force-dynamic';
 import { extractIdFromSlug } from '@/lib/propertySlug';
 import PropertyDetailClient from './PropertyDetailClient';
 

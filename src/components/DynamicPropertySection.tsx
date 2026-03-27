@@ -1,4 +1,4 @@
-import PropertyCard from './PropertyCard';
+import PropertyCardCompact from './PropertyCardCompact';
 import type { Property, HomepageSection } from "@/lib/firestore";
 import { filterPropertiesByCriteria } from "@/lib/firestore";
 
@@ -16,11 +16,11 @@ export function DynamicPropertySection({ section, properties }: DynamicPropertyS
     sectionProperties = section.propertyIds
       .map((id) => properties.find((p) => p.id === id))
       .filter(Boolean)
-      .slice(0, 4) as Property[];
+      .slice(0, 6) as Property[];
   } else if (section.type === "query" && section.criteria) {
     // Query-based: filter properties by criteria
     const filtered = filterPropertiesByCriteria(properties, section.criteria);
-    sectionProperties = filtered.slice(0, 4);
+    sectionProperties = filtered.slice(0, 6);
   }
 
   if (sectionProperties.length === 0) {
@@ -28,25 +28,25 @@ export function DynamicPropertySection({ section, properties }: DynamicPropertyS
   }
 
   return (
-    <section className="py-12 bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between mb-6">
+    <section className="py-4 sm:py-6 bg-white">
+      <div className="max-w-7xl mx-auto px-4">
+        <div className="flex items-center justify-between mb-3">
           <div>
-            <h2 className="text-2xl font-bold text-slate-900">{section.title}</h2>
+            <h2 className="text-lg font-bold text-slate-900">{section.title}</h2>
             {section.subtitle && (
-              <p className="text-slate-500 text-sm mt-1">{section.subtitle}</p>
+              <p className="text-slate-500 text-xs mt-0.5">{section.subtitle}</p>
             )}
           </div>
           <a
             href="/properties"
-            className="text-blue-900 font-semibold hover:text-blue-700 flex items-center gap-1 transition-colors"
+            className="text-xs font-semibold text-blue-900 hover:text-blue-700 flex items-center gap-1 transition-colors"
           >
             ดูทั้งหมด →
           </a>
         </div>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4">
           {sectionProperties.map((property) => (
-            <PropertyCard key={property.id} property={property} />
+            <PropertyCardCompact key={property.id} property={property} />
           ))}
         </div>
       </div>

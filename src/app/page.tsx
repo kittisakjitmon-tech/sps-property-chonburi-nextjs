@@ -37,7 +37,6 @@ import {
   type HomepageSection,
 } from "@/lib/firestore";
 import { generateBlogSlug } from "@/lib/blogSlug";
-import { DynamicSections } from "@/components/DynamicPropertySection";
 import Navbar from "@/components/Navbar";
 import HeroSlider from "@/components/HeroSlider";
 import HomeSearch from "@/components/HomeSearch";
@@ -60,8 +59,7 @@ const stats = [
   { icon: Clock, value: "24/7", label: "บริการ" },
 ];
 
-// Stats max width for consistent card sizes
-const STATS_MAX_W = "max-w-7xl";
+
 
 // Quick filters for sticky bar
 const QUICK_FILTERS = [

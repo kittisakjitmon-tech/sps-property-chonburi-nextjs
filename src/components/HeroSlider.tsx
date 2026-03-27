@@ -31,7 +31,7 @@ interface HeroSliderProps {
 
 function HeroSkeleton({ children }: { children: React.ReactNode }) {
   return (
-    <section className="relative flex items-center justify-center min-h-[85vh] overflow-hidden">
+    <section className="relative flex items-center justify-center min-h-[55vh] sm:min-h-[60vh] overflow-hidden">
       <img
         src={DEFAULT_IMAGE}
         alt=""
@@ -43,7 +43,7 @@ function HeroSkeleton({ children }: { children: React.ReactNode }) {
         aria-hidden="true"
       />
       <div className="absolute inset-0 bg-gradient-to-b from-black/65 via-black/50 to-black/75 z-[1]" />
-      <div className="relative z-[2] w-full flex flex-col items-center justify-center min-h-[85vh] py-16 md:py-20 px-4">
+      <div className="relative z-[2] w-full flex flex-col items-center justify-center min-h-[55vh] sm:min-h-[60vh] py-8 sm:py-12 px-4">
         {children}
       </div>
     </section>
@@ -71,7 +71,7 @@ export default function HeroSlider({ children, className = "" }: HeroSliderProps
   }
 
   return (
-    <section className={`relative min-h-[85vh] flex items-center justify-center ${className}`}>
+    <section className={`relative min-h-[55vh] sm:min-h-[60vh] flex items-center justify-center ${className}`}>
       <Swiper
         modules={[Autoplay, EffectFade, Pagination]}
         effect="fade"
@@ -83,12 +83,12 @@ export default function HeroSlider({ children, className = "" }: HeroSliderProps
         }}
         loop={slides.length > 1}
         className="!absolute !inset-0 !w-full !h-full"
-        style={{ height: "100%", minHeight: "85vh" }}
+        style={{ height: "100%", minHeight: "55vh" }}
       >
         {slides.map((slide, index) => {
           const imageUrl = getSlideImageUrl(slide);
           return (
-            <SwiperSlide key={slide.id} style={{ height: "100%", minHeight: "85vh" }}>
+            <SwiperSlide key={slide.id} style={{ height: "100%", minHeight: "55vh" }}>
               <img
                 src={imageUrl}
                 alt=""
@@ -109,7 +109,7 @@ export default function HeroSlider({ children, className = "" }: HeroSliderProps
       <div className="absolute inset-0 bg-gradient-to-b from-black/65 via-black/50 to-black/75 z-[1]" />
 
       {/* Content */}
-      <div className="relative z-[2] w-full flex flex-col items-center justify-center min-h-[85vh] py-16 md:py-20 px-4">
+      <div className="relative z-[2] w-full flex flex-col items-center justify-center min-h-[55vh] sm:min-h-[60vh] py-8 sm:py-12 px-4">
         {children}
       </div>
     </section>

@@ -21,7 +21,8 @@ const PropertiesMap = dynamic(() => import('@/components/PropertiesMap'), {
   ),
 });
 
-const ITEMS_PER_PAGE = 12;
+const ITEMS_PER_PAGE = 24;
+const LOAD_MORE_INCREMENT = 12;
 
 const QUICK_LOCATIONS = [
   { label: 'ชลบุรี', value: 'ชลบุรี' },
@@ -42,10 +43,10 @@ export default function PropertiesClient({ initialProperties, loading = false }:
   const [isInitialLoad, setIsInitialLoad] = useState(loading);
   const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '');
   const [debouncedQuery, setDebouncedQuery] = useState(searchParams.get('q') || '');
-  const [currentPage, setCurrentPage] = useState(1);
   const [showMap, setShowMap] = useState(true);
   const [viewMode, setViewMode] = useState<'both' | 'list' | 'map'>('both');
   const [sortBy, setSortBy] = useState('latest');
+  const [displayedCount, setDisplayedCount] = useState(ITEMS_PER_PAGE);
   
   // Filters
   const [propertyType, setPropertyType] = useState('');
@@ -78,7 +79,7 @@ export default function PropertiesClient({ initialProperties, loading = false }:
     setPropertyType(pt);
     setPriceRange(pr);
     setBedrooms(bd);
-    setCurrentPage(1);
+    setDisplayedCount(ITEMS_PER_PAGE);
   }, [searchParams]);
 
   // If no initial properties (SSR failed), fetch client-side
@@ -179,27 +180,17 @@ export default function PropertiesClient({ initialProperties, loading = false }:
     );
   }, [sortedProperties]);
 
-  const totalPages = Math.max(1, Math.ceil(sortedProperties.length / ITEMS_PER_PAGE));
-  
   const paginatedProperties = useMemo(() => {
-    const start = (currentPage - 1) * ITEMS_PER_PAGE;
-    return sortedProperties.slice(start, start + ITEMS_PER_PAGE);
-  }, [sortedProperties, currentPage]);
+    return sortedProperties.slice(0, displayedCount);
+  }, [sortedProperties, displayedCount]);
 
-  const getPageNumbers = () => {
-    const pages = [];
-    const maxVisible = 5;
-    let start = Math.max(1, currentPage - Math.floor(maxVisible / 2));
-    let end = Math.min(totalPages, start + maxVisible - 1);
-    if (end - start + 1 < maxVisible) start = Math.max(1, end - maxVisible + 1);
-    for (let i = start; i <= end; i++) pages.push(i);
-    return pages;
-  };
+  const hasMore = sortedProperties.length > displayedCount;
+  const showingFrom = sortedProperties.length > 0 ? 1 : 0;
+  const showingTo = Math.min(displayedCount, sortedProperties.length);
 
-  const handlePageChange = (newPage: number) => {
-    if (newPage < 1 || newPage > totalPages) return;
-    setCurrentPage(newPage);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+  const handleLoadMore = () => {
+    setDisplayedCount(prev => prev + LOAD_MORE_INCREMENT);
+    window.scrollTo({ top: window.scrollY + 300, behavior: 'smooth' });
   };
 
   const clearAllFilters = () => {
@@ -213,7 +204,7 @@ export default function PropertiesClient({ initialProperties, loading = false }:
     setPropertyCondition('');
     setSubListingType('');
     setProject('');
-    setCurrentPage(1);
+    setDisplayedCount(ITEMS_PER_PAGE);
   };
 
   const hasActiveFilters = debouncedQuery || propertyType || location || priceRange || bedrooms || listingType || propertyCondition || subListingType || project;
@@ -221,7 +212,7 @@ export default function PropertiesClient({ initialProperties, loading = false }:
   // Quick search handler
   const handleQuickLocation = (loc: string) => {
     setLocation(loc);
-    setCurrentPage(1);
+    setDisplayedCount(ITEMS_PER_PAGE);
   };
 
   return (
@@ -298,7 +289,7 @@ export default function PropertiesClient({ initialProperties, loading = false }:
             <Dropdown
               options={PROPERTY_TYPES.map((pt) => ({ value: pt.id, label: pt.label }))}
               value={propertyType}
-              onChange={(val) => { setPropertyType(val); setCurrentPage(1); }}
+              onChange={(val) => { setPropertyType(val); setDisplayedCount(ITEMS_PER_PAGE); }}
               placeholder="ประเภท"
             />
 
@@ -313,7 +304,7 @@ export default function PropertiesClient({ initialProperties, loading = false }:
                 { value: 'ระยอง', label: 'ระยอง' },
               ]}
               value={location}
-              onChange={(val) => { setLocation(val); setCurrentPage(1); }}
+              onChange={(val) => { setLocation(val); setDisplayedCount(ITEMS_PER_PAGE); }}
               placeholder="ทำเล"
             />
 
@@ -327,7 +318,7 @@ export default function PropertiesClient({ initialProperties, loading = false }:
                 { value: '10000000-', label: 'มากกว่า 10 ล้าน' },
               ]}
               value={priceRange}
-              onChange={(val) => { setPriceRange(val); setCurrentPage(1); }}
+              onChange={(val) => { setPriceRange(val); setDisplayedCount(ITEMS_PER_PAGE); }}
               placeholder="ราคา"
             />
 
@@ -340,7 +331,7 @@ export default function PropertiesClient({ initialProperties, loading = false }:
                 { value: '4', label: '4 ห้องนอน+' },
               ]}
               value={bedrooms}
-              onChange={(val) => { setBedrooms(val); setCurrentPage(1); }}
+              onChange={(val) => { setBedrooms(val); setDisplayedCount(ITEMS_PER_PAGE); }}
               placeholder="ห้องนอน"
             />
 
@@ -403,7 +394,7 @@ export default function PropertiesClient({ initialProperties, loading = false }:
                   { value: 'rent', label: 'เช่า' },
                 ]}
                 value={listingType}
-                onChange={(val) => { setListingType(val); setCurrentPage(1); }}
+                onChange={(val) => { setListingType(val); setDisplayedCount(ITEMS_PER_PAGE); }}
                 placeholder="ประเภทประกาศ"
               />
               <Dropdown
@@ -413,7 +404,7 @@ export default function PropertiesClient({ initialProperties, loading = false }:
                   { value: 'มือ 2', label: 'มือ 2' },
                 ]}
                 value={propertyCondition}
-                onChange={(val) => { setPropertyCondition(val); setCurrentPage(1); }}
+                onChange={(val) => { setPropertyCondition(val); setDisplayedCount(ITEMS_PER_PAGE); }}
                 placeholder="สภาพทรัพย์"
               />
               <Dropdown
@@ -422,7 +413,7 @@ export default function PropertiesClient({ initialProperties, loading = false }:
                   { value: 'installment_only', label: 'ผ่อนตรงเท่านั้น' },
                 ]}
                 value={subListingType}
-                onChange={(val) => { setSubListingType(val); setCurrentPage(1); }}
+                onChange={(val) => { setSubListingType(val); setDisplayedCount(ITEMS_PER_PAGE); }}
                 placeholder="ผ่อนตรง"
               />
               <Dropdown
@@ -431,7 +422,7 @@ export default function PropertiesClient({ initialProperties, loading = false }:
                   { value: 'NPA', label: 'บ้าน NPA' },
                 ]}
                 value={project}
-                onChange={(val) => { setProject(val); setCurrentPage(1); }}
+                onChange={(val) => { setProject(val); setDisplayedCount(ITEMS_PER_PAGE); }}
                 placeholder="โครงการพิเศษ"
               />
             </div>
@@ -450,6 +441,8 @@ export default function PropertiesClient({ initialProperties, loading = false }:
               <div className="flex items-center justify-between mb-4">
                 <p className="text-slate-600 text-sm">
                   พบ <span className="font-semibold text-blue-900">{filteredProperties.length}</span> รายการ
+                  <span className="text-slate-400 mx-1">|</span>
+                  <span className="text-slate-500">แสดง {showingFrom}-{showingTo}</span>
                 </p>
                 <Dropdown
                   options={[
@@ -501,37 +494,24 @@ export default function PropertiesClient({ initialProperties, loading = false }:
                 </div>
               )}
 
-              {/* Pagination */}
-              {totalPages > 1 && (
-                <div className="mt-8 flex items-center justify-center gap-2">
-                  <button 
-                    onClick={() => handlePageChange(currentPage - 1)}
-                    disabled={currentPage === 1}
-                    className="p-2.5 rounded-xl border border-slate-200 bg-white disabled:opacity-40 hover:bg-slate-50 transition"
+              {/* Load More Button */}
+              {hasMore && (
+                <div className="mt-6 flex flex-col items-center gap-3">
+                  <button
+                    onClick={handleLoadMore}
+                    className="w-full sm:w-auto px-8 py-3 rounded-xl bg-blue-900 text-white font-semibold hover:bg-blue-800 transition-all shadow-sm flex items-center justify-center gap-2"
                   >
-                    <ChevronLeft className="h-5 w-5" />
+                    แสดงทรัพย์เพิ่มเติม ({LOAD_MORE_INCREMENT} รายการ)
                   </button>
-                  {getPageNumbers().map((n) => (
-                    <button
-                      key={n}
-                      onClick={() => handlePageChange(n)}
-                      className={`w-10 h-10 rounded-xl text-sm font-bold transition-all ${
-                        currentPage === n 
-                          ? 'bg-blue-900 text-white shadow-sm' 
-                          : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
-                      }`}
-                    >
-                      {n}
-                    </button>
-                  ))}
-                  <button 
-                    onClick={() => handlePageChange(currentPage + 1)}
-                    disabled={currentPage === totalPages}
-                    className="p-2.5 rounded-xl border border-slate-200 bg-white disabled:opacity-40 hover:bg-slate-50 transition"
-                  >
-                    <ChevronRight className="h-5 w-5" />
-                  </button>
+                  <p className="text-slate-400 text-xs">
+                    แสดง {showingTo} จาก {sortedProperties.length} รายการ
+                  </p>
                 </div>
+              )}
+              {!hasMore && sortedProperties.length > ITEMS_PER_PAGE && (
+                <p className="mt-6 text-center text-slate-400 text-sm">
+                  — แสดงทั้งหมด {sortedProperties.length} รายการ —
+                </p>
               )}
             </div>
 
@@ -553,6 +533,8 @@ export default function PropertiesClient({ initialProperties, loading = false }:
             <div className="flex items-center justify-between mb-4">
               <p className="text-slate-600 text-sm">
                 พบ <span className="font-semibold text-blue-900">{filteredProperties.length}</span> รายการ
+                <span className="text-slate-400 mx-1">|</span>
+                <span className="text-slate-500">แสดง {showingFrom}-{showingTo}</span>
               </p>
               <Dropdown
                 options={[
@@ -596,37 +578,24 @@ export default function PropertiesClient({ initialProperties, loading = false }:
               </div>
             )}
 
-            {/* Pagination */}
-            {totalPages > 1 && (
-              <div className="mt-8 flex items-center justify-center gap-2">
-                <button 
-                  onClick={() => handlePageChange(currentPage - 1)}
-                  disabled={currentPage === 1}
-                  className="p-2.5 rounded-xl border border-slate-200 bg-white disabled:opacity-40 hover:bg-slate-50 transition"
+            {/* Load More Button */}
+            {hasMore && (
+              <div className="mt-6 flex flex-col items-center gap-3">
+                <button
+                  onClick={handleLoadMore}
+                  className="w-full sm:w-auto px-8 py-3 rounded-xl bg-blue-900 text-white font-semibold hover:bg-blue-800 transition-all shadow-sm flex items-center justify-center gap-2"
                 >
-                  <ChevronLeft className="h-5 w-5" />
+                  แสดงทรัพย์เพิ่มเติม ({LOAD_MORE_INCREMENT} รายการ)
                 </button>
-                {getPageNumbers().map((n) => (
-                  <button
-                    key={n}
-                    onClick={() => handlePageChange(n)}
-                    className={`w-10 h-10 rounded-xl text-sm font-bold transition-all ${
-                      currentPage === n 
-                        ? 'bg-blue-900 text-white shadow-sm' 
-                        : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
-                    }`}
-                  >
-                    {n}
-                  </button>
-                ))}
-                <button 
-                  onClick={() => handlePageChange(currentPage + 1)}
-                  disabled={currentPage === totalPages}
-                  className="p-2.5 rounded-xl border border-slate-200 bg-white disabled:opacity-40 hover:bg-slate-50 transition"
-                >
-                  <ChevronRight className="h-5 w-5" />
-                </button>
+                <p className="text-slate-400 text-xs">
+                  แสดง {showingTo} จาก {sortedProperties.length} รายการ
+                </p>
               </div>
+            )}
+            {!hasMore && sortedProperties.length > ITEMS_PER_PAGE && (
+              <p className="mt-6 text-center text-slate-400 text-sm">
+                — แสดงทั้งหมด {sortedProperties.length} รายการ —
+              </p>
             )}
           </div>
         )}

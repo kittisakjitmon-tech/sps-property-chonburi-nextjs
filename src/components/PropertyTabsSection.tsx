@@ -16,8 +16,9 @@ type TabId = 'all' | 'price' | 'new';
 const TABS: { id: TabId; label: string; icon: React.ElementType }[] = [
   { id: 'all', label: 'ทั้งหมด', icon: HomeIcon },
   { id: 'price', label: 'ราคาดี', icon: TrendingDown },
-  { id: 'new', label: '🏠 ใหม่', icon: Sparkles },
+  { id: 'new', label: 'ใหม่', icon: Sparkles },
 ];
+
 
 export default function PropertyTabsSection({ initialProperties, totalCount }: PropertyTabsSectionProps) {
   const [activeTab, setActiveTab] = useState<TabId>('all');
@@ -37,11 +38,11 @@ export default function PropertyTabsSection({ initialProperties, totalCount }: P
         filtered = filtered
           .filter(p => p.createdAt)
           .sort((a, b) => {
-            const aTime = typeof a.createdAt === 'number' 
-              ? a.createdAt 
+            const aTime = typeof a.createdAt === 'number'
+              ? a.createdAt
               : (a.createdAt as any)?.toMillis?.() || 0;
-            const bTime = typeof b.createdAt === 'number' 
-              ? b.createdAt 
+            const bTime = typeof b.createdAt === 'number'
+              ? b.createdAt
               : (b.createdAt as any)?.toMillis?.() || 0;
             return bTime - aTime;
           });
@@ -54,58 +55,74 @@ export default function PropertyTabsSection({ initialProperties, totalCount }: P
     return filtered;
   }, [initialProperties, activeTab]);
 
+  // Get count for each tab
+  const tabCounts = useMemo(() => ({
+    all: initialProperties.length,
+    price: initialProperties.filter(p => p.price != null).length,
+    new: initialProperties.filter(p => p.createdAt).length,
+  }), [initialProperties]);
+
   return (
     <section className="py-4 sm:py-6 bg-white">
       <div className="max-w-7xl mx-auto px-4">
-        
+
         {/* Section Header with Tabs */}
-        <div className="flex items-center justify-between mb-3">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
           <div className="flex items-center gap-2">
             <span className="w-1 h-5 bg-blue-600 rounded-full" />
             <h2 className="text-lg font-bold text-slate-900">ทรัพย์แนะนำ</h2>
           </div>
-          
-          {/* Tab Navigation */}
-          <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-lg">
+
+          {/* Tab Navigation - Visible on all screens with horizontal scroll on mobile */}
+          <div className="flex items-center gap-1.5 bg-slate-100 p-1.5 rounded-xl overflow-x-auto scrollbar-hide">
             {TABS.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md transition-all duration-200 ${
-                  activeTab === tab.id
-                    ? 'bg-white text-blue-900 font-semibold shadow-sm'
-                    : 'text-slate-600 hover:text-blue-900 hover:bg-white/50'
-                }`}
+                className={`flex w-1/3 items-center justify-center gap-1.5 px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 shrink-0 min-h-[44px] ${activeTab === tab.id
+                  ? 'bg-blue-900 text-white font-semibold shadow-md'
+                  : 'text-slate-600 hover:text-blue-900 hover:bg-white/70'
+                  }`}
               >
-                <tab.icon className="h-3.5 w-3.5" />
-                {tab.label}
+                <tab.icon className="h-4 w-4 shrink-0" />
+                <span>{tab.label}</span>
+                <span className={`text-xs px-1.5 py-0.5 rounded-full ${activeTab === tab.id
+                  ? 'bg-white/20 text-white'
+                  : 'bg-slate-200 text-slate-600'
+                  }`}>
+                  {tabCounts[tab.id]}
+                </span>
               </button>
             ))}
           </div>
         </div>
 
-        {/* Property Grid - Dense Layout */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 sm:gap-3">
+        {/* Property Grid - Consistent Sizing */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4">
           {filteredProperties.length > 0 ? (
             filteredProperties.slice(0, 12).map((property) => (
-              <PropertyCardCompact 
-                key={property.id} 
-                property={property} 
+              <PropertyCardCompact
+                key={property.id}
+                property={property}
                 isNew={activeTab === 'new'}
               />
             ))
           ) : (
-            <div className="col-span-full text-center py-8 text-slate-500">
-              ไม่พบทรัพย์ในหมวดนี้
+            <div className="col-span-full flex flex-col items-center justify-center py-16 text-slate-500">
+              <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center mb-4">
+                <Sparkles className="h-8 w-8 text-slate-300" />
+              </div>
+              <p className="text-base font-medium">ไม่พบทรัพย์ในหมวดนี้</p>
+              <p className="text-sm text-slate-400 mt-1">ลองเลือกหมวดอื่นดูนะ</p>
             </div>
           )}
         </div>
 
         {/* Load More */}
-        <div className="mt-4 text-center">
+        <div className="mt-6 text-center">
           <Link
             href="/properties"
-            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-blue-900 text-white text-sm font-semibold hover:bg-blue-800 transition-colors"
+            className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-blue-900 text-white text-sm font-semibold hover:bg-blue-800 hover:shadow-lg transition-all duration-200 min-h-[48px]"
           >
             ดูทรัพย์ทั้งหมด ({totalCount}+)
           </Link>

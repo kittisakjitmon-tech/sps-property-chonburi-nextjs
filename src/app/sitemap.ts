@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next';
 import { getPropertiesOnce, getBlogsOnce } from '@/lib/firestore';
 
-const BASE_URL = 'https://spspropertysolution.com';
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://spspropertysolution.com';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticPages: MetadataRoute.Sitemap = [

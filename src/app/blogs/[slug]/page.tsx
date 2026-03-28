@@ -29,10 +29,14 @@ export async function generateMetadata({ params }: BlogDetailPageProps): Promise
     const ogImage = blog.images?.[0] || `${BASE_URL}/logo.png`;
     const title = blog.title || 'บทความ';
     const description = blog.content?.replace(/<[^>]*>/g, '').slice(0, 160) || title;
+    const canonicalUrl = `${BASE_URL}/blogs/${slug}`;
     
     return {
       title: `${title} | SPS Blog`,
       description,
+      alternates: {
+        canonical: canonicalUrl,
+      },
       openGraph: {
         title: `${title} | SPS Blog`,
         description,

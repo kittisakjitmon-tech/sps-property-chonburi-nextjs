@@ -26,9 +26,14 @@ export async function generateMetadata({ params }: PropertyDetailPageProps): Pro
     const title = property.title || 'ทรัพย์สิน';
     const description = property.description?.slice(0, 160) || 'ดูรายละเอียดทรัพย์สิน';
     
+    const canonicalUrl = `${BASE_URL}/properties/${id}`;
+    
     return {
       title: `${title} | SPS Property`,
       description,
+      alternates: {
+        canonical: canonicalUrl,
+      },
       openGraph: {
         title: `${title} | SPS Property`,
         description,

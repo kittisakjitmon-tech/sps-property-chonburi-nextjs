@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: '/',
       disallow: ['/api/', '/login', '/admin/', '/private/'],
     },
-    sitemap: 'https://spspropertysolution.com/sitemap.xml',
+    sitemap: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://spspropertysolution.com'}/sitemap.xml`,
   };
 }

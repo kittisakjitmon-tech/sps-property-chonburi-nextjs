@@ -2,11 +2,11 @@
 
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
-import { 
-  Phone, 
-  MessageCircle, 
-  Mail, 
-  MapPin, 
+import {
+  Phone,
+  MessageCircle,
+  Mail,
+  MapPin,
   Star,
   Users,
   Clock,
@@ -21,6 +21,7 @@ import {
   FileText,
 } from "lucide-react";
 import Link from "next/link";
+import { getPortfolioItems, PortfolioItem } from "@/lib/firestore";
 
 // Animation Hook
 function useInView(threshold = 0.1) {
@@ -48,17 +49,17 @@ function useInView(threshold = 0.1) {
 }
 
 // Animated Section Component
-function AnimatedSection({ 
-  children, 
-  className = "", 
-  delay = 0 
-}: { 
-  children: React.ReactNode; 
-  className?: string; 
+function AnimatedSection({
+  children,
+  className = "",
+  delay = 0
+}: {
+  children: React.ReactNode;
+  className?: string;
   delay?: number;
 }) {
   const { ref, isInView } = useInView(0.1);
-  
+
   return (
     <div
       ref={ref}
@@ -75,15 +76,15 @@ function AnimatedSection({
 }
 
 // Staggered Animation for Grid Items
-function StaggeredGrid({ 
-  children, 
-  className = "" 
-}: { 
-  children: React.ReactNode; 
+function StaggeredGrid({
+  children,
+  className = ""
+}: {
+  children: React.ReactNode;
   className?: string;
 }) {
   const { ref, isInView } = useInView(0.1);
-  
+
   return (
     <div
       ref={ref}
@@ -211,28 +212,43 @@ const portfolioData = [
 ];
 
 const categories = ["ทั้งหมด", "บ้านเดี่ยว", "คอนโด", "ทาวน์เฮ้าส์", "ที่ดิน", "อพาร์ตเมนต์"];
-const areas = ["ทั้งหมด", "ชลบุรี", "พัทยา", "ระยอง", "บางนา", "สมุทรปราการ", "ศรีราชา", "ฉะเชิงเทรา"];
 
 const testimonials = [
   {
-    name: "คุณสมชาย",
+    name: "คุณธนา สุขเกษม",
+    location: "อมตะ ชลบุรี",
+    review: "โอนบ้านเสร็จเร็วมาก ใช้เวลาพิจารณาแค่ 3 วัน ทีมงานเป็นมืออาชีพ ช่วยดูแลเอกสารทุกอย่างจนโอนสำเร็จ ตอนนี้อยู่บ้านใหม่แล้ว ดีใจมากครับ!",
+    rating: 5,
+    avatar: "ธ",
+    job: "พนักงานบริษัท อมตะ",
+  },
+  {
+    name: "คุณพิมพ์ใจ วงศ์สกุล",
+    location: "ศรีราชา",
+    review: "ตอนแรกกังวลเรื่องสัญญาและภาษีมาก แต่ทีมงานอธิบายให้เข้าใจตั้งแต่ต้น ช่วยจัดการทุกอย่างจนโอนเสร็จสมบูรณ์ แนะนำให้เพื่อนๆ เลยค่ะ",
+    rating: 5,
+    avatar: "พ",
+    job: "ครูโรงเรียนเอกชน ศรีราชา",
+  },
+  {
+    name: "คุณสมชาย รักดี",
+    location: "พานทอง",
+    review: "บริการดีมาก โอนคอนโดให้ลูก ทีมงานสุภาพ เป็นมิตร ตอบคำถามรวดเร็ว ค่าใช้จ่ายชัดเจน ไม่มีค่าใช้จ่ายแอบแฝง ประทับใจมากครับ",
+    rating: 5,
+    avatar: "ส",
+    job: "ผู้จัดการโรงงาน พานทอง",
+  },
+  {
+    name: "คุณวิไล พันธุ์สุข",
     location: "ชลบุรี",
-    review: "บริการดีมากค่ะ โอนบ้านเสร็จภายใน 7 วัน ทำงานรวดเร็วและถูกต้อง แนะนำเลยค่ะ",
+    review: "ซื้อบ้านมือ 2 ผ่านการโอนกับทีมงานที่นี่ ช่วยตรวจสอบสถานะทางการเงินให้ด้วย ทำให้มั่นใจว่าไม่มีปัญหา บริการดีเยี่ยมมากค่ะ",
     rating: 5,
-  },
-  {
-    name: "คุณแดง",
-    location: "พัทยา",
-    review: "ตอนแรกกังวลเรื่องเอกสาร แต่ทีมงานช่วยดูแลทุกอย่างจนโอนสำเร็จ ขอบคุณมากค่ะ",
-    rating: 5,
-  },
-  {
-    name: "คุณวิชัย",
-    location: "ระยอง",
-    review: "ประทับใจกับการให้บริการ มีทีมงานมืออาชีพ ตอบคำถามได้ตลอดเวลา",
-    rating: 5,
+    avatar: "ว",
+    job: "แม่บ้าน ชลบุรี",
   },
 ];
+
+const areas = ["ทั้งหมด", "อมตะ", "ชลบุรี", "ศรีราชา", "พานทอง"];
 
 // Counter Animation Hook
 function useCounter(end: number, duration: number = 2000, start: number = 0) {
@@ -266,12 +282,12 @@ function useCounter(end: number, duration: number = 2000, start: number = 0) {
       const progress = Math.min((currentTime - startTime) / duration, 1);
       const easeOut = 1 - Math.pow(1 - progress, 3);
       setCount(Math.floor(easeOut * (end - start) + start));
-      
+
       if (progress < 1) {
         requestAnimationFrame(animate);
       }
     };
-    
+
     requestAnimationFrame(animate);
   }, [hasStarted, end, duration, start]);
 
@@ -281,7 +297,7 @@ function useCounter(end: number, duration: number = 2000, start: number = 0) {
 // Animated Counter Component
 function AnimatedCounter({ end, suffix = "", duration = 2000 }: { end: number; suffix?: string; duration?: number }) {
   const { count, ref } = useCounter(end, duration);
-  
+
   return (
     <div ref={ref} className="font-bold text-4xl">
       {count}{suffix}
@@ -289,17 +305,28 @@ function AnimatedCounter({ end, suffix = "", duration = 2000 }: { end: number; s
   );
 }
 
+// Gallery Item Type (for display)
+interface GalleryItem {
+  id: string;
+  image: string;
+  title?: string;
+  location?: string;
+  category?: string;
+  year?: number;
+  description?: string;
+}
+
 // Simple Lightbox Component
-function SimpleLightbox({ 
-  isOpen, 
-  onClose, 
-  items, 
-  currentIndex, 
-  setCurrentIndex 
-}: { 
-  isOpen: boolean; 
-  onClose: () => void; 
-  items: typeof portfolioData;
+function SimpleLightbox({
+  isOpen,
+  onClose,
+  items,
+  currentIndex,
+  setCurrentIndex
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  items: GalleryItem[];
   currentIndex: number;
   setCurrentIndex: (idx: number) => void;
 }) {
@@ -350,7 +377,7 @@ function SimpleLightbox({
       <div className="relative w-full max-w-5xl h-[70vh] mx-16 animate-scaleIn">
         <Image
           src={item.image}
-          alt={item.title}
+          alt={String(item.title || "ผลงานโอนบ้าน")}
           fill
           className="object-contain"
           sizes="100vw"
@@ -359,7 +386,7 @@ function SimpleLightbox({
 
       <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6 animate-slideUp">
         <div className="max-w-5xl mx-auto">
-          <h3 className="text-white text-xl font-bold">{item.title}</h3>
+          <h3 className="text-white text-xl font-bold">{item.title || "ผลงานโอนบ้าน"}</h3>
           <p className="text-white/80 flex items-center gap-2 mt-1">
             <MapPin className="h-4 w-4" />
             {item.location} • {item.category} • {item.year}
@@ -377,12 +404,34 @@ export default function PortfolioPage() {
   const [selectedArea, setSelectedArea] = useState("ทั้งหมด");
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
+  const [portfolioItems, setPortfolioItems] = useState<PortfolioItem[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const filteredData = portfolioData.filter((item) => {
-    const categoryMatch = selectedCategory === "ทั้งหมด" || item.category === selectedCategory;
-    const areaMatch = selectedArea === "ทั้งหมด" || item.location === selectedArea;
-    return categoryMatch && areaMatch;
-  });
+  useEffect(() => {
+    async function fetchPortfolio() {
+      try {
+        const items = await getPortfolioItems();
+        setPortfolioItems(items);
+      } catch (error) {
+        console.error("Error fetching portfolio:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchPortfolio();
+  }, []);
+
+  const filteredData = portfolioItems
+    .filter((item) => {
+      const categoryMatch = selectedCategory === "ทั้งหมด" || item.category === selectedCategory;
+      const areaMatch = selectedArea === "ทั้งหมด" || item.location === selectedArea;
+      return categoryMatch && areaMatch;
+    })
+    .map((item) => ({
+      ...item,
+      image: item.imageUrl,
+      year: item.createdAt ? new Date((item.createdAt as any).seconds ? (item.createdAt as any).seconds * 1000 : Date.now()).getFullYear() : 2024,
+    }));
 
   const openLightbox = (index: number) => {
     setLightboxIndex(index);
@@ -407,7 +456,7 @@ export default function PortfolioPage() {
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
         </div>
-        
+
         <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
           <div className="animate-bounceIn">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6">
@@ -415,17 +464,18 @@ export default function PortfolioPage() {
               <span className="block text-amber-400">500+ ราย</span>
             </h1>
             <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
-              บริการโอนบ้าน คอนโด ที่ดิน รวดเร็ว ถูกต้อง ไว้ใจได้
+              บริการโอนบ้าน คอนโด ที่ดิน ในพื้นที่<br />
+              <span className="text-amber-300 font-semibold">อมตะ ชลบุรี ศรีราชา พานทอง</span>
             </p>
           </div>
           <div className="flex flex-wrap gap-4 justify-center animate-fadeInUp delay-200">
-            <button 
+            <button
               onClick={() => document.getElementById('gallery')?.scrollIntoView({ behavior: 'smooth' })}
               className="px-8 py-3 bg-amber-500 text-white font-semibold rounded-xl hover:bg-amber-600 transition-all shadow-lg hover:shadow-xl hover:scale-105"
             >
               ดูผลงาน
             </button>
-            <Link 
+            <Link
               href="/contact"
               className="px-8 py-3 bg-white/10 backdrop-blur text-white font-semibold rounded-xl hover:bg-white/20 transition-all border border-white/30 hover:scale-105"
             >
@@ -434,7 +484,7 @@ export default function PortfolioPage() {
           </div>
         </div>
 
-        <button 
+        <button
           onClick={() => document.getElementById('gallery')?.scrollIntoView({ behavior: 'smooth' })}
           className="absolute bottom-8 left-1/2 -translate-x-1/2 text-white/80 hover:text-white animate-bounce"
         >
@@ -489,7 +539,7 @@ export default function PortfolioPage() {
               บริการโอนบ้านครบวงจร ด้วยทีมงานมืออาชีพ ประสบการณ์กว่า 5 ปี
             </p>
           </AnimatedSection>
-          
+
           <div className="grid md:grid-cols-3 gap-8">
             <AnimatedSection delay={0}>
               <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-8 border border-blue-100 hover:shadow-xl hover:-translate-y-2 transition-all duration-300 h-full">
@@ -533,7 +583,7 @@ export default function PortfolioPage() {
               ง่ายๆ เพียง 4 ขั้นตอน กับการโอนบ้านที่ไม่ยุ่งยาก
             </p>
           </AnimatedSection>
-          
+
           <div className="grid md:grid-cols-4 gap-6">
             {[
               { step: 1, title: "ปรึกษาฟรี", desc: "ติดต่อมาก ประเมินราคา และข้อมูลเบื้องต้น", icon: MessageCircle },
@@ -570,75 +620,71 @@ export default function PortfolioPage() {
             </p>
           </AnimatedSection>
 
-          {/* Filters */}
-          <AnimatedSection className="flex flex-wrap gap-4 mb-8 justify-center">
-            <div className="flex flex-wrap gap-2 bg-gray-100 p-2 rounded-xl">
-              {categories.map((cat) => (
-                <button
-                  key={cat}
-                  onClick={() => setSelectedCategory(cat)}
-                  className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                    selectedCategory === cat
-                      ? "bg-blue-600 text-white shadow-md scale-105"
-                      : "text-gray-600 hover:bg-gray-200 hover:scale-105"
-                  }`}
-                >
-                  {cat}
-                </button>
-              ))}
-            </div>
-            
-            <select
-              value={selectedArea}
-              onChange={(e) => setSelectedArea(e.target.value)}
-              className="px-4 py-2 rounded-xl border border-gray-200 bg-white text-gray-700 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 hover:scale-105 transition-transform"
-            >
-              {areas.map((area) => (
-                <option key={area} value={area}>
-                  {area}
-                </option>
-              ))}
-            </select>
-          </AnimatedSection>
 
-          {/* Gallery Grid */}
-          <StaggeredGrid className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {filteredData.map((item, index) => (
-              <div
-                key={item.id}
-                className="group relative aspect-[4/3] rounded-2xl overflow-hidden cursor-pointer bg-gray-100 hover:shadow-2xl hover:scale-105 transition-all duration-300"
-                onClick={() => openLightbox(index)}
-                style={{
-                  animationDelay: `${index * 50}ms`,
-                }}
-              >
-                <Image
-                  src={item.image}
-                  alt={item.title}
-                  fill
-                  className="object-cover transition-transform duration-500 group-hover:scale-120"
-                  sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
-                    <p className="font-semibold text-sm">{item.title}</p>
-                    <p className="text-xs text-white/80 flex items-center gap-1 mt-1">
-                      <MapPin className="h-3 w-3" />
-                      {item.location}
-                    </p>
-                  </div>
-                </div>
-                <div className="absolute top-3 right-3 bg-white/90 backdrop-blur px-2 py-1 rounded-lg text-xs font-medium text-gray-700">
-                  {item.category}
-                </div>
+
+          {/* Gallery Loading */}
+          {loading && (
+            <div className="flex items-center justify-center py-16">
+              <div className="text-center">
+                <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+                <p className="text-slate-500">กำลังโหลดผลงาน...</p>
               </div>
-            ))}
-          </StaggeredGrid>
+            </div>
+          )}
 
-          {filteredData.length === 0 && (
+          {/* Gallery Empty */}
+          {!loading && filteredData.length === 0 && portfolioItems.length === 0 && (
+            <AnimatedSection className="text-center py-16 bg-slate-50 rounded-2xl">
+              <p className="text-gray-500 text-lg mb-2">ยังไม่มีผลงาน</p>
+              <p className="text-gray-400">รูปผลงานจะแสดงหลังจากอัปโหลดในระบบ Admin</p>
+            </AnimatedSection>
+          )}
+
+          {/* Gallery No Results */}
+          {!loading && filteredData.length === 0 && portfolioItems.length > 0 && (
             <AnimatedSection className="text-center py-16">
               <p className="text-gray-500">ไม่พบผลงานในหมวดหมู่ที่เลือก</p>
             </AnimatedSection>
+          )}
+
+          {/* Gallery Grid */}
+          {!loading && filteredData.length > 0 && (
+            <StaggeredGrid className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {filteredData.map((item, index) => (
+                <div
+                  key={item.id}
+                  className="group relative aspect-[4/3] rounded-2xl overflow-hidden cursor-pointer bg-gray-100 hover:shadow-2xl hover:scale-105 transition-all duration-300"
+                  onClick={() => openLightbox(index)}
+                  style={{
+                    animationDelay: `${index * 50}ms`,
+                  }}
+                >
+                  <Image
+                    src={item.image}
+                    alt={item.title || "ผลงาน"}
+                    fill
+                    className="object-cover transition-transform duration-500 group-hover:scale-120"
+                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
+                      <p className="font-semibold text-sm">{item.title || "ผลงาน"}</p>
+                      {item.location && (
+                        <p className="text-xs text-white/80 flex items-center gap-1 mt-1">
+                          <MapPin className="h-3 w-3" />
+                          {item.location}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                  {item.category && (
+                    <div className="absolute top-3 right-3 bg-white/90 backdrop-blur px-2 py-1 rounded-lg text-xs font-medium text-gray-700">
+                      {item.category}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </StaggeredGrid>
           )}
         </div>
       </section>
@@ -655,23 +701,24 @@ export default function PortfolioPage() {
             </p>
           </AnimatedSection>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {testimonials.map((item, index) => (
               <AnimatedSection key={index} delay={index * 100}>
-                <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 hover:bg-white/20 hover:scale-105 transition-all duration-300 h-full">
+                <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 hover:bg-white/20 hover:scale-105 transition-all duration-300 h-full flex flex-col">
                   <div className="flex gap-1 mb-4">
                     {[...Array(item.rating)].map((_, i) => (
-                      <Star key={i} className="h-5 w-5 text-amber-400 fill-amber-400" />
+                      <Star key={i} className="h-4 w-4 text-amber-400 fill-amber-400" />
                     ))}
                   </div>
-                  <p className="text-white/90 mb-6 italic">"{item.review}"</p>
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 bg-amber-500 rounded-full flex items-center justify-center text-white font-bold hover:scale-110 transition-transform">
-                      {item.name[0]}
+                  <p className="text-white/90 mb-6 flex-1 text-sm leading-relaxed">"{item.review}"</p>
+                  <div className="flex items-start gap-3 pt-4 border-t border-white/10">
+                    <div className="w-12 h-12 bg-gradient-to-br from-amber-400 to-orange-500 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg">
+                      {item.avatar || item.name[0]}
                     </div>
-                    <div>
+                    <div className="flex-1">
                       <p className="font-semibold text-white">{item.name}</p>
-                      <p className="text-white/70 text-sm flex items-center gap-1">
+                      <p className="text-amber-300 text-xs mb-1">{item.job}</p>
+                      <p className="text-white/60 text-xs flex items-center gap-1">
                         <MapPin className="h-3 w-3" />
                         {item.location}
                       </p>
@@ -692,18 +739,18 @@ export default function PortfolioPage() {
               พื้นที่ให้บริการ
             </h2>
             <p className="text-gray-600 max-w-2xl mx-auto">
-              บริการโอนบ้าน ครอบคลุมภาคตะวันออกและกรุงเทพฯ
+              บริการโอนบ้าน ครอบคลุมพื้นที่อมตะ ชลบุรี ศรีราชา และพานทอง
             </p>
           </AnimatedSection>
 
-          <AnimatedSection className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-            {["ชลบุรี", "พัทยา", "ระยอง", "บางนา", "สมุทรปราการ", "ศรีราชา", "ฉะเชิงเทรา", "สัตหีบ", "มาบตาพุด", "แหลมแม่โยน", "กรุงเทพฯ", "นนทบุรี"].map((area, index) => (
+          <AnimatedSection className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-2xl mx-auto">
+            {["อมตะ", "ชลบุรี", "ศรีราชา", "พานทอง"].map((area, index) => (
               <button
                 key={area}
-                className="px-4 py-3 bg-gray-50 hover:bg-blue-50 border border-gray-200 hover:border-blue-300 rounded-xl text-gray-700 hover:text-blue-700 font-medium transition-all hover:scale-110 flex items-center justify-center gap-2"
+                className="px-4 py-4 bg-gradient-to-br from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 border border-blue-200 hover:border-blue-300 rounded-xl text-gray-700 hover:text-blue-700 font-medium transition-all hover:scale-105 flex items-center justify-center gap-2 shadow-sm hover:shadow-md"
                 style={{ animationDelay: `${index * 30}ms` }}
               >
-                <MapPin className="h-4 w-4" />
+                <MapPin className="h-5 w-5 text-blue-500" />
                 {area}
               </button>
             ))}
@@ -728,22 +775,6 @@ export default function PortfolioPage() {
             </p>
           </AnimatedSection>
           <AnimatedSection delay={200} className="flex flex-wrap gap-4 justify-center">
-            <a
-              href="tel:0891234567"
-              className="inline-flex items-center gap-2 px-8 py-4 bg-white text-amber-600 font-bold rounded-xl hover:bg-gray-100 transition-all shadow-lg hover:scale-110 hover:shadow-xl"
-            >
-              <Phone className="h-5 w-5" />
-              โทรเลย
-            </a>
-            <a
-              href="https://line.me/ti/p/~yourlineid"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-8 py-4 bg-green-500 text-white font-bold rounded-xl hover:bg-green-600 transition-all shadow-lg hover:scale-110 hover:shadow-xl"
-            >
-              <MessageCircle className="h-5 w-5" />
-              LINE
-            </a>
             <Link
               href="/contact"
               className="inline-flex items-center gap-2 px-8 py-4 bg-amber-600 text-white font-bold rounded-xl hover:bg-amber-700 transition-all shadow-lg hover:scale-110 hover:shadow-xl"
@@ -756,9 +787,9 @@ export default function PortfolioPage() {
       </section>
 
       {/* Simple Lightbox */}
-      <SimpleLightbox 
-        isOpen={lightboxOpen} 
-        onClose={closeLightbox} 
+      <SimpleLightbox
+        isOpen={lightboxOpen}
+        onClose={closeLightbox}
         items={filteredData}
         currentIndex={lightboxIndex}
         setCurrentIndex={setLightboxIndex}

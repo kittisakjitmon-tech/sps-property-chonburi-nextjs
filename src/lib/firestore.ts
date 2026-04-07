@@ -10,6 +10,7 @@ import {
   limit,
   Timestamp,
   serverTimestamp,
+  onSnapshot,
 } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
@@ -522,5 +523,39 @@ export async function createLoanRequest(data: {
     ...data,
     status: "pending",
     createdAt: serverTimestamp(),
+  });
+}
+
+// ─── Portfolio ────────────────────────────────────────────────────────────────
+
+export interface PortfolioItem {
+  id: string;
+  imageUrl: string;
+  title?: string;
+  category?: string;
+  description?: string;
+  location?: string;
+  order?: number;
+  createdAt?: Timestamp;
+  updatedAt?: Timestamp;
+}
+
+export async function getPortfolioItems(): Promise<PortfolioItem[]> {
+  const q = query(collection(db, "portfolio"), orderBy("order", "asc"));
+  const snapshot = await getDocs(q);
+  return snapshot.docs.map((doc) => ({
+    id: doc.id,
+    ...doc.data(),
+  })) as PortfolioItem[];
+}
+
+export function getPortfolioSnapshot(callback: (items: PortfolioItem[]) => void) {
+  const q = query(collection(db, "portfolio"), orderBy("order", "asc"));
+  return onSnapshot(q, (snapshot) => {
+    const items = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    })) as PortfolioItem[];
+    callback(items);
   });
 }

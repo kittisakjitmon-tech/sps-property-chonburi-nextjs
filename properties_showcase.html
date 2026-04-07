@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>บ้านน่าขาย - พานทอง ดอนหัวฬ่อ ศรีราชา ชลบุรี</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap');
+    
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: 'Sarabun', sans-serif;
+      font-size: 12px;
+      color: #333;
+      background: #f5f5f5;
+      padding: 20px;
+    }
+    
+    .page {
+      background: white;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 25px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 3px solid #e74c3c;
+    }
+    
+    .header h1 {
+      font-size: 24px;
+      font-weight: 700;
+      color: #c0392b;
+      margin-bottom: 5px;
+    }
+    
+    .header .subtitle {
+      color: #666;
+      font-size: 12px;
+    }
+    
+    .highlight-banner {
+      background: linear-gradient(135deg, #f1c40f, #f39c12);
+      color: #333;
+      padding: 12px 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      text-align: center;
+      font-weight: 600;
+    }
+    
+    .highlight-banner .emoji {
+      font-size: 18px;
+      margin-right: 8px;
+    }
+    
+    table { width: 100%; border-collapse: collapse; font-size: 11px; }
+    
+    th {
+      background: #2c3e50;
+      color: white;
+      padding: 10px 6px;
+      text-align: center;
+      font-weight: 600;
+      font-size: 11px;
+    }
+    
+    th:first-child { border-radius: 8px 0 0 0; }
+    th:last-child { border-radius: 0 8px 0 0; }
+    
+    td {
+      padding: 8px 6px;
+      vertical-align: top;
+      border-bottom: 1px solid #eee;
+    }
+    
+    tr:nth-child(even) { background: #fafafa; }
+    tr:hover { background: #fef9e7; }
+    tr.high-comm { background: #fff9e6; }
+    tr.high-comm:hover { background: #fff3cc; }
+    
+    .col-no { width: 35px; text-align: center; font-weight: 700; color: #e74c3c; }
+    .col-project { width: 170px; }
+    .col-image { width: 70px; text-align: center; }
+    .col-location { width: 120px; }
+    .col-type { width: 80px; text-align: center; }
+    .col-price { width: 85px; text-align: right; }
+    .col-commission { width: 70px; text-align: center; }
+    .col-perks { width: 175px; font-size: 10px; color: #555; }
+    .col-source { width: 60px; text-align: center; }
+    
+    .project-name {
+      font-weight: 600;
+      color: #2c3e50;
+      line-height: 1.3;
+      font-size: 11px;
+    }
+    
+    .property-image {
+      width: 65px;
+      height: 48px;
+      object-fit: cover;
+      border-radius: 6px;
+      border: 2px solid #ecf0f1;
+    }
+    
+    .location { color: #555; font-size: 10px; line-height: 1.3; }
+    
+    .type-badge {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-size: 9px;
+      font-weight: 600;
+    }
+    
+    .type-บ้านเดี่ยว { background: #3498db; color: white; }
+    .type-บ้าน2ชั้น { background: #9b59b6; color: white; }
+    .type-ทาวน์โฮม-1-ชั้น { background: #1abc9c; color: white; }
+    .type-ทาวน์โฮม-2-ชั้น { background: #f39c12; color: white; }
+    .type-คอนโด { background: #e74c3c; color: white; }
+    .type-บ้านแฝด { background: #e67e22; color: white; }
+    .type-พาวิลเลี่ยน { background: #16a085; color: white; }
+    
+    .price { font-weight: 700; color: #27ae60; font-size: 12px; text-align: right; }
+    
+    .commission {
+      display: inline-block;
+      padding: 3px 8px;
+      background: #f1c40f;
+      color: #333;
+      border-radius: 12px;
+      font-size: 10px;
+      font-weight: 700;
+    }
+    
+    .commission.high {
+      background: #e74c3c;
+      color: white;
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+    
+    .perks { font-size: 10px; color: #666; line-height: 1.4; }
+    .perks .highlight { color: #e67e22; font-weight: 500; }
+    
+    .btn-source {
+      display: inline-block;
+      padding: 4px 8px;
+      background: #3498db;
+      color: white;
+      border-radius: 4px;
+      text-decoration: none;
+      font-size: 10px;
+      font-weight: 600;
+    }
+    
+    .btn-source:hover { background: #2980b9; }
+    
+    .footer {
+      margin-top: 20px;
+      padding-top: 15px;
+      border-top: 2px solid #ecf0f1;
+      text-align: center;
+      color: #999;
+      font-size: 10px;
+    }
+    
+    .legend {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+    
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 10px;
+    }
+    
+    .legend-color {
+      width: 12px;
+      height: 12px;
+      border-radius: 3px;
+    }
+    
+    @media print {
+      body { background: white; padding: 0; }
+      .page { box-shadow: none; max-width: 100%; padding: 15px; }
+      .btn-source, .type-badge, .commission { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      tr.high-comm { background: #fff9e6 !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="header">
+      <h1>🏠 บ้านน่าขาย พานทอง ดอนหัวฬ่อ ศรีราชา ชลบุรี</h1>
+      <p class="subtitle">คัดสรรทรัพย์คุณภาพ เน้นทำเลชลบุรี | อัปเดต: 1 เมษายน 2569</p>
+    </div>
+    
+    <div class="highlight-banner">
+      <span class="emoji">⭐</span>
+      <span>พบ 5 ทรัพย์ Commission 5% สูงกว่าปกติ! ดูที่ #1-5</span>
+    </div>
+    
+    <table>
+      <thead>
+        <tr>
+          <th class="col-no">ลำดับ</th>
+          <th class="col-project">โครงการ</th>
+          <th class="col-image">รูปภาพ</th>
+          <th class="col-location">ทำเล</th>
+          <th class="col-type">ประเภท</th>
+          <th class="col-price">ราคา</th>
+          <th class="col-commission">ค่าคอม</th>
+          <th class="col-perks">ส่วนต่าง / ของแถม</th>
+          <th class="col-source">แหล่งที่มา</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="high-comm">
+          <td class="col-no">⭐1</td>
+          <td class="col-project"><div class="project-name">ทาวน์โฮมชั้นเดียว หลังมุม พื้นที่กว้าง คุ้มสุดในโซนนี้</div></td>
+          <td class="col-image"><img src="https://res.cloudinary.com/dhqvmo8dd/image/upload/e_improve:outdoor,a_auto,q_auto,f_auto/udpqiqvbpw7crwsfnirv" class="property-image" onerror="this.style.display='none'"></td>
+          <td class="col-location"><div class="location">พานทอง, ชลบุรี</div></td>
+          <td class="col-type"><span class="type-badge type-ทาวน์โฮม-1-ชั้น">ทาวน์โฮม 1 ชั้น</span></td>
+          <td class="col-price"><div class="price">1,500,000 บ.</div></td>
+          <td class="col-commission"><div class="commission high">5%</div></td>
+          <td class="col-perks"><div class="perks"><span class="highlight">🏆</span> Commission สูง 5%!</div></td>
+          <td class="col-source"><a href="https://spspropertysolution.com/properties/พานทอง-ชลบุรี-ทาวน์โฮม-1-ชั้น-ขาย-1.5m--5gkREPpJOM0fEQ8jfdmY" target="_blank" class="btn-source">ดูเว็บ</a></td>
+        </tr>
+        <tr class="high-comm">
+          <td class="col-no">⭐2</td>
+          <td class="col-project"><div class="project-name">บ้านแฝดชั้นเดียว พื้นที่กว้าง อยู่สบาย ทำเลพานทอง</div></td>
+          <td class="col-image"><img src="https://res.cloudinary.com/dhqvmo8dd/image/upload/e_improve:outdoor,a_auto,q_auto,f_auto/ppiae3fqmj9pczamkute" class="property-image" onerror="this.style.display='none'"></td>
+          <td class="col-location"><div class="location">พานทอง, ชลบุรี</div></td>
+          <td class="col-type"><span class="type-badge type-บ้านแฝด">บ้านแฝด</span></td>
+          <td class="col-price"><div class="price">2,600,000 บ.</div></td>
+          <td class="col-commission"><div class="commission high">5%</div></td>
+          <td class="col-perks"><div class="perks"><span class="highlight">🏆</span> Commission สูง 5%!</div></td>
+          <td class="col-source"><a href="https://spspropertysolution.com/properties/พานทอง-ชลบุรี-บ้านแฝด-ขาย-2.6m--JBfXxz5fCPy8Y3QcQp12" target="_blank" class="btn-source">ดูเว็บ</a></td>
+        </tr>
+        <tr class="high-comm">
+          <td class="col-no">⭐3</td>
+          <td class="col-project"><div class="project-name">บ้านเดี่ยวหลังใหญ่ ยกสูง พื้นที่กว้าง อยู่สบาย</div></td>
+          <td class="col-image"><img src="https://res.cloudinary.com/dhqvmo8dd/image/upload/e_improve:outdoor,a_auto,q_auto,f_auto/ymnlww8hdt4haukdocty" class="property-image" onerror="this.style.display='none'"></td>
+          <td class="col-location"><div class="location">พานทอง, ชลบุรี</div></td>
+          <td class="col-type"><span class="type-badge type-บ้านเดี่ยว">บ้านเดี่ยว</span></td>
+          <td class="col-price"><div class="price">2,600,000 บ.</div></td>
+          <td class="col-commission"><div class="commission high">5%</div></td>
+          <td class="col-perks"><div class="perks"><span class="highlight">🏆</span> Commission สูง 5%!</div></td>
+          <td class="col-source"><a href="https://spspropertysolution.com/properties/พานทอง-ชลบุรี-บ้านเดี่ยว-ขาย-2.6m--L5alVH0zlIJaVofopr02" target="_blank" class="btn-source">ดูเว็บ</a></td>
+        </tr>
+        <tr class="high-comm">
+          <td class="col-no">⭐4</td>
+          <td class="col-project"><div class="project-name">ทาวน์โฮมชั้นเดียว ราคาคุ้มสุดในโซนนี้ เริ่มไม่ถึงล้าน</div></td>
+          <td class="col-image"><img src="https://res.cloudinary.com/dhqvmo8dd/image/upload/e_improve:outdoor,a_auto,q_auto,f_auto/wi0yhskgqrhthqzbbcfi" class="property-image" onerror="this.style.display='none'"></td>
+          <td class="col-location"><div class="location">พานทอง, ชลบุรี</div></td>
+          <td class="col-type"><span class="type-badge type-ทาวน์โฮม-1-ชั้น">ทาวน์โฮม 1 ชั้น</span></td>
+          <td class="col-price"><div class="price">1,000,000 บ.</div></td>
+          <td class="col-commission"><div class="commission high">5%</div></td>
+          <td class="col-perks"><div class="perks"><span class="highlight">🏆</span> Commission สูง 5%!</div></td>
+          <td class="col-source"><a href="https://spspropertysolution.com/properties/พานทอง-ชลบุรี-ทาวน์โฮม-1-ชั้น-ขาย-1m--XeFJIl3LFqgSXyBpqfZT" target="_blank" class="btn-source">ดูเว็บ</a></td>
+        </tr>
+        <tr class="high-comm">
+          <td class="col-no">⭐5</td>
+          <td class="col-project"><div class="project-name">ทาวน์โฮมชั้นเดียว หลังมุม พื้นที่กว้าง จอดรถ 2 คัน</div></td>
+          <td class="col-image"><img src="https://res.cloudinary.com/dhqvmo8dd/image/upload/e_improve:outdoor,a_auto,q_auto,f_auto/aw26q9ge239kguxole5v" class="property-image" onerror="this.style.display='none'"></td>
+          <td class="col-location"><div class="location">พานทอง, ชลบุรี</div></td>
+          <td class="col-type"><span class="type-badge type-ทาวน์โฮม-1-ชั้น">ทาวน์โฮม 1 ชั้น</span></td>
+          <td class="col-price"><div class="price">1,900,000 บ.</div></td>
+          <td class="col-commission"><div class="commission high">5%</div></td>
+          <td class="col-perks"><div class="perks"><span class="highlight">🏆</span> Commission สูง 5%!</div></td>
+          <td class="col-source"><a href="https://spspropertysolution.com/properties/พานทอง-ชลบุรี-ทาวน์โฮม-1-ชั้น-ขาย-1.9m--c1dcnnN5LLBc25kjeQnN" target="_blank" class="btn-source">ดูเว็บ</a></td>
+        </tr>
+        <tr>
+          <td class="col-no">6</td>
+          <td class="col-project"><div class="project-name">ทาวน์โฮม 1 ชั้น มีส่วนลดพิเศษ</div></td>
+          <td class="col-image"><img src="https://res.cloudinary.com/dhqvmo8dd/image/upload/e_improve:outdoor,a_auto,q_auto,f_auto/ntwujxowbyuoyp0hlxk9" class="property-image" onerror="this.style.display='none'"></td>
+          <td class="col-location"><div class="location">มาบโป่ง, พานทอง, ชลบุรี</div></td>
+          <td class="col-type"><span class="type-badge type-ทาวน์โฮม-1-ชั้น">ทาวน์โฮม 1 ชั้น</span></td>
+          <td class="col-price"><div class="price">1,000,000 บ.</div></td>
+          <td class="col-commission"><div class="commission">3%</div></td>
+          <td class="col-perks"><div class="perks"><span class="highlight">💰</span> มีส่วนลดพิเศษ</div></td>
+          <td class="col-source"><a href="https://spspropertysolution.com/properties/มาบโป่ง-ชลบุรี-ทาวน์โฮม-1-ชั้น-ขาย-1m--03IwrwjuvbwnZdAGxA8d" target="_blank" class="btn-source">ดูเว็บ</a></td>
+        </tr>
+        <tr>
+          <td class="col-no">7</td>
+          <td class="col-project"><div class="project-name">บ้านเดี่ยว (เฟส 8-12)</div></td>
+          <td class="col-image"><img src="https://res.cloudinary.com/dhqvmo8dd/image/upload/e_improve:outdoor,a_auto,q_auto,f_auto/aybdf84xrv6afltn99vs" class="property-image" onerror="this.style.display='none'"></td>
+          <td class="col-location"><div class="location">มาบโป่ง, พานทอง, ชลบุรี</div></td>
+          <td class="col-type"><span class="type-badge type-บ้านเดี่ยว">บ้านเดี่ยว</span></td>
+          <td class="col-price"><div class="price">1,000,000 บ.</div></td>
+          <td class="col-commission"><div class="commission">3%</div></td>
+          <td class="col-perks"><div class="perks"><span class="highlight">🏘</span> เฟสใหม่</div></td>
+          <td class="col-source"><a href="https://spspropertysolution.com/properties/มาบโป่ง-ชลบุรี-บ้านเดี่ยว-ขาย-1m--0UPLFSdIlJpGCQS4HcM5" target="_blank" class="btn-source">ดูเว็บ</a></td>
+        </tr>
+        <tr>
+          <td class="col-no">8</td>
+          <td class="col-project"><div class="project-name">ทาวน์โฮม 2 ชั้น</div></td>
+          <td class="col-image"><img src="https://res.cloudinary.com/dhqvmo8dd/image/upload/e_improve:outdoor,a_auto,q_auto,f_auto/ghcje1uozx3hn5uzpzsu" class="property-image" onerror="this.style.display='none'"></td>
+          <td class="col-location"><div class="location">บ้านเก่า, พานทอง, ชลบุรี</div></td>
+          <td class="col-type"><span class="type-badge type-ทาวน์โฮม-2-ชั้น">ทาวน์โฮม 2 ชั้น</span></td>
+          <td class="col-price"><div class="price">1,000,000 บ.</div></td>
+          <td class="col-commission"><div class="commission">3%</div></td>
+          <td class="col-perks"><div class="perks"><span class="highlight">🏠</span> พื้นที่กว้าง</div></td>
+          <td class="col-source"><a href="https://spspropertysolution.com/properties/บ้านเก่า-ชลบุรี-ทาวน์โฮม-2-ชั้น-ขาย-1m--0cXfO54n4s5is6M84NBU" target="_blank" class="btn-source">ดูเว็บ</a></td>
+        </tr>
+        <tr>
+          <td class="col-no">9</td>
+          <td class="col-project"><div class="project-name">เปิดขาย ทาวน์เฮ้าส์ ชั้นเดียว</div></td>
+          <td class="col-image"><img src="https://res.cloudinary.com/dhqvmo8dd/image/upload/e_improve:outdoor,a_auto,q_auto,f_auto/iuyjpdixszjd0iekjbfc" class="property-image" onerror="this.style.display='none'"></td>
+          <td class="col-location"><div class="location">บ้านเก่า, พานทอง, ชลบุรี</div></td>
+          <td class="col-type"><span class="type-badge type-ทาวน์โฮม-1-ชั้น">ทาวน์โฮม 1 ชั้น</span></td>
+          <td class="col-price"><div class="price">3,350,000 บ.</div></td>
+          <td class="col-commission"><div class="commission">3%</div></td>
+          <td class="col-perks"><div class="perks"><span class="highlight">✅</span> เปิดขายแล้ว</div></td>
+          <td class="col-source"><a href="https://spspropertysolution.com/properties/บ้านเก่า-ชลบุรี-ทาวน์โฮม-1-ชั้น-ขาย-3.35m--0yNSmGp1FfgzWPq0ryBr" target="_blank" class="btn-source">ดูเว็บ</a></td>
+        </tr>
+        <tr>
+          <td class="col-no">10</td>
+          <td class="col-project"><div class="project-name">เปิดขาย บ้านชั้นเดียว</div></td>
+          <td class="col-image"><img src="https://res.cloudinary.com/dhqvmo8dd/image/upload/e_improve:outdoor,a_auto,q_auto,f_auto/ero4pyjvecv4dx6erihr" class="property-image" onerror="this.style.display='none'"></td>
+          <td class="col-location"><div class="location">บ้านเก่า, พานทอง, ชลบุรี</div></td>
+          <td class="col-type"><span class="type-badge type-ทาวน์โฮม-1-ชั้น">ทาวน์โฮม 1 ชั้น</span></td>
+          <td class="col-price"><div class="price">1,550,000 บ.</div></td>
+          <td class="col-commission"><div class="commission">3%</div></td>
+          <td class="col-perks"><div class="perks"><span class="highlight">🏡</span> พร้อมอยู่</div></td>
+          <td class="col-source"><a href="https://spspropertysolution.com/properties/บ้านเก่า-ชลบุรี-ทาวน์โฮม-1-ชั้น-ขาย-1.55m--1LBdRnPL41N4737BpVv0" target="_blank" class="btn-source">ดูเว็บ</a></td>
+        </tr>
+        <tr>
+          <td class="col-no">11</td>
+          <td class="col-project"><div class="project-name">บ้านเดี่ยว 50 ตร.ว.</div></td>
+          <td class="col-image"><img src="https://res.cloudinary.com/dhqvmo8dd/image/upload/e_improve:outdoor,a_auto,q_auto,f_auto/jish85rpvirgbqaaqoxk" class="property-image" onerror="this.style.display='none'"></td>
+          <td class="col-location"><div class="location">บ้านสวน, เมืองชลบุรี, ชลบุรี</div></td>
+          <td class="col-type"><span class="type-badge type-บ้านเดี่ยว">บ้านเดี่ยว</span></td>
+          <td class="col-price"><div class="price">3,000,000 บ.</div></td>
+          <td class="col-commission"><div class="commission">3%</div></td>
+          <td class="col-perks"><div class="perks"><span class="highlight">📐</span> พื้นที่ 50 ตร.ว.</div></td>
+          <td class="col-source"><a href="https://spspropertysolution.com/properties/บ้านสวน-ชลบุรี-บ้านเดี่ยว-ขาย-3m--1gxdgZhtv1DzZFB15B9i" target="_blank" class="btn-source">ดูเว็บ</a></td>
+        </tr>
+        <tr>
+          <td class="col-no">12</td>
+          <td class="col-project"><div class="project-name">บ้านเดี่ยว หนองกะขะซอย 17</div></td>
+          <td class="col-image"><img src="https://res.cloudinary.com/dhqvmo8dd/image/upload/e_improve:outdoor,a_auto,q_auto,f_auto/zrpsmzjwuzguqiksu1hx" class="property-image" onerror="this.style.display='none'"></td>
+          <td class="col-location"><div class="location">มาบโป่ง, พานทอง, ชลบุรี</div></td>
+          <td class="col-type"><span class="type-badge type-บ้านเดี่ยว">บ้านเดี่ยว</span></td>
+          <td class="col-price"><div class="price">1,000,000 บ.</div></td>
+          <td class="col-commission"><div class="commission">3%</div></td>
+          <td class="col-perks"><div class="perks"><span class="highlight">🏠</span> ราคาพิเศษ</div></td>
+          <td class="col-source"><a href="https://spspropertysolution.com/properties/มาบโป่ง-ชลบุรี-บ้านเดี่ยว-ขาย-1m--1mFqdJpseJy1ubWFuLle" target="_blank" class="btn-source">ดูเว็บ</a></td>
+        </tr>
+        <tr>
+          <td class="col-no">13</td>
+          <td class="col-project"><div class="project-name">ขายทาวน์เฮ้าส์ 2 ชั้น ใกล้นิคมอมตะนคร</div></td>
+          <td class="col-image"><img src="https://res.cloudinary.com/dhqvmo8dd/image/upload/e_improve:outdoor,a_auto,q_auto,f_auto/vplqqodkcti3bphivvxk" class="property-image" onerror="this.style.display='none'"></td>
+          <td class="col-location"><div class="location">ดอนหัวฬ่อ, ชลบุรี</div></td>
+          <td class="col-type"><span class="type-badge type-ทาวน์โฮม-2-ชั้น">ทาวน์โฮม 2 ชั้น</span></td>
+          <td class="col-price"><div class="price">1,700,000 บ.</div></td>
+          <td class="col-commission"><div class="commission">3%</div></td>
+          <td class="col-perks"><div class="perks"><span class="highlight">🏭</span> ใกล้นิคมอมตะ</div></td>
+          <td class="col-source"><a href="https://spspropertysolution.com/properties/ดอนหัวฬ่อ-ชลบุรี-ทาวน์โฮม-2-ชั้น-ขาย-1.7m--2RgltpHDLjPCs89RKZJn" target="_blank" class="btn-source">ดูเว็บ</a></td>
+        </tr>
+        <tr>
+          <td class="col-no">14</td>
+          <td class="col-project"><div class="project-name">ทาวน์เฮาส์ชั้นเดียว ดอนหัวฬ่อ</div></td>
+          <td class="col-image"><img src="https://res.cloudinary.com/dhqvmo8dd/image/upload/e_improve:outdoor,a_auto,q_auto,f_auto/xz2sj6bfddng46nexr3x" class="property-image" onerror="this.style.display='none'"></td>
+          <td class="col-location"><div class="location">ดอนหัวฬ่อ, ชลบุรี</div></td>
+          <td class="col-type"><span class="type-badge type-ทาวน์โฮม-1-ชั้น">ทาวน์โฮม 1 ชั้น</span></td>
+          <td class="col-price"><div class="price">1,290,000 บ.</div></td>
+          <td class="col-commission"><div class="commission">3%</div></td>
+          <td class="col-perks"><div class="perks"><span class="highlight">🏘</span> ทำเลดอนหัวฬ่อ</div></td>
+          <td class="col-source"><a href="https://spspropertysolution.com/properties/ดอนหัวฬ่อ-ชลบุรี-ทาวน์โฮม-1-ชั้น-ขาย-1.29m--2Y430Rrew3SZY0w93OdM" target="_blank" class="btn-source">ดูเว็บ</a></td>
+        </tr>
+        <tr>
+          <td class="col-no">15</td>
+          <td class="col-project"><div class="project-name">บ้านเดี่ยว มาบโป่ง</div></td>
+          <td class="col-image"><img src="https://res.cloudinary.com/dhqvmo8dd/image/upload/e_improve:outdoor,a_auto,q_auto,f_auto/pa2tokhyzhlqn4qqzeoq" class="property-image" onerror="this.style.display='none'"></td>
+          <td class="col-location"><div class="location">มาบโป่ง, พานทอง, ชลบุรี</div></td>
+          <td class="col-type"><span class="type-badge type-บ้านเดี่ยว">บ้านเดี่ยว</span></td>
+          <td class="col-price"><div class="price">2,000,000 บ.</div></td>
+          <td class="col-commission"><div class="commission">3%</div></td>
+          <td class="col-perks"><div class="perks"><span class="highlight">🏠</span> พื้นที่กว้าง</div></td>
+          <td class="col-source"><a href="https://spspropertysolution.com/properties/มาบโป่ง-ชลบุรี-บ้านเดี่ยว-ขาย-2m--2p0WbO4D2F9IEaGNsCn8" target="_blank" class="btn-source">ดูเว็บ</a></td>
+        </tr>
+        <tr>
+          <td class="col-no">16</td>
+          <td class="col-project"><div class="project-name">บ้านเดี่ยว โป่งตามุข</div></td>
+          <td class="col-image"><img src="https://res.cloudinary.com/dhqvmo8dd/image/upload/e_improve:outdoor,a_auto,q_auto,f_auto/jotrqxm2b4sxmkwiiz2r" class="property-image" onerror="this.style.display='none'"></td>
+          <td class="col-location"><div class="location">มาบโป่ง, พานทอง, ชลบุรี</div></td>
+          <td class="col-type"><span class="type-badge type-บ้านเดี่ยว">บ้านเดี่ยว</span></td>
+          <td class="col-price"><div class="price">2,000,000 บ.</div></td>
+          <td class="col-commission"><div class="commission">3%</div></td>
+          <td class="col-perks"><div class="perks"><span class="highlight">🏔️</span> วิวเขา</div></td>
+          <td class="col-source"><a href="https://spspropertysolution.com/properties/มาบโป่ง-ชลบุรี-บ้านเดี่ยว-ขาย-2m--3OHgipEiuxfTr96P5q1P" target="_blank" class="btn-source">ดูเว็บ</a></td>
+        </tr>
+        <tr>
+          <td class="col-no">17</td>
+          <td class="col-project"><div class="project-name">คอนโดสไตล์ญี่ปุ่น บ้านสวน เมืองชล</div></td>
+          <td class="col-image"><img src="https://res.cloudinary.com/dhqvmo8dd/image/upload/e_improve:outdoor,a_auto,q_auto,f_auto/nkvxgyqgo1tclyjzkq7e" class="property-image" onerror="this.style.display='none'"></td>
+          <td class="col-location"><div class="location">บ้านสวน, เมืองชลบุรี, ชลบุรี</div></td>
+          <td class="col-type"><span class="type-badge type-คอนโด">คอนโด</span></td>
+          <td class="col-price"><div class="price">2,200,000 บ.</div></td>
+          <td class="col-commission"><div class="commission">3%</div></td>
+          <td class="col-perks"><div class="perks"><span class="highlight">🇯🇵</span> สไตล์ญี่ปุ่น</div></td>
+          <td class="col-source"><a href="https://spspropertysolution.com/properties/บ้านสวน-ชลบุรี-คอนโด-ขาย-2.2m--3tv0XEO27vBd3O04W7OB" target="_blank" class="btn-source">ดูเว็บ</a></td>
+        </tr>
+        <tr>
+          <td class="col-no">18</td>
+          <td class="col-project"><div class="project-name">ทรัพย์รุ่งเรืองซิตี้ 1 (บ้านเกา-พานทอง)</div></td>
+          <td class="col-image"><img src="https://res.cloudinary.com/dhqvmo8dd/image/upload/e_improve:outdoor,a_auto,q_auto,f_auto/e5kqubfhvgiapzhro50g" class="property-image" onerror="this.style.display='none'"></td>
+          <td class="col-location"><div class="location">บ้านเก่า, พานทอง, ชลบุรี</div></td>
+          <td class="col-type"><span class="type-badge type-ทาวน์โฮม-1-ชั้น">ทาวน์โฮม 1 ชั้น</span></td>
+          <td class="col-price"><div class="price">1,290,000 บ.</div></td>
+          <td class="col-commission"><div class="commission">3%</div></td>
+          <td class="col-perks"><div class="perks"><span class="highlight">🏘</span> ทรัพย์รุ่งเรืองซิตี้</div></td>
+          <td class="col-source"><a href="https://spspropertysolution.com/properties/บ้านเก่า-ชลบุรี-ทาวน์โฮม-1-ชั้น-ขาย-1.29m--3w9Ec0Sd5AlATzZjmN0X" target="_blank" class="btn-source">ดูเว็บ</a></td>
+        </tr>
+        <tr>
+          <td class="col-no">19</td>
+          <td class="col-project"><div class="project-name">บ้านแฝดกู้ง่าย ติดแยกดอนหัวฬ่อ</div></td>
+          <td class="col-image"><img src="https://res.cloudinary.com/dhqvmo8dd/image/upload/e_improve:outdoor,a_auto,q_auto,f_auto/gmiidv7vcup3crt2lbh8" class="property-image" onerror="this.style.display='none'"></td>
+          <td class="col-location"><div class="location">ดอนหัวฬ่อ, ชลบุรี</div></td>
+          <td class="col-type"><span class="type-badge type-บ้านแฝด">บ้านแฝด</span></td>
+          <td class="col-price"><div class="price">1,000,000 บ.</div></td>
+          <td class="col-commission"><div class="commission">3%</div></td>
+          <td class="col-perks"><div class="perks"><span class="highlight">🔥</span> ผ่อนตรงเจ้าของ</div></td>
+          <td class="col-source"><a href="https://spspropertysolution.com/properties/ดอนหัวฬ่อ-ชลบุรี-บ้านเดี่ยว-ขาย-1m--3yaHoRgnZsaZHUQKzCnf" target="_blank" class="btn-source">ดูเว็บ</a></td>
+        </tr>
+        <tr>
+          <td class="col-no">20</td>
+          <td class="col-project"><div class="project-name">คอนโด ขายพร้อมผู้เช่า</div></td>
+          <td class="col-image"><img src="https://res.cloudinary.com/dhqvmo8dd/image/upload/e_improve:outdoor,a_auto,q_auto,f_auto/soxbkalpxfqdewvcj3em" class="property-image" onerror="this.style.display='none'"></td>
+          <td class="col-location"><div class="location">แสนสุข, เมืองชลบุรี, ชลบุรี</div></td>
+          <td class="col-type"><span class="type-badge type-คอนโด">คอนโด</span></td>
+          <td class="col-price"><div class="price">1,500,000 บ.</div></td>
+          <td class="col-commission"><div class="commission">3%</div></td>
+          <td class="col-perks"><div class="perks"><span class="highlight">💵</span> พร้อมผู้เช่า</div></td>
+          <td class="col-source"><a href="https://spspropertysolution.com/properties/แสนสุข-ชลบุรี-คอนโด-ขาย-1.5m--3zX8zqwkoJUBoP8xjdzo" target="_blank" class="btn-source">ดูเว็บ</a></td>
+        </tr>
+      </tbody>
+    </table>
+    
+    <div class="footer">
+      <p>📊 ข้อมูลจากระบบ Firestore - SPS Property Solution | อัปเดตล่าสุด: 1 เมษายน 2569</p>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-color" style="background:#e74c3c"></div> ⭐ Commission 5%</div>
+        <div class="legend-item"><div class="legend-color" style="background:#f1c40f"></div> ค่าคอมมิสชั่น 3%</div>
+        <div class="legend-item"><div class="legend-color" style="background:#3498db"></div> บ้านเดี่ยว</div>
+        <div class="legend-item"><div class="legend-color" style="background:#1abc9c"></div> ทาวน์โฮม 1 ชั้น</div>
+        <div class="legend-item"><div class="legend-color" style="background:#f39c12"></div> ทาวน์โฮม 2 ชั้น</div>
+        <div class="legend-item"><div class="legend-color" style="background:#e67e22"></div> บ้านแฝด</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

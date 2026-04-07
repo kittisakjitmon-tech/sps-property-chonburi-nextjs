@@ -14,6 +14,7 @@ import {
   Flame,
   CreditCard,
   Building2,
+  Award,
 } from "lucide-react";
 
 const buyHomeLinks = [
@@ -158,6 +159,10 @@ export default function Navbar() {
             เช่า
           </Link>
 
+          <Link href="/portfolio" className="nav-link text-[15px] font-medium text-gray-600 hover:text-blue-600 transition-colors duration-200 whitespace-nowrap no-underline py-2">
+            ผลงาน
+          </Link>
+
           {/* Service Dropdown */}
           <div className="relative">
             <button
@@ -273,6 +278,11 @@ export default function Navbar() {
 
               <Link href="/properties?listingType=rent" onClick={() => setMobileOpen(false)} className="w-full px-4 py-3 rounded-xl text-slate-700 hover:bg-slate-50 font-medium min-h-[44px] flex items-center">
                 เช่า
+              </Link>
+
+              <Link href="/portfolio" onClick={() => setMobileOpen(false)} className="w-full px-4 py-3 rounded-xl text-slate-700 hover:bg-slate-50 font-medium min-h-[44px] flex items-center gap-2">
+                <Award className="h-4 w-4" />
+                ผลงาน
               </Link>
 
               <button

@@ -1,0 +1,32 @@
+{
+  "name": "sps-property-functions",
+  "description": "Cloud Functions for SPS Property Solution (AI Image Enhancement via Cloudinary)",
+  "scripts": {
+    "serve": "firebase emulators:start --only functions",
+    "shell": "firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "22"
+  },
+  "main": "index.js",
+  "dependencies": {
+    "@google-cloud/vertexai": "^1.10.0",
+    "@google/generative-ai": "^0.24.1",
+    "axios": "^1.6.0",
+    "cloudinary": "^2.0.0",
+    "firebase-admin": "^12.7.0",
+    "firebase-functions": "^4.9.0"
+  },
+  "devDependencies": {
+    "firebase-functions-test": "^3.4.1",
+    "typescript": "^5.9.3"
+  },
+  "private": true,
+  "version": "1.0.0",
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

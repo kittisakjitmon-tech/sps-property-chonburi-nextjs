@@ -4,7 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "node scripts/dev-local.mjs",
+    "dev:vite": "vite",
     "build": "vite build",
     "build:locations": "node scripts/build-thai-locations.js",
     "generate-sitemap": "node scripts/generate-sitemap.js",

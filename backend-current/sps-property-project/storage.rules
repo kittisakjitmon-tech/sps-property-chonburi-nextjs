@@ -1,0 +1,41 @@
+rules_version = '2';
+// อัปโหลดจากหลังบ้านต้องใช้ adminStorage (จาก admin app) เพื่อให้ request.auth เป็น admin ที่ล็อกอิน
+service firebase.storage {
+  match /b/{bucket}/o {
+    // properties: อ่านได้ทุกคน, เขียนได้เฉพาะ Admin ที่ login แล้ว
+    match /properties/{propertyId}/{allPaths=**} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+    // hero_slides: อ่านได้ทุกคน, เขียนได้เฉพาะ Admin ที่ login แล้ว
+    match /hero_slides/{allPaths=**} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+    // popular_locations: อ่านได้ทุกคน, เขียนได้เฉพาะ Admin ที่ login แล้ว
+    match /popular_locations/{allPaths=**} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+    // pending_properties: อ่านได้ทุกคน, เขียนได้ทุกคน (สำหรับฟอร์มลงประกาศ)
+    match /pending_properties/{allPaths=**} {
+      allow read: if true;
+      allow write: if true;
+    }
+    // blogs: อ่านได้ทุกคน, เขียนได้เฉพาะ Admin ที่ login แล้ว
+    match /blogs/{allPaths=**} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+    // agents: อ่านได้ทุกคน, เขียนได้เฉพาะเจ้าของ (Agent) หรือผู้ที่ login แล้ว
+    match /agents/{userId}/{allPaths=**} {
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.uid == userId;
+    }
+    // portfolio: อ่านได้ทุกคน, เขียนได้เฉพาะ Admin ที่ login แล้ว
+    match /portfolio/{allPaths=**} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+  }
+}

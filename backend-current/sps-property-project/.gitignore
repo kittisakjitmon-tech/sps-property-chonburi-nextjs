@@ -1,0 +1,48 @@
+# Logs
+logs/
+*.log
+._*
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+hosting.*
+# Node / dependencies
+node_modules/
+functions/node_modules/
+้hosting.*
+# Build output
+dist/
+dist-ssr/
+
+# Vite / tooling caches
+.eslintcache
+*.local
+.firebase/*cache*
+# Environment & secrets
+.env
+.env.local
+.env.development.local
+.env.production.local
+.env.test.local
+functions/.env
+
+# Firebase local state
+.firebase/
+.firebase/*cache*
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json
+# Misc editor / project files
+.antigravity
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.continueignore
+.env

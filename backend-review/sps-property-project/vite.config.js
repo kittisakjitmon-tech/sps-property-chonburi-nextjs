@@ -1,12 +1,23 @@
-import { defineConfig } from 'vite'
+import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
 import compression from 'vite-plugin-compression'
 import { ViteImageOptimizer } from 'vite-plugin-image-optimizer'
 
 // https://vite.dev/config/
-export default defineConfig({
-  plugins: [
-    react(),
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), '')
+  return {
+    plugins: [
+      react(),
+      {
+        name: 'sps-local-ai-property',
+        configureServer: async server => {
+          const { createLocalAiMiddleware } = await import('./scripts/local-ai-middleware.mjs')
+          server.middlewares.use('/api/ai-property', createLocalAiMiddleware({
+            env: { ...env, OPENROUTER_API_KEY: process.env.OPENROUTER_API_KEY },
+          }))
+        },
+      },
     // Optimize images in public/ and imported assets (PNG, JPEG, WebP, SVG)
     ViteImageOptimizer({
       test: /\.(jpe?g|png|gif|tiff|webp|svg|avif)$/i,
@@ -59,4 +70,5 @@ export default defineConfig({
       },
     },
   },
+  }
 })

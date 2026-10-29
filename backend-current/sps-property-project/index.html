@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+    <link rel="icon" type="image/x-icon" href="/icon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SPS Admin | ระบบจัดการ</title>
+    <meta name="description" content="SPS Property Admin - ระบบจัดการเว็บไซต์" />
+    <!-- Preconnect to LCP, font and image CDN origins for faster first request -->
+    <link rel="preconnect" href="https://res.cloudinary.com" crossorigin />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Preconnect to Firebase for faster API calls -->
+    <link rel="preconnect" href="https://firestore.googleapis.com" />
+    <link rel="preconnect" href="https://identitytoolkit.googleapis.com" />
+    <!-- Preload LCP image (default hero, mobile-first &lt;150KB): 800w, WebP via auto=format -->
+    <link rel="preload" as="image" href="https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=800&amp;q=75&amp;auto=format" fetchpriority="high" />
+    <!-- Load font CSS async to avoid render-blocking; fallback for no-JS -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" media="print" onload="this.media='all'" />
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" /></noscript>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

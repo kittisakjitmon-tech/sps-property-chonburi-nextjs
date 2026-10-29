@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from 'react';
+import { useId } from 'react';
 import { ChevronDown } from 'lucide-react';
 
 interface DropdownOption {
@@ -17,6 +17,7 @@ interface DropdownProps {
   className?: string;
 }
 
+/** ใช้ select มาตรฐานเพื่อรองรับคีย์บอร์ด หน้าจอสัมผัส และโปรแกรมอ่านหน้าจอ */
 export default function Dropdown({
   options,
   value,
@@ -25,69 +26,26 @@ export default function Dropdown({
   label,
   className = '',
 }: DropdownProps) {
-  const [isOpen, setIsOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-
-  const selectedOption = options.find((opt) => opt.value === value);
-  const displayText = selectedOption?.label || placeholder;
-
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+  const id = useId();
+  const labelId = `${id}-label`;
+  const normalizedOptions = options.filter((option, index) =>
+    option.value !== '' && options.findIndex((item) => item.value === option.value) === index
+  );
 
   return (
-    <div className={`relative ${className}`} ref={dropdownRef}>
-      {label && (
-        <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-4">
-          {label}
-        </div>
-      )}
-      <button
-        type="button"
-        onClick={() => setIsOpen(!isOpen)}
-        className={`w-full flex items-center justify-between gap-3 px-5 py-3 rounded-2xl bg-slate-50 hover:bg-slate-100 border-2 transition-all duration-200 ${
-          isOpen ? 'border-blue-200 bg-white ring-4 ring-blue-50' : 'border-transparent'
-        }`}
+    <div className={`relative ${className}`}>
+      {label && <label id={labelId} htmlFor={id} className="block text-xs font-semibold text-slate-600 mb-1.5 ml-1">{label}</label>}
+      <select
+        id={id}
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        aria-label={label ? undefined : placeholder}
+        className="w-full min-h-[44px] min-w-[112px] appearance-none cursor-pointer rounded-xl border border-slate-200 bg-slate-50 py-2.5 pl-3 pr-9 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-100 focus:border-blue-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-100"
       >
-        <span className={`text-sm font-semibold truncate ${value ? 'text-slate-900' : 'text-slate-500'}`}>
-          {displayText}
-        </span>
-        <ChevronDown className={`h-4 w-4 text-slate-400 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
-      </button>
-
-      {isOpen && (
-        <div className="absolute top-[calc(100%+10px)] left-0 w-full min-w-[200px] bg-white rounded-xl shadow-lg border border-slate-100 py-2 z-50">
-          <button
-            type="button"
-            onClick={() => {
-              onChange('');
-              setIsOpen(false);
-            }}
-            className={`w-full text-left px-5 py-3 text-sm transition-colors ${!value ? 'bg-blue-50 text-blue-900 font-bold' : 'text-slate-600 hover:bg-slate-50'}`}
-          >
-            {placeholder}
-          </button>
-          {options.map((option) => (
-            <button
-              key={option.value}
-              type="button"
-              onClick={() => {
-                onChange(option.value);
-                setIsOpen(false);
-              }}
-              className={`w-full text-left px-5 py-3 text-sm transition-colors ${value === option.value ? 'bg-blue-50 text-blue-900 font-bold' : 'text-slate-600 hover:bg-slate-50'}`}
-            >
-              {option.label}
-            </button>
-          ))}
-        </div>
-      )}
+        <option value="">{placeholder}</option>
+        {normalizedOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
+      </select>
+      <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" aria-hidden="true" />
     </div>
   );
 }

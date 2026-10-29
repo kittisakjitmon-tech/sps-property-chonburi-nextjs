@@ -17,61 +17,37 @@ import {
   CheckCircle2,
   Lightbulb,
   Handshake,
-  TrendingUp,
-  Flame,
-  Star,
-  Clock3,
-  TrendingDown,
-  Sparkles,
 } from "lucide-react";
 import {
   getPropertiesOnce,
-  getFeaturedProperties,
   getFeaturedBlogs,
   getPopularLocationsOnce,
-  getHomepageSectionsOnce,
-  getLocationString,
-  type Property,
-  type Blog,
-  type PopularLocation,
-  type HomepageSection,
 } from "@/lib/firestore";
 import { generateBlogSlug } from "@/lib/blogSlug";
-import Navbar from "@/components/Navbar";
 import HeroSlider from "@/components/HeroSlider";
 import HomeSearch from "@/components/HomeSearch";
-import Footer from "@/components/Footer";
-import PropertyCard from "@/components/PropertyCard";
 import PropertyCardCompact from "@/components/PropertyCardCompact";
 import PropertyTabsSection from "@/components/PropertyTabsSection";
+import OptimizedImage from "@/components/OptimizedImage";
+import { PRIMARY_CHAT_LABEL, PRIMARY_CHAT_URL } from "@/constants/contact";
+import { SITE_DESCRIPTION } from "@/lib/site";
 
-// Metadata for SEO
 export const metadata: Metadata = {
-  title: "SPS Property Solution | บ้านคอนโดสวย อมตะซิตี้ ชลบุรี",
-  description: "SPS Property Solution บ้านคอนโดสวย อมตะซิตี้ ชลบุรี - ค้นหาบ้านและคอนโดที่ใช่สำหรับคุณในอมตะซิตี้ ชลบุรี",
+  title: "บ้าน คอนโด อมตะซิตี้ ชลบุรี",
+  description: SITE_DESCRIPTION,
+  alternates: { canonical: '/' },
+  openGraph: {
+    title: "SPS Property Solution | บ้าน คอนโด อมตะซิตี้ ชลบุรี",
+    description: SITE_DESCRIPTION,
+    url: '/',
+    type: 'website',
+  },
+  twitter: {
+    title: "SPS Property Solution | บ้าน คอนโด อมตะซิตี้ ชลบุรี",
+    description: SITE_DESCRIPTION,
+  },
 };
 
-// Stats data
-const stats = [
-  { icon: Building2, value: "500+", label: "ทรัพย์สิน" },
-  { icon: Award, value: "12+", label: "ปีประสบการณ์" },
-  { icon: Users, value: "1,200+", label: "ลูกค้า" },
-  { icon: Clock, value: "24/7", label: "บริการ" },
-];
-
-
-
-// Quick filters for sticky bar
-const QUICK_FILTERS = [
-  { id: "all", label: "ทั้งหมด", icon: HomeIcon },
-  { id: "featured", label: "ทรัพย์เด่น", icon: Star },
-  { id: "hotdeal", label: "🔥 ดีลร้อน", icon: Flame },
-  { id: "near", label: "ใกล้ BTS", icon: MapPin },
-  { id: "new", label: "🏠 ใหม่", icon: Sparkles },
-  { id: "cheap", label: "💰 ราคาดี", icon: TrendingDown },
-];
-
-// Service highlights (compact)
 const serviceHighlights = [
   { icon: CheckCircle2, title: "รับปิดหนี้ รวมหนี้ ผ่อนทางเดียว" },
   { icon: Building2, title: "บริการสินเชื่อครบวงจร ดูแลทุกขั้นตอน" },
@@ -79,30 +55,20 @@ const serviceHighlights = [
   { icon: Handshake, title: "บริการครบวงจรทุกขั้นตอน" },
 ];
 
-// Main Page Component
 export default async function HomePage() {
-  // Fetch all data in parallel
-  const [properties, featuredProperties, blogs, locations, sections] = await Promise.all([
+  const [properties, blogs, locations] = await Promise.all([
     getPropertiesOnce(false),
-    getFeaturedProperties(6),
     getFeaturedBlogs(3),
     getPopularLocationsOnce(),
-    getHomepageSectionsOnce(),
   ]);
-
-  // Get newest properties sorted by createdAt (newest first, no time limit)
-  const newProperties = [...properties]
-    .filter(p => p.createdAt) // Only properties with createdAt
-    .sort((a, b) => {
-      const aTime = typeof a.createdAt === 'number'
-        ? a.createdAt
-        : (a.createdAt as any)?.toMillis?.() || 0;
-      const bTime = typeof b.createdAt === 'number'
-        ? b.createdAt
-        : (b.createdAt as any)?.toMillis?.() || 0;
-      return bTime - aTime; // Sort descending (newest first)
-    })
-    .slice(0, 6);
+  const featuredProperties = properties.slice(0, 200).filter((property) => property.featured === true).slice(0, 6);
+  const newProperties = properties.filter((property) => property.createdAt).slice(0, 6);
+  const stats = [
+    { icon: Building2, value: properties.length.toLocaleString('th-TH'), label: "ทรัพย์ในระบบ" },
+    { icon: Award, value: "12+", label: "ปีประสบการณ์" },
+    { icon: Users, value: "1,200+", label: "ลูกค้า" },
+    { icon: Clock, value: "24/7", label: "บริการ" },
+  ];
 
   return (
     <>
@@ -110,34 +76,21 @@ export default async function HomePage() {
 
         {/* ── Hero Section (Compact) ── */}
         <HeroSlider>
-          {/* Hero Content */}
           <div className="text-center mb-4">
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white mb-2">
-              รวมภาระหนี้{" "}
-              <span className="text-yellow-400 drop-shadow">ผ่อนบ้านทางเดียว</span>
+            <h1 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold text-white mb-2">
+              ค้นหาบ้านและคอนโด <span className="text-yellow-400 drop-shadow">อมตะซิตี้ ชลบุรี</span>
             </h1>
-            <p className="text-sm sm:text-base text-blue-200">
-              อสังหาริมทรัพย์คุณภาพ อมตะซิตี้ · ชลบุรี
-            </p>
+            <p className="text-sm sm:text-base text-blue-100">ซื้อ เช่า ผ่อนตรง พร้อมบริการปรึกษาสินเชื่อ</p>
           </div>
-
-          {/* Search Box */}
           <HomeSearch />
-
-          {/* Compact Service Highlights */}
-          <div className="relative w-full max-w-4xl mx-auto mt-3">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
+          <div className="hidden sm:block relative w-full max-w-4xl mx-auto mt-3">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
               {serviceHighlights.map((item) => {
                 const IconComponent = item.icon;
                 return (
-                  <div
-                    key={item.title}
-                    className="flex items-center gap-4 p-5 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md hover:bg-white/10 transition-all min-h-[30px] cursor-pointer"
-                  >
-                    <IconComponent className="h-4 w-4 text-yellow-400 shrink-0" />
-                    <p className="text-white text-xs sm:text-sm font-medium leading-tight drop-shadow-sm">
-                      {item.title}
-                    </p>
+                  <div key={item.title} className="flex items-center gap-3 p-3 rounded-xl border border-white/10 bg-white/5 backdrop-blur-md">
+                    <IconComponent className="h-4 w-4 text-yellow-400 shrink-0" aria-hidden="true" />
+                    <p className="text-white text-xs sm:text-sm font-medium leading-snug">{item.title}</p>
                   </div>
                 );
               })}
@@ -244,13 +197,13 @@ export default async function HomePage() {
               </div>
 
               <a
-                href="https://www.facebook.com/houseamata"
+                href={PRIMARY_CHAT_URL}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 border border-white/25 text-white font-semibold px-6 py-3 rounded-xl transition-all duration-300 text-sm whitespace-nowrap"
               >
                 <MessageCircle className="h-4 w-4" />
-                ติดต่อ Facebook
+                ปรึกษาผ่าน {PRIMARY_CHAT_LABEL}
               </a>
             </div>
           </div>
@@ -275,7 +228,7 @@ export default async function HomePage() {
               ].map(({ Icon, title, desc, color }) => (
                 <div
                   key={title}
-                  className="flex flex-col items-center text-center p-3 sm:p-4 rounded-xl bg-white hover:bg-white hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 cursor-pointer min-h-[100px]"
+                  className="flex flex-col items-center text-center p-3 sm:p-4 rounded-xl bg-white hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 min-h-[100px]"
                 >
                   <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-3 ${color}`}>
                     <Icon className="h-6 w-6" />
@@ -315,11 +268,7 @@ export default async function HomePage() {
                         <MapPin className="h-12 w-12 text-white/30" />
                       </div>
                       {loc.imageUrl && (
-                        <img
-                          src={loc.imageUrl}
-                          alt={loc.displayName}
-                          className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                        />
+                        <OptimizedImage src={loc.imageUrl} alt={loc.displayName} fill sizes="(max-width: 640px) 256px, 288px" className="object-cover group-hover:scale-105 transition-transform duration-300" />
                       )}
                       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
                       <div className="absolute bottom-3 left-3 right-3">
@@ -359,13 +308,9 @@ export default async function HomePage() {
                     href={`/blogs/${generateBlogSlug(blog)}`}
                     className="group bg-slate-50 rounded-xl overflow-hidden hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300"
                   >
-                    <div className="aspect-video bg-slate-100 overflow-hidden">
+                    <div className="relative aspect-video bg-slate-100 overflow-hidden">
                       {blog.images?.[0] ? (
-                        <img
-                          src={blog.images[0]}
-                          alt={blog.title}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                        />
+                        <OptimizedImage src={blog.images[0]} alt={blog.title} fill sizes="(max-width: 640px) 100vw, 33vw" className="object-cover group-hover:scale-105 transition-transform duration-300" />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center bg-blue-50">
                           <span className="text-blue-400 text-xs">ไม่มีรูป</span>

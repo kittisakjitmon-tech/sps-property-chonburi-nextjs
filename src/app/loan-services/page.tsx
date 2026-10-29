@@ -3,15 +3,16 @@
 import { useState } from 'react';
 import { Calculator, Check, MessageCircle } from 'lucide-react';
 import { createLoanRequest } from '@/lib/firestore';
+import { CONTACT, PRIMARY_CHAT_LABEL, PRIMARY_CHAT_URL } from '@/constants/contact';
 
 export default function LoanServicesPage() {
   // Calculator state
   const [totalDebt, setTotalDebt] = useState('');
   const [avgInterestRate, setAvgInterestRate] = useState('18');
   const [homeLoanRate, setHomeLoanRate] = useState('6.5');
+  const [loanTermYears, setLoanTermYears] = useState('20');
   const [showResult, setShowResult] = useState(false);
 
-  // Form state
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
@@ -23,26 +24,34 @@ export default function LoanServicesPage() {
   });
   const [submitted, setSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
 
-  // Calculations
-  const debtAmount = parseFloat(totalDebt) || 0;
-  const avgRate = parseFloat(avgInterestRate) || 0;
-  const homeRate = parseFloat(homeLoanRate) || 0;
-  
-  const monthlyInterestOnly = (debtAmount * avgRate / 100) / 12;
-  const totalInterestCurrent = monthlyInterestOnly * 12 * 20; // 20 years
-  const newMonthlyPayment = (debtAmount * (homeRate / 100) / 12);
-  const monthlySavings = monthlyInterestOnly - newMonthlyPayment;
+  const debtAmount = Math.max(0, parseFloat(totalDebt) || 0);
+  const avgRate = Math.max(0, parseFloat(avgInterestRate) || 0);
+  const homeRate = Math.max(0, parseFloat(homeLoanRate) || 0);
+  const years = Math.max(1, parseInt(loanTermYears) || 20);
+  const numberOfPayments = years * 12;
+  const currentMonthlyInterest = (debtAmount * avgRate / 100) / 12;
+  const newMonthlyRate = homeRate / 100 / 12;
+  const rateFactor = Math.pow(1 + newMonthlyRate, numberOfPayments);
+  const newMonthlyPayment = debtAmount > 0
+    ? newMonthlyRate === 0
+      ? debtAmount / numberOfPayments
+      : debtAmount * newMonthlyRate * rateFactor / (rateFactor - 1)
+    : 0;
+  const newFirstMonthInterest = debtAmount * newMonthlyRate;
+  const monthlyInterestDifference = currentMonthlyInterest - newFirstMonthInterest;
+  const totalPayment = newMonthlyPayment * numberOfPayments;
+  const totalInterest = Math.max(0, totalPayment - debtAmount);
 
   const handleCalculate = () => {
-    if (debtAmount > 0) {
-      setShowResult(true);
-    }
+    if (debtAmount > 0) setShowResult(true);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setSubmitError('');
     try {
       await createLoanRequest({
         name: formData.name,
@@ -56,16 +65,17 @@ export default function LoanServicesPage() {
       setSubmitted(true);
     } catch (err) {
       console.error('Error submitting:', err);
+      setSubmitError('ส่งข้อมูลไม่สำเร็จ กรุณาตรวจสอบการเชื่อมต่อและลองอีกครั้ง');
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const checklists = [
-    'ไม่ต้องกู้เพิ่ม ใช้บ้านที่มีอยู่เป็นหลักประกัน',
-    'รวมหนี้บัตรเครดิต หนี้ส่วนบุคคล เข้าด้วยกัน',
-    'ผ่อนถูกลงสูงสุด 50% ต่อเดือน',
-    'ปิดหนี้เก่า เริ่มต้นใหม่กับบ้านหลังเดียว',
+    'ประเมินการใช้บ้านที่มีอยู่เป็นหลักประกัน',
+    'รวมภาระบัตรเครดิตและสินเชื่อส่วนบุคคลไว้ในแผนเดียว',
+    'เปรียบเทียบค่างวดและดอกเบี้ยตามเงื่อนไขที่คุณกรอก',
+    'วางแผนปิดหนี้เก่าอย่างเป็นระบบ',
   ];
 
   return (
@@ -74,12 +84,12 @@ export default function LoanServicesPage() {
       <section className="bg-gradient-to-br from-blue-900 via-blue-800 to-blue-700 text-white">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight mb-6">
-            เปลี่ยนหนี้บัตรหลายใบ<br />
-            ให้เป็นบ้านหลังเดียว<br />
-            ผ่อนถูกลงครึ่งต่อครึ่ง!
+            รวมภาระหนี้หลายก้อน<br />
+            ให้เป็นแผนเดียว<br />
+            ที่คุณเห็นตัวเลขชัดเจน
           </h1>
           <p className="text-lg sm:text-xl text-blue-100 mb-8 max-w-2xl">
-            รวมหนี้สินทั้งหมด ไปอยู่ในบ้านที่คุณรัก ผ่อนชำระสะดวก ดอกเบี้ยต่ำกว่าบัตรเครดิต 5-10 เท่า
+            เปรียบเทียบดอกเบี้ย ค่างวด และระยะเวลาผ่อนเบื้องต้น ก่อนขอคำแนะนำตามสถานการณ์ของคุณ
           </p>
           
           {/* Checklist */}
@@ -119,16 +129,16 @@ export default function LoanServicesPage() {
           </div>
 
           <div className="grid md:grid-cols-2 gap-6 mb-6">
-            {/* Left Card - Current Debt */}
             <div className="bg-slate-50 border border-slate-200 rounded-2xl p-6">
               <h3 className="font-bold text-slate-700 mb-4">ภาระหนี้ปัจจุบัน</h3>
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-slate-600 mb-2">
-                    ยอดหนี้รวม (บาท)
-                  </label>
+                  <label htmlFor="total-debt" className="block text-sm font-medium text-slate-600 mb-2">ยอดหนี้รวม (บาท)</label>
                   <input
+                    id="total-debt"
                     type="number"
+                    min="0"
+                    inputMode="decimal"
                     value={totalDebt}
                     onChange={(e) => { setTotalDebt(e.target.value); setShowResult(false); }}
                     placeholder="0"
@@ -136,12 +146,13 @@ export default function LoanServicesPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-600 mb-2">
-                    ดอกเบี้ยเฉลี่ย (% ต่อปี)
-                  </label>
+                  <label htmlFor="average-interest" className="block text-sm font-medium text-slate-600 mb-2">ดอกเบี้ยเฉลี่ย (% ต่อปี)</label>
                   <input
+                    id="average-interest"
                     type="number"
+                    min="0"
                     step="0.1"
+                    inputMode="decimal"
                     value={avgInterestRate}
                     onChange={(e) => { setAvgInterestRate(e.target.value); setShowResult(false); }}
                     placeholder="18"
@@ -149,36 +160,45 @@ export default function LoanServicesPage() {
                   />
                 </div>
                 <div className="pt-4 border-t border-slate-200">
-                  <p className="text-sm text-slate-500 mb-1">ดอกเบี้ยที่ต้องจ่ายต่อปี</p>
+                  <p className="text-sm text-slate-500 mb-1">ดอกเบี้ยต่อเดือนโดยประมาณ</p>
                   <p className="text-2xl font-bold text-red-600">
-                    {(monthlyInterestOnly * 12).toLocaleString('th-TH', { maximumFractionDigits: 0 })} บาท
+                    {currentMonthlyInterest.toLocaleString('th-TH', { maximumFractionDigits: 0 })} บาท
                   </p>
+                  <p className="mt-1 text-xs text-slate-500">คำนวณจากยอดหนี้คงที่ ไม่ใช่ค่างวดปัจจุบัน</p>
                 </div>
               </div>
             </div>
 
-            {/* Right Card - After Consolidation */}
             <div className="bg-green-50 border border-green-200 rounded-2xl p-6">
-              <h3 className="font-bold text-green-800 mb-4">เมื่อรวมหนี้เป็นก้อนเดียว</h3>
+              <h3 className="font-bold text-green-800 mb-4">แผนสินเชื่อใหม่</h3>
               <div className="space-y-4">
                 <div>
-                  <p className="text-sm text-green-700 mb-2">
-                    สินเชื่อบ้านที่คุณมีอยู่ สามารถรีไฟแนนซ์รวมหนี้ได้
-                  </p>
-                  <label className="block text-sm font-medium text-green-800 mb-2">
-                    อัตราดอกเบี้ยบ้านใหม่ (% ต่อปี)
-                  </label>
+                  <label htmlFor="home-loan-rate" className="block text-sm font-medium text-green-800 mb-2">อัตราดอกเบี้ยใหม่ (% ต่อปี)</label>
                   <input
+                    id="home-loan-rate"
                     type="number"
+                    min="0"
                     step="0.1"
+                    inputMode="decimal"
                     value={homeLoanRate}
                     onChange={(e) => { setHomeLoanRate(e.target.value); setShowResult(false); }}
                     placeholder="6.5"
                     className="w-full px-4 py-3 rounded-xl border border-green-300 text-lg focus:outline-none focus:ring-2 focus:ring-green-900/20 focus:border-green-900 bg-white"
                   />
                 </div>
+                <div>
+                  <label htmlFor="loan-term" className="block text-sm font-medium text-green-800 mb-2">ระยะเวลาผ่อน</label>
+                  <select
+                    id="loan-term"
+                    value={loanTermYears}
+                    onChange={(e) => { setLoanTermYears(e.target.value); setShowResult(false); }}
+                    className="w-full px-4 py-3 rounded-xl border border-green-300 text-lg focus:outline-none focus:ring-2 focus:ring-green-900/20 focus:border-green-900 bg-white"
+                  >
+                    {[5, 10, 15, 20, 25, 30].map((year) => <option key={year} value={year}>{year} ปี</option>)}
+                  </select>
+                </div>
                 <div className="pt-4 border-t border-green-200">
-                  <p className="text-sm text-green-600 mb-1">ค่างวดต่อเดือน (ดอกเบี้ยอย่างเดียว)</p>
+                  <p className="text-sm text-green-600 mb-1">ค่างวดต่อเดือน (เงินต้นและดอกเบี้ย)</p>
                   <p className="text-2xl font-bold text-green-700">
                     {newMonthlyPayment.toLocaleString('th-TH', { maximumFractionDigits: 0 })} บาท
                   </p>
@@ -187,33 +207,45 @@ export default function LoanServicesPage() {
             </div>
           </div>
 
-          {/* Calculate Button */}
           <div className="text-center mb-6">
             <button
+              type="button"
               onClick={handleCalculate}
               disabled={!totalDebt || debtAmount <= 0}
               className="px-10 py-4 bg-blue-900 hover:bg-blue-800 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-bold rounded-xl transition-colors text-lg"
             >
-              คำนวณผลต่าง
+              ดูผลประเมิน
             </button>
           </div>
 
-          {/* Result Box */}
           {showResult && debtAmount > 0 && (
-            <div className="bg-teal-700 text-white rounded-2xl p-8 text-center">
-              <p className="text-teal-200 mb-2">ผ่อนชำระต่อเดือนลดลง</p>
-              <p className="text-4xl sm:text-5xl font-bold mb-2">
-                {Math.abs(monthlySavings).toLocaleString('th-TH', { maximumFractionDigits: 0 })} บาท
-              </p>
-              <p className="text-teal-200 text-sm">
-                {monthlySavings > 0 ? '👍 คุณจะประหยัดได้เดือนละ' : '⚠️ ตรวจสอบยอดหนี้และอัตราดอกเบี้ยอีกครั้ง'} 
-                {' '}{Math.abs(monthlySavings).toLocaleString('th-TH', { maximumFractionDigits: 0 })} บาท
-              </p>
-              {monthlySavings > 0 && (
-                <p className="text-teal-300 text-xs mt-4">
-                  รวมประหยัดได้ถึง {(Math.abs(monthlySavings) * 12 * 5).toLocaleString('th-TH', { maximumFractionDigits: 0 })} บาท ใน 5 ปีแรก
+            <div className="bg-teal-700 text-white rounded-2xl p-6 sm:p-8" aria-live="polite">
+              <div className="text-center">
+                <p className="text-teal-200 mb-2">
+                  {monthlyInterestDifference >= 0 ? 'ดอกเบี้ยเดือนแรกลดลงโดยประมาณ' : 'ดอกเบี้ยเดือนแรกเพิ่มขึ้นโดยประมาณ'}
                 </p>
-              )}
+                <p className="text-4xl sm:text-5xl font-bold mb-2">
+                  {Math.abs(monthlyInterestDifference).toLocaleString('th-TH', { maximumFractionDigits: 0 })} บาท
+                </p>
+                <p className="text-teal-200 text-sm">เฉพาะส่วนดอกเบี้ย ไม่ใช่ส่วนต่างของค่างวดที่ต้องจ่าย</p>
+              </div>
+              <dl className="grid sm:grid-cols-3 gap-3 mt-6 text-center">
+                <div className="rounded-xl bg-white/10 p-4">
+                  <dt className="text-xs text-teal-200">ค่างวดใหม่ต่อเดือน</dt>
+                  <dd className="mt-1 text-xl font-bold">{newMonthlyPayment.toLocaleString('th-TH', { maximumFractionDigits: 0 })} บาท</dd>
+                </div>
+                <div className="rounded-xl bg-white/10 p-4">
+                  <dt className="text-xs text-teal-200">ดอกเบี้ยรวมตลอดสัญญา</dt>
+                  <dd className="mt-1 text-xl font-bold">{totalInterest.toLocaleString('th-TH', { maximumFractionDigits: 0 })} บาท</dd>
+                </div>
+                <div className="rounded-xl bg-white/10 p-4">
+                  <dt className="text-xs text-teal-200">ยอดจ่ายรวมโดยประมาณ</dt>
+                  <dd className="mt-1 text-xl font-bold">{totalPayment.toLocaleString('th-TH', { maximumFractionDigits: 0 })} บาท</dd>
+                </div>
+              </dl>
+              <p className="mt-5 text-xs leading-relaxed text-teal-100">
+                ผลคำนวณใช้อัตราดอกเบี้ยคงที่และไม่รวมค่าธรรมเนียม ประกัน หรือเงื่อนไขผู้ให้สินเชื่อ ตัวเลขนี้เป็นการประเมินเบื้องต้น ไม่ใช่ข้อเสนอหรือผลอนุมัติสินเชื่อ
+              </p>
             </div>
           )}
         </div>
@@ -247,6 +279,11 @@ export default function LoanServicesPage() {
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-sm p-6 space-y-4">
+              {submitError && (
+                <div role="alert" className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+                  {submitError}
+                </div>
+              )}
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">ชื่อ-สกุล</label>
                 <input
@@ -360,13 +397,15 @@ export default function LoanServicesPage() {
           <p className="text-blue-200 mb-6">
             ทักแชทมาคุยกับเราฟรี! ไม่มีค่าใช้จ่าย ไม่มีข้อผูกพัน
           </p>
-          <button 
-            onClick={() => window.open('https://line.me/ti/p/~spsproperty', '_blank')}
-            className="inline-flex items-center gap-2 px-8 py-4 bg-green-500 hover:bg-green-400 text-white font-bold rounded-xl transition-colors"
+          <a
+            href={PRIMARY_CHAT_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`inline-flex items-center gap-2 px-8 py-4 text-white font-bold rounded-xl transition-colors ${CONTACT.lineUrl ? 'bg-green-600 hover:bg-green-700' : 'bg-blue-600 hover:bg-blue-700'}`}
           >
             <MessageCircle className="w-5 h-5" />
-            ทักแชท Line ตอนนี้
-          </button>
+            ทักแชท {PRIMARY_CHAT_LABEL} ตอนนี้
+          </a>
         </div>
       </section>
     </div>

@@ -1,75 +1,53 @@
 import { MetadataRoute } from 'next';
 import { getPropertiesOnce, getBlogsOnce } from '@/lib/firestore';
+import { getPropertyPath } from '@/lib/propertySlug';
+import { getBlogPath } from '@/lib/blogSlug';
+import { SITE_URL, absoluteUrl } from '@/lib/site';
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://spspropertysolution.com';
+function toDate(value: unknown): Date {
+  if (value instanceof Date && !Number.isNaN(value.getTime())) return value;
+  if (typeof value === 'object' && value !== null && 'toDate' in value && typeof value.toDate === 'function') {
+    const date = value.toDate();
+    if (date instanceof Date && !Number.isNaN(date.getTime())) return date;
+  }
+  if (typeof value === 'string' || typeof value === 'number') {
+    const date = new Date(value);
+    if (!Number.isNaN(date.getTime())) return date;
+  }
+  return new Date();
+}
+
+// Next.js currently writes image URLs without escaping XML entities.
+function sitemapImages(images: (string | undefined)[]): string[] {
+  return [...new Set(images.filter((image): image is string => Boolean(image)))]
+    .map((image) => image.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'));
+}
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticPages: MetadataRoute.Sitemap = [
-    {
-      url: BASE_URL,
-      lastModified: new Date(),
-      changeFrequency: 'daily',
-      priority: 1,
-    },
-    {
-      url: `${BASE_URL}/properties`,
-      lastModified: new Date(),
-      changeFrequency: 'daily',
-      priority: 0.9,
-    },
-    {
-      url: `${BASE_URL}/blogs`,
-      lastModified: new Date(),
-      changeFrequency: 'weekly',
-      priority: 0.8,
-    },
-    {
-      url: `${BASE_URL}/contact`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.6,
-    },
-    {
-      url: `${BASE_URL}/loan-services`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.5,
-    },
-    {
-      url: `${BASE_URL}/login`,
-      lastModified: new Date(),
-      changeFrequency: 'yearly',
-      priority: 0.3,
-    },
+    { url: SITE_URL, lastModified: new Date(), changeFrequency: 'daily', priority: 1 },
+    { url: absoluteUrl('/properties'), lastModified: new Date(), changeFrequency: 'daily', priority: 0.9 },
+    { url: absoluteUrl('/blogs'), lastModified: new Date(), changeFrequency: 'weekly', priority: 0.8 },
+    { url: absoluteUrl('/portfolio'), lastModified: new Date(), changeFrequency: 'monthly', priority: 0.7 },
+    { url: absoluteUrl('/post'), lastModified: new Date(), changeFrequency: 'monthly', priority: 0.7 },
+    { url: absoluteUrl('/contact'), lastModified: new Date(), changeFrequency: 'monthly', priority: 0.6 },
+    { url: absoluteUrl('/loan-services'), lastModified: new Date(), changeFrequency: 'monthly', priority: 0.6 },
   ];
 
-  // Helper to convert Firestore Timestamp or Date to Date
-  const toDate = (value: any): Date => {
-    if (!value) return new Date();
-    if (value instanceof Date) return value;
-    if (typeof value.toDate === 'function') return value.toDate();
-    if (typeof value === 'string' || typeof value === 'number') return new Date(value);
-    return new Date();
-  };
-
-  // Fetch dynamic pages
   let propertyPages: MetadataRoute.Sitemap = [];
   let blogPages: MetadataRoute.Sitemap = [];
 
   try {
     const properties = await getPropertiesOnce(false);
     propertyPages = properties
-      .filter((p) => p.id)
-      .map((property) => {
-        const slug = property.slug || property.id;
-        const url = `${BASE_URL}/properties/${slug}--${property.id}`;
-        return {
-          url,
-          lastModified: toDate(property.updatedAt),
-          changeFrequency: 'weekly' as const,
-          priority: 0.7,
-        };
-      });
+      .filter((property) => property.id)
+      .map((property) => ({
+        url: absoluteUrl(getPropertyPath(property)),
+        lastModified: toDate(property.updatedAt || property.createdAt),
+        changeFrequency: 'weekly' as const,
+        priority: 0.7,
+        images: sitemapImages([property.coverImageUrl, ...(property.images || [])]),
+      }));
   } catch (error) {
     console.error('Error fetching properties for sitemap:', error);
   }
@@ -77,17 +55,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   try {
     const blogs = await getBlogsOnce(100);
     blogPages = blogs
-      .filter((b) => b.id)
-      .map((blog) => {
-        const slug = blog.slug || blog.id;
-        const url = `${BASE_URL}/blogs/${slug}--${blog.id}`;
-        return {
-          url,
-          lastModified: toDate(blog.updatedAt),
-          changeFrequency: 'monthly' as const,
-          priority: 0.6,
-        };
-      });
+      .filter((blog) => blog.id)
+      .map((blog) => ({
+        url: absoluteUrl(getBlogPath(blog)),
+        lastModified: toDate(blog.updatedAt || blog.createdAt),
+        changeFrequency: 'monthly' as const,
+        priority: 0.6,
+        images: sitemapImages(blog.images || []),
+      }));
   } catch (error) {
     console.error('Error fetching blogs for sitemap:', error);
   }

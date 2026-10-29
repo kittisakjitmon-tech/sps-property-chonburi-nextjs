@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { MapPin, Globe, Mail, Clock, Phone, MessageCircle, Send } from 'lucide-react';
 import { createInquiry } from '@/lib/firestore';
+import { CONTACT, PRIMARY_CHAT_LABEL, PRIMARY_CHAT_URL } from '@/constants/contact';
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -49,14 +50,14 @@ export default function ContactPage() {
     {
       icon: Mail,
       label: 'อีเมล',
-      value: 'propertysommai@gmail.com',
-      href: 'mailto:propertysommai@gmail.com',
+      value: CONTACT.email,
+      href: `mailto:${CONTACT.email}`,
     },
     {
       icon: Send,
       label: 'Facebook',
       value: 'houseamata',
-      href: 'https://facebook.com/houseamata',
+      href: CONTACT.facebookUrl,
     },
     {
       icon: Clock,
@@ -257,22 +258,24 @@ export default function ContactPage() {
               {/* Quick Contact */}
               <div className="mt-6 pt-6 border-t border-gray-100">
                 <p className="text-center text-sm text-gray-500 mb-4">หรือติดต่อเราได้โดยตรง</p>
-                <div className="flex gap-3">
+                <div className="flex flex-col sm:flex-row gap-3">
+                  {CONTACT.phone && (
+                    <a
+                      href={`tel:${CONTACT.phone}`}
+                      className="flex-1 flex items-center justify-center gap-2 py-3 bg-blue-900 hover:bg-blue-800 text-white font-medium rounded-xl transition-colors"
+                    >
+                      <Phone className="w-5 h-5" />
+                      โทร {CONTACT.phone}
+                    </a>
+                  )}
                   <a
-                    href="tel:0891234567"
-                    className="flex-1 flex items-center justify-center gap-2 py-3 bg-green-500 hover:bg-green-600 text-white font-medium rounded-xl transition-colors"
-                  >
-                    <Phone className="w-5 h-5" />
-                    โทรเลย
-                  </a>
-                  <a
-                    href="https://line.me/ti/p/~spsproperty"
+                    href={PRIMARY_CHAT_URL}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex-1 flex items-center justify-center gap-2 py-3 bg-green-400 hover:bg-green-500 text-white font-medium rounded-xl transition-colors"
+                    className={`flex-1 flex items-center justify-center gap-2 py-3 text-white font-medium rounded-xl transition-colors ${CONTACT.lineUrl ? 'bg-green-600 hover:bg-green-700' : 'bg-blue-600 hover:bg-blue-700'}`}
                   >
                     <MessageCircle className="w-5 h-5" />
-                    แชท LINE
+                    แชท {PRIMARY_CHAT_LABEL}
                   </a>
                 </div>
               </div>

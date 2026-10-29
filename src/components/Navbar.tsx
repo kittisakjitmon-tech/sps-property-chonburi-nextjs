@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
+import OptimizedImage from "@/components/OptimizedImage";
 import {
   Menu,
   X,
@@ -33,12 +34,6 @@ const serviceLinks = [
 
 export default function Navbar() {
   const pathname = usePathname();
-  
-  // Hide navbar on share pages
-  if (pathname?.startsWith('/share')) {
-    return null;
-  }
-
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileBuyOpen, setMobileBuyOpen] = useState(false);
   const [mobileServiceOpen, setMobileServiceOpen] = useState(false);
@@ -87,17 +82,28 @@ export default function Navbar() {
   };
 
   const handleServiceMouseLeave = () => {
-    serviceTimeoutRef.current = setTimeout(() => {
-      setServiceMenuOpen(false);
-    }, 1000); // 1 second delay
+    serviceTimeoutRef.current = setTimeout(() => setServiceMenuOpen(false), 200);
   };
+
+  useEffect(() => {
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return;
+      setMobileOpen(false);
+      setBuyMenuOpen(false);
+      setServiceMenuOpen(false);
+    };
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, []);
+
+  if (pathname?.startsWith('/share')) return null;
 
   return (
     <header className="sticky top-0 z-[100] w-full bg-white border-b border-gray-200">
       <nav className="w-full mx-auto px-3 sm:px-4 md:px-6 lg:px-8 lg:max-w-7xl min-h-[60px] flex flex-wrap items-center justify-between gap-3 py-2">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 shrink min-w-0 max-w-[calc(100%-56px)] lg:max-w-none">
-          <img src="/logo.png" alt="SPS Property Solution" className="w-10 h-10 object-contain rounded-xl" />
+          <OptimizedImage src="/logo.png" alt="SPS Property Solution" width={40} height={40} priority className="w-10 h-10 object-contain rounded-xl" />
           <span className="text-base font-semibold text-gray-900 whitespace-nowrap truncate hidden sm:inline">
             SPS Property Solution
           </span>
@@ -109,50 +115,28 @@ export default function Navbar() {
             หน้าหลัก
           </Link>
 
-          {/* Buy Dropdown */}
-          <div className="relative">
+          <div className="relative" onKeyDown={(event) => { if (event.key === 'Escape') { setBuyMenuOpen(false); event.currentTarget.querySelector('button')?.focus(); } }}>
             <button
               type="button"
-              onClick={() => {
-                setBuyMenuOpen(!buyMenuOpen);
-                setServiceMenuOpen(false);
-              }}
+              aria-expanded={buyMenuOpen}
+              aria-controls="buy-home-menu"
+              onClick={() => { setBuyMenuOpen(!buyMenuOpen); setServiceMenuOpen(false); }}
               onMouseEnter={handleBuyMouseEnter}
               onMouseLeave={handleBuyMouseLeave}
               className="nav-link inline-flex items-center gap-1 text-[15px] font-medium text-gray-600 hover:text-blue-600 transition-colors duration-200 whitespace-nowrap bg-transparent border-0 cursor-pointer py-2"
             >
-              ซื้อบ้าน
-              <ChevronDown className={`h-4 w-4 transition-transform ${buyMenuOpen ? "rotate-180" : ""}`} />
+              ซื้อบ้าน<ChevronDown className={`h-4 w-4 transition-transform ${buyMenuOpen ? "rotate-180" : ""}`} aria-hidden="true" />
             </button>
-
-            <div
-              onMouseEnter={handleBuyMouseEnter}
-              onMouseLeave={handleBuyMouseLeave}
-              className={`absolute left-0 top-full mt-2 w-72 bg-white rounded-xl shadow-lg border border-slate-200 py-2 z-50 transition-all duration-200 ${
-                buyMenuOpen ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 -translate-y-1 pointer-events-none"
-              }`}
-            >
-              {buyHomeLinks.map(({ href, label, icon: Icon, highlight, npaHighlight }) => (
-                <Link
-                  key={href}
-                  href={href}
-                  className={`flex items-center gap-2 px-4 py-2.5 text-sm transition ${
-                    highlight
-                      ? "font-semibold text-red-600 hover:bg-red-50"
-                      : npaHighlight
-                      ? "font-semibold text-indigo-700 hover:bg-indigo-50"
-                      : "text-slate-700 hover:bg-slate-50"
-                  }`}
-                  onClick={() => setBuyMenuOpen(false)}
-                >
-                  <Icon className={`h-4 w-4 ${highlight ? "text-red-500" : npaHighlight ? "text-indigo-500" : "text-slate-500"}`} />
-                  {label}
-                  {npaHighlight && (
-                    <span className="ml-auto text-[10px] font-bold bg-indigo-100 text-indigo-700 px-1.5 py-0.5 rounded-full">NPA</span>
-                  )}
-                </Link>
-              ))}
-            </div>
+            {buyMenuOpen && (
+              <div id="buy-home-menu" onMouseEnter={handleBuyMouseEnter} onMouseLeave={handleBuyMouseLeave} className="absolute left-0 top-full mt-2 w-72 bg-white rounded-xl shadow-lg border border-slate-200 py-2 z-50">
+                {buyHomeLinks.map(({ href, label, icon: Icon, highlight, npaHighlight }) => (
+                  <Link key={href} href={href} className={`flex items-center gap-2 px-4 py-2.5 text-sm transition ${highlight ? "font-semibold text-red-600 hover:bg-red-50" : npaHighlight ? "font-semibold text-indigo-700 hover:bg-indigo-50" : "text-slate-700 hover:bg-slate-50"}`} onClick={() => setBuyMenuOpen(false)}>
+                    <Icon className={`h-4 w-4 ${highlight ? "text-red-500" : npaHighlight ? "text-indigo-500" : "text-slate-500"}`} aria-hidden="true" />
+                    {label}{npaHighlight && <span className="ml-auto text-[10px] font-bold bg-indigo-100 text-indigo-700 px-1.5 py-0.5 rounded-full">NPA</span>}
+                  </Link>
+                ))}
+              </div>
+            )}
           </div>
 
           <Link href="/properties?listingType=rent" className="nav-link text-[15px] font-medium text-gray-600 hover:text-blue-600 transition-colors duration-200 whitespace-nowrap no-underline py-2">
@@ -163,41 +147,27 @@ export default function Navbar() {
             ผลงาน
           </Link>
 
-          {/* Service Dropdown */}
-          <div className="relative">
+          <div className="relative" onKeyDown={(event) => { if (event.key === 'Escape') { setServiceMenuOpen(false); event.currentTarget.querySelector('button')?.focus(); } }}>
             <button
               type="button"
-              onClick={() => {
-                setServiceMenuOpen(!serviceMenuOpen);
-                setBuyMenuOpen(false);
-              }}
+              aria-expanded={serviceMenuOpen}
+              aria-controls="service-menu"
+              onClick={() => { setServiceMenuOpen(!serviceMenuOpen); setBuyMenuOpen(false); }}
               onMouseEnter={handleServiceMouseEnter}
               onMouseLeave={handleServiceMouseLeave}
               className="nav-link inline-flex items-center gap-1 text-[15px] font-medium text-gray-600 hover:text-blue-600 transition-colors duration-200 whitespace-nowrap bg-transparent border-0 cursor-pointer py-2"
             >
-              บริการของเรา
-              <ChevronDown className={`h-4 w-4 transition-transform ${serviceMenuOpen ? "rotate-180" : ""}`} />
+              บริการของเรา<ChevronDown className={`h-4 w-4 transition-transform ${serviceMenuOpen ? "rotate-180" : ""}`} aria-hidden="true" />
             </button>
-
-            <div
-              onMouseEnter={handleServiceMouseEnter}
-              onMouseLeave={handleServiceMouseLeave}
-              className={`absolute left-0 top-full mt-2 w-72 bg-white rounded-xl shadow-lg border border-slate-200 py-2 z-50 transition-all duration-200 ${
-                serviceMenuOpen ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 -translate-y-1 pointer-events-none"
-              }`}
-            >
-              {serviceLinks.map(({ href, label, icon: Icon }) => (
-                <Link
-                  key={href}
-                  href={href}
-                  className="flex items-center gap-2 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 transition"
-                  onClick={() => setServiceMenuOpen(false)}
-                >
-                  <Icon className="h-4 w-4 text-slate-500" />
-                  {label}
-                </Link>
-              ))}
-            </div>
+            {serviceMenuOpen && (
+              <div id="service-menu" onMouseEnter={handleServiceMouseEnter} onMouseLeave={handleServiceMouseLeave} className="absolute left-0 top-full mt-2 w-72 bg-white rounded-xl shadow-lg border border-slate-200 py-2 z-50">
+                {serviceLinks.map(({ href, label, icon: Icon }) => (
+                  <Link key={href} href={href} className="flex items-center gap-2 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 transition" onClick={() => setServiceMenuOpen(false)}>
+                    <Icon className="h-4 w-4 text-slate-500" aria-hidden="true" />{label}
+                  </Link>
+                ))}
+              </div>
+            )}
           </div>
 
           <Link href="/contact" className="nav-link text-[15px] font-medium text-gray-600 hover:text-blue-600 transition-colors duration-200 whitespace-nowrap no-underline py-2">
@@ -229,19 +199,19 @@ export default function Navbar() {
           </Link>
         </div>
 
-        {/* Mobile menu button */}
         <button
           type="button"
-          onClick={() => setMobileOpen((o) => !o)}
-          className="lg:hidden min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl text-gray-600 hover:bg-gray-100 focus:outline-none"
+          onClick={() => setMobileOpen((open) => !open)}
+          className="lg:hidden min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-200"
           aria-label={mobileOpen ? "ปิดเมนู" : "เปิดเมนู"}
+          aria-expanded={mobileOpen}
+          aria-controls="mobile-navigation"
         >
-          {mobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          {mobileOpen ? <X className="h-6 w-6" aria-hidden="true" /> : <Menu className="h-6 w-6" aria-hidden="true" />}
         </button>
 
-        {/* Mobile menu */}
         {mobileOpen && (
-          <div className="lg:hidden basis-full w-full py-3 border-t border-slate-100">
+          <div id="mobile-navigation" className="lg:hidden basis-full w-full py-3 border-t border-slate-100">
             <div className="flex flex-col gap-2">
               <Link href="/" onClick={() => setMobileOpen(false)} className="w-full px-4 py-3 rounded-xl text-slate-700 hover:bg-slate-50 font-medium min-h-[44px] flex items-center">
                 หน้าหลัก
@@ -249,14 +219,15 @@ export default function Navbar() {
 
               <button
                 type="button"
+                aria-expanded={mobileBuyOpen}
+                aria-controls="mobile-buy-menu"
                 onClick={() => setMobileBuyOpen((prev) => !prev)}
                 className="w-full px-4 py-3 rounded-xl text-slate-700 hover:bg-slate-50 font-medium flex items-center justify-between min-h-[44px]"
               >
-                <span>ซื้อบ้าน</span>
-                <ChevronDown className={`h-4 w-4 transition-transform ${mobileBuyOpen ? "rotate-180" : ""}`} />
+                <span>ซื้อบ้าน</span><ChevronDown className={`h-4 w-4 transition-transform ${mobileBuyOpen ? "rotate-180" : ""}`} aria-hidden="true" />
               </button>
               {mobileBuyOpen && (
-                <div className="w-full space-y-2 pl-4">
+                <div id="mobile-buy-menu" className="w-full space-y-2 pl-4">
                   {buyHomeLinks.map(({ href, label, icon: Icon, highlight, npaHighlight }) => (
                     <Link
                       key={href}
@@ -287,14 +258,15 @@ export default function Navbar() {
 
               <button
                 type="button"
+                aria-expanded={mobileServiceOpen}
+                aria-controls="mobile-service-menu"
                 onClick={() => setMobileServiceOpen((prev) => !prev)}
                 className="w-full px-4 py-3 rounded-xl text-slate-700 hover:bg-slate-50 font-medium flex items-center justify-between min-h-[44px]"
               >
-                <span>บริการของเรา</span>
-                <ChevronDown className={`h-4 w-4 transition-transform ${mobileServiceOpen ? "rotate-180" : ""}`} />
+                <span>บริการของเรา</span><ChevronDown className={`h-4 w-4 transition-transform ${mobileServiceOpen ? "rotate-180" : ""}`} aria-hidden="true" />
               </button>
               {mobileServiceOpen && (
-                <div className="w-full space-y-2 pl-4">
+                <div id="mobile-service-menu" className="w-full space-y-2 pl-4">
                   {serviceLinks.map(({ href, label, icon: Icon }) => (
                     <Link
                       key={href}

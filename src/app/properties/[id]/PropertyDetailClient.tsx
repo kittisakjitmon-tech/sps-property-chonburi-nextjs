@@ -1,18 +1,18 @@
 'use client';
 
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
-import { 
-  MapPin, Bed, Bath, Maximize2, Share2, Copy, Check, 
-  Home, ChevronLeft, ChevronRight, CheckCircle2, X, Calendar
-} from 'lucide-react';
+import { MapPin, Bed, Bath, Maximize2, Share2, Copy, Check, Home, ChevronLeft, ChevronRight, X, Calendar, MessageCircle } from 'lucide-react';
 import { createSpoomeShortUrl } from '@/lib/spoo';
 import { formatPrice } from '@/lib/priceFormat';
 import { highlightText } from '@/lib/textHighlight';
 import { getPropertyLabel } from '@/constants/propertyTypes';
 import { getCloudinaryLargeUrl, getCloudinaryThumbUrl, isValidImageUrl } from '@/lib/cloudinary';
-import { generatePropertySlug, getPropertyPath } from '@/lib/propertySlug';
+import { PRIMARY_CHAT_LABEL, PRIMARY_CHAT_URL } from '@/constants/contact';
+import type { Property } from '@/lib/firestore';
+import { useDialog } from '@/hooks/useDialog';
+import OptimizedImage from '@/components/OptimizedImage';
 import LeadForm from '@/components/LeadForm';
 import MortgageCalculator from '@/components/MortgageCalculator';
 import Toast from '@/components/Toast';
@@ -22,8 +22,16 @@ const NeighborhoodData = dynamic(() => import('@/components/NeighborhoodData'), 
   loading: () => <div className="h-40 bg-slate-100 rounded-xl animate-pulse" />,
 });
 
+interface PropertyDetail extends Property {
+  displayId?: string;
+  propertyId?: string;
+  propertySubStatus?: string;
+  mapUrl?: string;
+  totalFloors?: number;
+}
+
 interface PropertyDetailClientProps {
-  property: any;
+  property: PropertyDetail | null;
   loading?: boolean;
 }
 
@@ -36,6 +44,10 @@ export default function PropertyDetailClient({ property, loading = false }: Prop
   const [showMobileForm, setShowMobileForm] = useState(false);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
+  const closeMobileForm = useCallback(() => setShowMobileForm(false), []);
+  const closeLightbox = useCallback(() => setLightboxOpen(false), []);
+  const mobileFormDialogRef = useDialog(showMobileForm, closeMobileForm);
+  const lightboxDialogRef = useDialog(lightboxOpen, closeLightbox);
 
   const handleShare = async () => {
     if (!property?.id) return;
@@ -148,7 +160,7 @@ export default function PropertyDetailClient({ property, loading = false }: Prop
   }
 
   // Parse property data
-  const loc = typeof property.location === 'object' ? property.location : {};
+  const loc = typeof property.location === 'object' && property.location !== null ? property.location : {};
   const agent = property.agentContact || {};
   const isRental = property.isRental || property.listingType === 'rent';
   const isInstallment = property.subListingType === 'installment_only' || property.directInstallment;
@@ -191,58 +203,59 @@ export default function PropertyDetailClient({ property, loading = false }: Prop
 
   return (
     <div className="min-h-screen bg-slate-50 pb-24 md:pb-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
+        <nav aria-label="เส้นทางการนำทาง" className="mb-4 sm:mb-6">
+          <ol className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-slate-500">
+            <li><Link href="/" className="inline-flex min-h-[32px] items-center hover:text-blue-800">หน้าแรก</Link></li>
+            <li aria-hidden="true">/</li>
+            <li><Link href="/properties" className="inline-flex min-h-[32px] items-center hover:text-blue-800">อสังหาริมทรัพย์</Link></li>
+            <li aria-hidden="true">/</li>
+            <li aria-current="page" className="max-w-full truncate text-slate-700">{property.title || typeLabel}</li>
+          </ol>
+        </nav>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           
-          {/* ===== MAIN CONTENT (65%) ===== */}
-          <div className="lg:col-span-2 space-y-6">
-            
-            {/* Gallery */}
-            <div className="bg-white rounded-xl overflow-hidden shadow-sm">
-              <div className="relative h-[450px] md:h-[500px] bg-slate-200 cursor-pointer" onClick={() => { setLightboxIndex(galleryIndex); setLightboxOpen(true); }}>
-                <img
+          {/* บนมือถือแสดงข้อมูลสำคัญก่อนแกลเลอรี */}
+          <div className="lg:col-span-2 flex flex-col gap-4 sm:gap-6">
+            <div className="order-2 lg:order-1 bg-white rounded-xl overflow-hidden shadow-sm">
+              <button
+                type="button"
+                className="relative block w-full h-[280px] sm:h-[380px] md:h-[500px] bg-slate-200 cursor-zoom-in"
+                onClick={() => { setLightboxIndex(galleryIndex); setLightboxOpen(true); }}
+                aria-label={`ขยายรูปภาพที่ ${galleryIndex + 1} จาก ${imgs.length}`}
+              >
+                <OptimizedImage
                   src={getCloudinaryLargeUrl(imgs[galleryIndex]) || imgs[galleryIndex]}
                   alt={`${typeLabel} - รูปภาพที่ ${galleryIndex + 1}`}
-                  className="w-full h-full object-cover"
-                  loading="lazy"
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 66vw"
+                  className="object-cover"
+                  priority
                   draggable={false}
                 />
-                <div className="absolute bottom-4 right-4 px-3 py-1.5 rounded-full bg-black/60 backdrop-blur-sm text-white text-sm font-medium">
+                <span className="absolute bottom-4 right-4 px-3 py-1.5 rounded-full bg-black/60 backdrop-blur-sm text-white text-sm font-medium">
                   {galleryIndex + 1} / {imgs.length}
-                </div>
-                <div className="absolute top-4 right-4 w-10 h-10 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center">
-                  <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
-                  </svg>
-                </div>
-              </div>
-              
+                </span>
+              </button>
               {imgs.length > 1 && (
-                <div className="flex gap-2 p-3 overflow-x-auto">
+                <div className="flex gap-2 p-3 overflow-x-auto" aria-label="เลือกรูปภาพ">
                   {imgs.map((img: string, i: number) => (
                     <button
-                      key={i}
+                      key={`${img}-${i}`}
                       type="button"
                       onClick={() => setGalleryIndex(i)}
-                      className={`shrink-0 w-[100px] h-[70px] rounded-xl overflow-hidden border-2 ${
-                        i === galleryIndex ? 'border-blue-900' : 'border-transparent'
-                      }`}
+                      aria-label={`ดูรูปภาพที่ ${i + 1}`}
+                      aria-pressed={i === galleryIndex}
+                      className={`relative shrink-0 w-[100px] h-[70px] rounded-xl overflow-hidden border-2 ${i === galleryIndex ? 'border-blue-900' : 'border-transparent'}`}
                     >
-                      <img
-                        src={getCloudinaryThumbUrl(img) || img}
-                        alt={`รูปย่อที่ ${i + 1}`}
-                        className="w-full h-full object-cover"
-                        loading="lazy"
-                        draggable={false}
-                      />
+                      <OptimizedImage src={getCloudinaryThumbUrl(img) || img} alt="" fill sizes="100px" className="object-cover" draggable={false} />
                     </button>
                   ))}
                 </div>
               )}
             </div>
 
-            {/* Property Details Card */}
-            <div className="bg-white rounded-xl border border-slate-200 p-6">
+            <div className="order-1 lg:order-2 bg-white rounded-xl border border-slate-200 p-4 sm:p-6">
               {/* Badges */}
               <div className="flex flex-wrap items-center gap-2 mb-4">
                 {property.propertyId && (
@@ -251,12 +264,13 @@ export default function PropertyDetailClient({ property, loading = false }: Prop
                     <button
                       type="button"
                       onClick={() => {
-                        navigator.clipboard.writeText(property.propertyId);
+                        navigator.clipboard.writeText(property.propertyId || '');
                         setToastMessage('คัดลอกรหัสทรัพย์แล้ว');
                         setShowToast(true);
                         setTimeout(() => setShowToast(false), 2000);
                       }}
-                      className="p-0.5 hover:bg-gray-200 rounded transition"
+                      aria-label="คัดลอกรหัสทรัพย์"
+                      className="w-8 h-8 -m-1 flex items-center justify-center hover:bg-gray-200 rounded transition"
                     >
                       <Copy className="h-3.5 w-3.5" />
                     </button>
@@ -285,15 +299,12 @@ export default function PropertyDetailClient({ property, loading = false }: Prop
                 <span>{[loc.subDistrict, loc.district, loc.province].filter(Boolean).join(', ')}</span>
               </div>
 
-              {/* Price */}
-              <div className="flex items-baseline gap-2 mb-4">
-                <p className="text-3xl font-bold text-orange-600">
-                  {formatPrice(property.price, isRental)}
+              <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 mb-4">
+                <p className="text-2xl sm:text-3xl font-bold text-orange-700">
+                  {formatPrice(property.price, isRental, property.showPrice !== false)}
                 </p>
-                {isInstallment && property.price && (
-                  <p className="text-lg text-green-600 font-medium">
-                    ≈ {Math.round(property.price / 120).toLocaleString('th-TH')} บ./ด.
-                  </p>
+                {property.showPrice !== false && isInstallment && property.price > 0 && (
+                  <p className="text-base text-green-700 font-medium">≈ {Math.round(property.price / 120).toLocaleString('th-TH')} บาท/เดือน</p>
                 )}
               </div>
 
@@ -335,8 +346,7 @@ export default function PropertyDetailClient({ property, loading = false }: Prop
               )}
             </div>
 
-            {/* Map */}
-            <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+            <div className="order-3 bg-white rounded-xl border border-slate-200 overflow-hidden">
               <div className="p-4 border-b border-slate-100">
                 <h3 className="font-bold text-slate-900">ตำแหน่งที่ตั้ง</h3>
               </div>
@@ -375,8 +385,7 @@ export default function PropertyDetailClient({ property, loading = false }: Prop
               )}
             </div>
 
-            {/* Neighborhood Data */}
-            <NeighborhoodData property={property} />
+            <div className="order-4"><NeighborhoodData property={property} /></div>
           </div>
 
           {/* ===== SIDEBAR (35%) ===== */}
@@ -390,66 +399,40 @@ export default function PropertyDetailClient({ property, loading = false }: Prop
                     type="button"
                     onClick={handleShare}
                     disabled={isSharing}
+                    aria-label="แชร์ประกาศให้ลูกค้า"
                     className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 min-h-[48px] rounded-xl bg-blue-600 text-white shadow-sm hover:bg-blue-700 active:scale-[0.98] transition-all font-semibold"
                   >
-                    <Share2 className="h-5 w-5" />
+                    <Share2 className="h-5 w-5" aria-hidden="true" />
                     <span className="hidden sm:inline">แชร์ให้ลูกค้า</span>
                   </button>
                   <button
                     type="button"
                     onClick={handleCopyLink}
-                    className={`flex items-center justify-center gap-2 px-4 py-2.5 min-h-[48px] rounded-xl font-semibold transition-all border ${
-                      copied 
-                        ? 'bg-emerald-50 border-emerald-200 text-emerald-700' 
-                        : 'bg-white border-slate-200 text-slate-700 hover:border-blue-300'
-                    }`}
+                    aria-label={copied ? 'คัดลอกลิงก์สำเร็จ' : 'คัดลอกลิงก์ประกาศ'}
+                    className={`flex items-center justify-center gap-2 px-4 py-2.5 min-h-[48px] rounded-xl font-semibold transition-all border ${copied ? 'bg-emerald-50 border-emerald-200 text-emerald-700' : 'bg-white border-slate-200 text-slate-700 hover:border-blue-300'}`}
                   >
-                    {copied ? <Check className="h-5 w-5" /> : <Copy className="h-5 w-5" />}
+                    {copied ? <Check className="h-5 w-5" aria-hidden="true" /> : <Copy className="h-5 w-5" aria-hidden="true" />}
                     <span className="hidden sm:inline">{copied ? 'คัดลอกสำเร็จ' : 'คัดลอกลิงก์'}</span>
                   </button>
                 </div>
               </div>
 
-              {/* Lead Form */}
-              <div className="bg-white rounded-xl border border-blue-100 p-6 shadow-sm">
-                <div className="pt-4 border-slate-100">
-                  <p className="text-sm font-medium text-slate-700 mb-2">จองเยี่ยมชม (ส่งข้อความ)</p>
-                  <LeadForm
-                    propertyId={property.displayId || property.propertyId || property.id}
-                    propertyTitle={property.title}
-                    propertyPrice={property.price}
-                    isRental={isRental}
-                    onSuccess={(message) => {
-                      setToastMessage(message || 'ส่งข้อมูลสำเร็จ เจ้าหน้าที่จะติดต่อกลับ');
-                      setShowToast(true);
-                    }}
-                    onError={() => {
-                      setToastMessage('เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง');
-                      setShowToast(true);
-                    }}
-                  />
-                </div>
+              <div className="bg-white rounded-xl border border-blue-100 p-4 sm:p-6 shadow-sm">
+                <LeadForm
+                  propertyId={property.displayId || property.propertyId || property.id}
+                  propertyTitle={property.title}
+                  onSuccess={(message) => { setToastMessage(message); setShowToast(true); }}
+                />
               </div>
 
-              {/* Mortgage Calculator */}
-              {!isRental && property.price && (
-                <MortgageCalculator 
-                  price={property.price} 
-                />
-              )}
+              {!isRental && property.price > 0 && property.showPrice !== false && <MortgageCalculator price={property.price} />}
 
-              {/* Agent Info */}
               {agent.name && (
                 <div className="bg-white rounded-xl border border-slate-200 p-4">
                   <p className="text-sm font-semibold text-slate-700 mb-3">ผู้ประกาศ</p>
                   <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
-                      <Home className="w-6 h-6 text-blue-600" />
-                    </div>
-                    <div>
-                      <p className="font-semibold text-slate-900">{agent.name}</p>
-                      {agent.phone && <p className="text-sm text-slate-500">{agent.phone}</p>}
-                    </div>
+                    <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center"><Home className="w-6 h-6 text-blue-600" aria-hidden="true" /></div>
+                    <div><p className="font-semibold text-slate-900">{agent.name}</p>{agent.phone && <p className="text-sm text-slate-500">{agent.phone}</p>}</div>
                   </div>
                 </div>
               )}
@@ -458,115 +441,74 @@ export default function PropertyDetailClient({ property, loading = false }: Prop
         </div>
       </div>
 
-      <Toast 
-        message={toastMessage} 
-        isVisible={showToast} 
-        onClose={() => setShowToast(false)} 
-        duration={3000} 
-      />
+      <Toast message={toastMessage} isVisible={showToast} onClose={() => setShowToast(false)} duration={3000} />
 
-      {/* Mobile Floating CTA Button */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 p-4 bg-white/95 backdrop-blur-sm border-t border-slate-200 z-40">
-        <button
-          onClick={() => setShowMobileForm(true)}
-          className="w-full py-4 rounded-2xl bg-blue-600 text-white font-bold text-lg shadow-lg hover:bg-blue-700 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
-        >
-          <Calendar className="w-5 h-5" />
-          จองเยี่ยมชม
-        </button>
+      <div className="md:hidden fixed bottom-0 left-0 right-0 p-3 bg-white/95 backdrop-blur-sm border-t border-slate-200 z-40" style={{ paddingBottom: 'max(0.75rem, env(safe-area-inset-bottom))' }}>
+        <div className="flex gap-2">
+          <a href={PRIMARY_CHAT_URL} target="_blank" rel="noopener noreferrer" className="flex-1 min-h-[52px] px-3 rounded-xl border border-blue-200 bg-white text-blue-900 font-bold flex items-center justify-center gap-2">
+            <MessageCircle className="w-5 h-5" aria-hidden="true" />{PRIMARY_CHAT_LABEL}
+          </a>
+          <button type="button" onClick={() => setShowMobileForm(true)} className="flex-[1.4] min-h-[52px] px-3 rounded-xl bg-blue-700 text-white font-bold shadow-lg hover:bg-blue-800 active:scale-[0.98] transition-all flex items-center justify-center gap-2">
+            <Calendar className="w-5 h-5" aria-hidden="true" />นัดชมทรัพย์
+          </button>
+        </div>
       </div>
 
-      {/* Mobile Form Bottom Sheet */}
       {showMobileForm && (
-        <div className="md:hidden fixed inset-0 z-50">
-          <div 
-            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-            onClick={() => setShowMobileForm(false)}
-          />
-          <div className="absolute bottom-0 left-0 right-0 max-h-[85vh] overflow-y-auto bg-white rounded-t-3xl shadow-xl">
-            <div className="sticky top-0 flex items-center justify-between p-4 border-b border-slate-100 bg-white">
-              <h2 className="text-lg font-bold text-slate-900">จองเยี่ยมชม</h2>
-              <button
-                onClick={() => setShowMobileForm(false)}
-                className="w-10 h-10 flex items-center justify-center rounded-full bg-slate-100 hover:bg-slate-200 transition-colors"
-              >
-                <X className="w-5 h-5 text-slate-600" />
+        <div className="md:hidden fixed inset-0 z-[110]">
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={closeMobileForm} aria-hidden="true" />
+          <div ref={mobileFormDialogRef} role="dialog" aria-modal="true" aria-labelledby="mobile-form-title" tabIndex={-1} className="absolute bottom-0 left-0 right-0 max-h-[90dvh] overflow-y-auto overscroll-contain bg-white rounded-t-3xl shadow-xl">
+            <div className="sticky top-0 z-10 flex items-center justify-between p-4 border-b border-slate-100 bg-white">
+              <h2 id="mobile-form-title" className="text-lg font-bold text-slate-900">นัดชมทรัพย์</h2>
+              <button type="button" onClick={closeMobileForm} aria-label="ปิดฟอร์มนัดชม" className="w-11 h-11 flex items-center justify-center rounded-full bg-slate-100 hover:bg-slate-200 transition-colors">
+                <X className="w-5 h-5 text-slate-600" aria-hidden="true" />
               </button>
             </div>
-            <div className="p-4">
+            <div className="p-4 pb-8">
               <LeadForm
                 propertyId={property.displayId || property.propertyId || property.id}
                 propertyTitle={property.title}
-                propertyPrice={property.price}
-                isRental={isRental}
-                onSuccess={(message) => {
-                  setToastMessage(message || 'ส่งข้อมูลสำเร็จ เจ้าหน้าที่จะติดต่อกลับ');
-                  setShowToast(true);
-                  setShowMobileForm(false);
-                }}
-                onError={() => {
-                  setToastMessage('เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง');
-                  setShowToast(true);
-                }}
+                onSuccess={(message) => { setToastMessage(message); setShowToast(true); closeMobileForm(); }}
               />
             </div>
           </div>
         </div>
       )}
 
-      {/* Lightbox Modal */}
       {lightboxOpen && (
-        <div 
-          className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center"
-          onClick={() => setLightboxOpen(false)}
+        <div
+          ref={lightboxDialogRef}
+          role="dialog"
+          aria-modal="true"
+          aria-label={`แกลเลอรี ${typeLabel} รูปที่ ${lightboxIndex + 1} จาก ${imgs.length}`}
+          tabIndex={-1}
+          className="fixed inset-0 z-[110] bg-black/95 flex items-center justify-center"
+          onClick={(event) => { if (event.target === event.currentTarget) closeLightbox(); }}
+          onKeyDown={(event) => {
+            if (event.key === 'ArrowLeft') setLightboxIndex((index) => Math.max(0, index - 1));
+            if (event.key === 'ArrowRight') setLightboxIndex((index) => Math.min(imgs.length - 1, index + 1));
+          }}
         >
-          <button
-            onClick={() => setLightboxOpen(false)}
-            className="absolute top-4 right-4 z-10 w-12 h-12 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition-colors"
-          >
-            <X className="w-6 h-6 text-white" />
+          <button type="button" onClick={closeLightbox} aria-label="ปิดแกลเลอรี" className="absolute top-4 right-4 z-10 w-12 h-12 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition-colors">
+            <X className="w-6 h-6 text-white" aria-hidden="true" />
           </button>
-
-          <div className="max-w-5xl max-h-[85vh] w-full mx-4" onClick={(e) => e.stopPropagation()}>
-            <img
-              src={getCloudinaryLargeUrl(imgs[lightboxIndex]) || imgs[lightboxIndex]}
-              alt={`${typeLabel} - รูปภาพที่ ${lightboxIndex + 1}`}
-              className="w-full h-full object-contain rounded-xl"
-            />
+          <div className="relative max-w-5xl h-[70vh] w-full mx-4">
+            <OptimizedImage src={getCloudinaryLargeUrl(imgs[lightboxIndex]) || imgs[lightboxIndex]} alt={`${typeLabel} - รูปภาพที่ ${lightboxIndex + 1}`} fill sizes="100vw" className="object-contain" />
           </div>
-
           {lightboxIndex > 0 && (
-            <button
-              onClick={(e) => { e.stopPropagation(); setLightboxIndex(lightboxIndex - 1); }}
-              className="absolute left-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition-colors"
-            >
-              <ChevronLeft className="w-6 h-6 text-white" />
+            <button type="button" aria-label="รูปก่อนหน้า" onClick={() => setLightboxIndex((index) => Math.max(0, index - 1))} className="absolute left-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition-colors">
+              <ChevronLeft className="w-6 h-6 text-white" aria-hidden="true" />
             </button>
           )}
-
           {lightboxIndex < imgs.length - 1 && (
-            <button
-              onClick={(e) => { e.stopPropagation(); setLightboxIndex(lightboxIndex + 1); }}
-              className="absolute right-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition-colors"
-            >
-              <ChevronRight className="w-6 h-6 text-white" />
+            <button type="button" aria-label="รูปถัดไป" onClick={() => setLightboxIndex((index) => Math.min(imgs.length - 1, index + 1))} className="absolute right-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition-colors">
+              <ChevronRight className="w-6 h-6 text-white" aria-hidden="true" />
             </button>
           )}
-
           <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 p-2 bg-black/50 backdrop-blur-sm rounded-xl max-w-[90vw] overflow-x-auto">
             {imgs.map((img: string, i: number) => (
-              <button
-                key={i}
-                onClick={(e) => { e.stopPropagation(); setLightboxIndex(i); }}
-                className={`shrink-0 w-16 h-12 rounded-lg overflow-hidden border-2 transition-all ${
-                  i === lightboxIndex ? 'border-white scale-110' : 'border-transparent opacity-60 hover:opacity-100'
-                }`}
-              >
-                <img
-                  src={getCloudinaryThumbUrl(img) || img}
-                  alt={`รูปย่อที่ ${i + 1}`}
-                  className="w-full h-full object-cover"
-                />
+              <button key={`${img}-${i}`} type="button" aria-label={`ดูรูปที่ ${i + 1}`} aria-pressed={i === lightboxIndex} onClick={() => setLightboxIndex(i)} className={`relative shrink-0 w-16 h-12 rounded-lg overflow-hidden border-2 transition-all ${i === lightboxIndex ? 'border-white' : 'border-transparent opacity-60 hover:opacity-100'}`}>
+                <OptimizedImage src={getCloudinaryThumbUrl(img) || img} alt="" fill sizes="64px" className="object-cover" />
               </button>
             ))}
           </div>

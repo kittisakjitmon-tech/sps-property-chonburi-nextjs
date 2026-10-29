@@ -9,6 +9,7 @@ import { getCloudinaryThumbUrl } from '@/lib/cloudinary';
 import { getPropertyLabel } from '@/constants/propertyTypes';
 import { generatePropertySlug } from '@/lib/propertySlug';
 import { type Property, Timestamp } from '@/lib/firestore';
+import OptimizedImage from '@/components/OptimizedImage';
 
 interface PropertyCardProps {
   property: Property;
@@ -17,64 +18,40 @@ interface PropertyCardProps {
   searchQuery?: string;
 }
 
-function PropertyCard({ property, compact = false, home = false, searchQuery }: PropertyCardProps) {
+function PropertyCard({ property, home = false }: PropertyCardProps) {
   const propertyId = property?.id ?? null;
   const [favorited, setFavorited] = useState(false);
   const [renderedAt, setRenderedAt] = useState<number | null>(null);
-  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
-    if (typeof window !== 'undefined' && propertyId) {
+    if (!propertyId) return;
+    const timer = window.setTimeout(() => {
       setRenderedAt(Date.now());
       setFavorited(isFavorite(propertyId));
-    }
+    }, 0);
+    return () => window.clearTimeout(timer);
   }, [propertyId]);
 
   if (!propertyId) return null;
 
   const listingType = property.listingType || (property.isRental ? 'rent' : 'sale');
-  const subListingType = property.subListingType;
-  const isNew = mounted && renderedAt && property.createdAt &&
+  const isNew = renderedAt !== null && property.createdAt &&
     renderedAt - (typeof property.createdAt === 'number'
       ? property.createdAt
       : (property.createdAt as Timestamp)?.toMillis?.() || 0) < 7 * 24 * 60 * 60 * 1000;
-  const isInstallment = subListingType === 'installment_only' || property.directInstallment;
+  const isInstallment = property.subListingType === 'installment_only' || property.directInstallment;
 
   const loc = typeof property.location === 'object' ? property.location : null;
-  const district = loc
-    ? [loc.district, loc.province].filter(Boolean).join(', ')
-    : (property.district || property.province || '');
+  const district = loc ? [loc.district, loc.province].filter(Boolean).join(', ') : (property.district || property.province || '');
   const subDistrict = loc?.subDistrict || '';
-
   const typeLabel = getPropertyLabel(property.type || property.propertyType || '') || 'อสังหาริมทรัพย์';
   const titleText = subDistrict ? `${typeLabel} ${subDistrict}` : typeLabel;
+  const areaSqWa = property.area != null && Number(property.area) > 0 ? (Number(property.area) / 4).toFixed(0) : null;
+  const installmentPerMonth = isInstallment && property.price != null && Number(property.price) > 0 ? Math.round(Number(property.price) / 120) : null;
 
-  const areaSqWa = property.area != null && Number(property.area) > 0
-    ? (Number(property.area) / 4).toFixed(0)
-    : null;
-
-  const installmentPerMonth =
-    isInstallment && property.price != null && Number(property.price) > 0
-      ? Math.round(Number(property.price) / 120)
-      : null;
-
-  const handleFavorite = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (typeof window !== 'undefined' && propertyId) {
-      setFavorited(toggleFavorite(propertyId));
-    }
-  };
-
-  // Get slug path
-  const propertyPath = generatePropertySlug(property)
-    ? `/properties/${generatePropertySlug(property)}`
-    : `/properties/${property.id}`;
-
-  // Default image
+  const handleFavorite = () => setFavorited(toggleFavorite(propertyId));
+  const propertyPath = generatePropertySlug(property) ? `/properties/${generatePropertySlug(property)}` : `/properties/${property.id}`;
   const coverImage = property.coverImageUrl || property.images?.[0] || 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=400';
-
   const isHome = home || false;
 
   // Badge color
@@ -89,66 +66,41 @@ function PropertyCard({ property, compact = false, home = false, searchQuery }: 
           : 'shadow-sm hover:shadow-lg hover:-translate-y-1'
       }`}
     >
-      {/* Image Section */}
-      <Link href={propertyPath} className="block relative aspect-[4/3] overflow-hidden bg-slate-100 shrink-0">
-        <img
-          src={getCloudinaryThumbUrl(coverImage) || coverImage}
-          alt={titleText}
-          width={400}
-          height={300}
-          loading="lazy"
-          decoding="async"
-          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-        />
-
-        {/* Gradient Overlay */}
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            background: 'linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.1) 40%, transparent 60%)',
-          }}
-        />
-
-        {/* Top Badges */}
-        <div className="absolute top-3 left-3 flex gap-2 z-10">
-          <span className={`inline-flex items-center py-1 px-2.5 text-xs font-semibold text-white rounded-full shadow-sm ${badgeColor}`}>
-            {badgeLabel}
-          </span>
-          {isNew && (
-            <span className="inline-flex items-center py-1 px-2.5 text-xs font-semibold text-white rounded-full shadow-sm bg-cyan-500">
-              ใหม่
-            </span>
-          )}
-        </div>
-
-        {/* Favorite Button */}
+      {/* Image Section: ปุ่มโปรดอยู่นอกลิงก์เพื่อไม่ให้ interactive elements ซ้อนกัน */}
+      <div className="relative aspect-[4/3] overflow-hidden bg-slate-100 shrink-0">
+        <Link href={propertyPath} className="block absolute inset-0" aria-label={`ดูรายละเอียด${titleText}`}>
+          <OptimizedImage
+            src={getCloudinaryThumbUrl(coverImage) || coverImage}
+            alt={titleText}
+            fill
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
+          />
+          <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+          <div className="absolute top-3 left-3 flex gap-2">
+            <span className={`inline-flex items-center py-1 px-2.5 text-xs font-semibold text-white rounded-full shadow-sm ${badgeColor}`}>{badgeLabel}</span>
+            {isNew && <span className="inline-flex items-center py-1 px-2.5 text-xs font-semibold text-white rounded-full shadow-sm bg-cyan-500">ใหม่</span>}
+          </div>
+          <div className="absolute bottom-0 left-0 right-0 p-3 pt-8">
+            {property.hotDeal && <div className="text-amber-300 text-[10px] font-bold uppercase tracking-wide mb-0.5">ราคาพิเศษ</div>}
+            <div className="text-white font-bold text-lg leading-tight">
+              {formatPriceShort(property.price, listingType === 'rent', property.showPrice !== false)}
+            </div>
+            {property.showPrice !== false && installmentPerMonth != null && (
+              <div className="text-white/90 text-xs mt-0.5">≈ ฿{installmentPerMonth.toLocaleString('th-TH')}/เดือน</div>
+            )}
+          </div>
+        </Link>
         <button
+          type="button"
           onClick={handleFavorite}
-          className="absolute top-3 right-3 z-10 w-9 h-9 flex items-center justify-center rounded-full bg-white/90 backdrop-blur-sm shadow-sm hover:bg-white hover:shadow-md active:scale-90 transition-all duration-200"
+          aria-pressed={favorited}
+          className="absolute top-2 right-2 z-10 w-11 h-11 flex items-center justify-center rounded-full bg-white/95 backdrop-blur-sm shadow-sm hover:bg-white active:scale-95 transition-all duration-200"
           aria-label={favorited ? 'ลบออกจากรายการโปรด' : 'เพิ่มในรายการโปรด'}
         >
-          <Heart 
-            className={`w-4 h-4 transition-colors ${favorited ? 'fill-red-500 text-red-500' : 'text-slate-500'}`} 
-          />
+          <Heart className={`w-5 h-5 transition-colors ${favorited ? 'fill-red-500 text-red-500' : 'text-slate-500'}`} aria-hidden="true" />
         </button>
-
-        {/* Price Overlay */}
-        <div className="absolute bottom-0 left-0 right-0 z-10 p-3 pt-8">
-          {property.hotDeal && (
-            <div className="text-amber-400 text-[10px] font-bold uppercase tracking-wide mb-0.5">
-              🔥 ราคาพิเศษ
-            </div>
-          )}
-          <div className="text-white font-bold text-lg leading-tight">
-            {formatPriceShort(property.price, listingType === 'rent', property.showPrice !== false)}
-          </div>
-          {installmentPerMonth != null && (
-            <div className="text-white/90 text-xs mt-0.5">
-              ≈ ฿{installmentPerMonth.toLocaleString('th-TH')}/ด.
-            </div>
-          )}
-        </div>
-      </Link>
+      </div>
 
       {/* Content Section */}
       <div className="flex flex-col flex-1 min-w-0 p-4">

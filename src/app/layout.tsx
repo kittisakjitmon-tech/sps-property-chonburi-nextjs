@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
 import { Prompt } from "next/font/google";
 import { FirebaseProvider } from "@/lib/providers/FirebaseProvider";
+import { CONTACT } from "@/constants/contact";
+import { SITE_DESCRIPTION, SITE_NAME, SITE_URL, absoluteUrl } from "@/lib/site";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import JsonLd from "@/components/JsonLd";
 import "./globals.css";
 
 const prompt = Prompt({
@@ -11,32 +14,53 @@ const prompt = Prompt({
   variable: "--font-prompt",
 });
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://sps-property-nextjs.vercel.app";
-
 export const metadata: Metadata = {
-  title: "SPS Property Solution",
-  description: "บริการรับฝาก ซื้อ-ขาย-เช่า-จำนอง-ขายฝาก อสังหาริมทรัพย์ในชลบุรี ฉะเชิงเทรา ระยอง",
-  keywords: ["บ้าน", "คอนโด", "อมตะซิตี้", "ชลบุรี", "ซื้อบ้าน", "ขายบ้าน", "เช่าบ้าน"],
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: `${SITE_NAME} | บ้าน คอนโด อมตะซิตี้ ชลบุรี`,
+    template: `%s | ${SITE_NAME}`,
+  },
+  description: SITE_DESCRIPTION,
+  applicationName: SITE_NAME,
   openGraph: {
-    title: "SPS Property Solution",
-    description: "บริการรับฝาก ซื้อ-ขาย-เช่า-จำนอง-ขายฝาก อสังหาริมทรัพย์ในชลบุรี ฉะเชิงเทรา ระยอง",
+    title: `${SITE_NAME} | บ้าน คอนโด อมตะซิตี้ ชลบุรี`,
+    description: SITE_DESCRIPTION,
+    siteName: SITE_NAME,
     locale: "th_TH",
     type: "website",
     images: [
       {
-        url: `${BASE_URL}/logo.png`,
-        width: 1200,
-        height: 630,
-        alt: "SPS Property Solution",
+        url: '/logo.png',
+        width: 1080,
+        height: 658,
+        alt: SITE_NAME,
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "SPS Property Solution",
-    description: "บริการรับฝาก ซื้อ-ขาย-เช่า-จำนอง-ขายฝาก อสังหาริมทรัพย์ในชลบุรี ฉะเชิงเทรา ระยอง",
-    images: [`${BASE_URL}/logo.png`],
+    title: `${SITE_NAME} | บ้าน คอนโด อมตะซิตี้ ชลบุรี`,
+    description: SITE_DESCRIPTION,
+    images: ['/logo.png'],
   },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true, 'max-image-preview': 'large', 'max-snippet': -1 },
+  },
+};
+
+const businessJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'RealEstateAgent',
+  '@id': `${SITE_URL}/#business`,
+  name: SITE_NAME,
+  url: SITE_URL,
+  logo: absoluteUrl('/logo.png'),
+  description: SITE_DESCRIPTION,
+  email: CONTACT.email,
+  areaServed: ['ชลบุรี', 'ฉะเชิงเทรา', 'ระยอง', 'ปทุมธานี', 'กรุงเทพมหานคร'],
+  sameAs: [CONTACT.facebookUrl],
 };
 
 export default function RootLayout({
@@ -48,6 +72,7 @@ export default function RootLayout({
     <html lang="th" className="h-full antialiased">
       <body className={`${prompt.variable} font-sans min-h-full flex flex-col`}>
         <FirebaseProvider>
+          <JsonLd data={businessJsonLd} />
           <Navbar />
           <main className="flex-1">{children}</main>
           <Footer />

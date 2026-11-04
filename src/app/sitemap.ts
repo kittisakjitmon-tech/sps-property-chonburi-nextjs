@@ -32,6 +32,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: absoluteUrl('/post'), lastModified: new Date(), changeFrequency: 'monthly', priority: 0.7 },
     { url: absoluteUrl('/contact'), lastModified: new Date(), changeFrequency: 'monthly', priority: 0.6 },
     { url: absoluteUrl('/loan-services'), lastModified: new Date(), changeFrequency: 'monthly', priority: 0.6 },
+    { url: absoluteUrl('/privacy'), lastModified: new Date(), changeFrequency: 'yearly', priority: 0.3 },
+    { url: absoluteUrl('/data-deletion'), lastModified: new Date(), changeFrequency: 'yearly', priority: 0.3 },
   ];
 
   let propertyPages: MetadataRoute.Sitemap = [];

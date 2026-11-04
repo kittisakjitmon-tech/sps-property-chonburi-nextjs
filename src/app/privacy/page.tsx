@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import LegalPage, { LegalSection } from '@/components/LegalPage';
-import { CONTACT } from '@/constants/contact';
+import { COMPANY, COMPANY_ADDRESS, CONTACT } from '@/constants/contact';
 import { SITE_NAME } from '@/lib/site';
 
 export const metadata: Metadata = {
@@ -13,7 +13,7 @@ export default function PrivacyPage() {
   return (
     <LegalPage title="นโยบายความเป็นส่วนตัว" updatedAt="4 พฤศจิกายน 2569">
       <p>
-        {SITE_NAME} (&ldquo;เรา&rdquo;) ให้ความสำคัญกับข้อมูลส่วนบุคคลของคุณ
+        {COMPANY.legalName} ผู้ให้บริการ {SITE_NAME} (&ldquo;เรา&rdquo;) ให้ความสำคัญกับข้อมูลส่วนบุคคลของคุณ
         นโยบายนี้อธิบายว่าเราเก็บข้อมูลอะไร นำไปใช้อย่างไร และคุณมีสิทธิอะไรบ้าง
         ตามพระราชบัญญัติคุ้มครองข้อมูลส่วนบุคคล พ.ศ. 2562 (PDPA)
       </p>
@@ -119,7 +119,10 @@ export default function PrivacyPage() {
             </a>
           </li>
           <li>
-            ที่อยู่: 99/199 หมู่บ้านกิตติพรพอร์ต ซอยอมตะพัฒน์ 15 ตำบลอมตะ อำเภอเมืองชลบุรี จังหวัดชลบุรี 20000
+            ผู้ให้บริการ: {COMPANY.legalName} (ทะเบียนนิติบุคคลเลขที่ {COMPANY.registrationNumber})
+          </li>
+          <li>
+            ที่อยู่: {COMPANY_ADDRESS}
           </li>
         </ul>
       </LegalSection>

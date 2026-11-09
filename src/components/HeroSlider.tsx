@@ -44,27 +44,27 @@ export default function HeroSlider({ children, className = "" }: { children: Rea
   }, []);
 
   return (
-    <section className={`relative sm:min-h-[60vh] flex items-center justify-center overflow-hidden ${className}`} aria-label="ค้นหาอสังหาริมทรัพย์">
+    <section className={`relative sm:min-h-[520px] flex items-center justify-center overflow-hidden ${className}`} aria-label="ค้นหาอสังหาริมทรัพย์">
       {slides === null ? (
-        <OptimizedImage src={DEFAULT_IMAGE} alt="" fill sizes="100vw" priority className="object-cover" aria-hidden="true" />
+        <OptimizedImage src={DEFAULT_IMAGE} alt="" fill sizes="100vw" priority className="object-cover scale-110 brightness-75 blur-2xl" aria-hidden="true" />
       ) : (
         <Swiper
           modules={[Autoplay, EffectFade, Pagination]}
           effect="fade"
           autoplay={slides.length > 1 ? { delay: 5000, disableOnInteraction: false } : false}
-          pagination={{ clickable: true, bulletClass: "swiper-pagination-bullet !bg-white/50 !w-2 !h-2 !mx-1", bulletActiveClass: "!bg-yellow-400 !w-6" }}
+          pagination={{ clickable: true, bulletClass: "swiper-pagination-bullet !bg-white/50 !w-2 !h-2 !mx-1", bulletActiveClass: "!bg-white !w-6" }}
           loop={slides.length > 1}
           className="!absolute !inset-0 !w-full !h-full"
         >
           {slides.map((slide, index) => (
             <SwiperSlide key={slide.id}>
-              <OptimizedImage src={getSlideImageUrl(slide)} alt="" fill sizes="100vw" priority={index === 0} className="object-cover" aria-hidden="true" />
+              <OptimizedImage src={getSlideImageUrl(slide)} alt="" fill sizes="100vw" priority={index === 0} className="object-cover scale-110 brightness-75 blur-2xl" aria-hidden="true" />
             </SwiperSlide>
           ))}
         </Swiper>
       )}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/65 via-black/50 to-black/75 z-[1]" />
-      <div className="relative z-[2] w-full flex flex-col items-center justify-center sm:min-h-[60vh] py-6 sm:py-12 px-4">
+      <div className="absolute inset-0 z-[1] bg-gradient-to-b from-ink/92 via-ink/85 to-ink/97 backdrop-blur-sm" />
+      <div className="relative z-[2] w-full flex flex-col items-center justify-center sm:min-h-[520px] py-6 sm:py-10 px-4">
         {children}
       </div>
     </section>

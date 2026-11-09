@@ -51,7 +51,7 @@ export default function MortgageCalculator({ price, directInstallment = false }:
 
   return (
     <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
-      <h3 className="text-lg font-bold text-blue-900 mb-4">คำนวณสินเชื่อบ้าน</h3>
+      <h3 className="text-lg font-bold text-ink mb-4">คำนวณสินเชื่อบ้าน</h3>
       <div className="space-y-4">
         {/* Loan Type Selection */}
         <div>
@@ -62,8 +62,8 @@ export default function MortgageCalculator({ price, directInstallment = false }:
               onClick={() => setLoanType('bank')}
               className={`px-4 py-3 rounded-xl border-2 transition ${
                 loanType === 'bank'
-                  ? 'border-blue-900 bg-blue-50 text-blue-900 font-semibold'
-                  : 'border-slate-200 bg-white text-slate-600 hover:border-blue-300'
+                  ? 'border-blue-900 bg-accent-soft text-ink font-semibold'
+                  : 'border-slate-200 bg-white text-slate-600 hover:border-accent'
               }`}
             >
               กู้ธนาคาร
@@ -73,8 +73,8 @@ export default function MortgageCalculator({ price, directInstallment = false }:
               onClick={() => setLoanType('direct')}
               className={`px-4 py-3 rounded-xl border-2 transition ${
                 loanType === 'direct'
-                  ? 'border-blue-900 bg-blue-50 text-blue-900 font-semibold'
-                  : 'border-slate-200 bg-white text-slate-600 hover:border-blue-300'
+                  ? 'border-blue-900 bg-accent-soft text-ink font-semibold'
+                  : 'border-slate-200 bg-white text-slate-600 hover:border-accent'
               }`}
             >
               ผ่อนตรง
@@ -152,7 +152,7 @@ export default function MortgageCalculator({ price, directInstallment = false }:
 
         {/* Payment Schedule Table */}
         <div className="pt-4 border-t border-slate-200">
-          <h4 className="text-sm font-semibold text-blue-900 mb-3">ตารางค่างวด 12 เดือนแรก</h4>
+          <h4 className="text-sm font-semibold text-ink mb-3">ตารางค่างวด 12 เดือนแรก</h4>
           <div className="overflow-x-auto">
             <table className="w-full text-xs">
               <thead>
@@ -168,7 +168,7 @@ export default function MortgageCalculator({ price, directInstallment = false }:
                 {paymentSchedule.map((row) => (
                   <tr key={row.month} className="hover:bg-slate-50">
                     <td className="px-2 py-2 text-slate-600">{row.month}</td>
-                    <td className="px-2 py-2 text-right font-medium text-blue-900">
+                    <td className="px-2 py-2 text-right font-medium text-ink">
                       {maskDigits(row.payment)}
                     </td>
                     <td className="px-2 py-2 text-right text-slate-600">

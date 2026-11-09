@@ -69,8 +69,8 @@ export default function PropertyTabsSection({ initialProperties, totalCount }: P
         {/* Section Header with Tabs */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
           <div className="flex items-center gap-2">
-            <span className="w-1 h-5 bg-blue-600 rounded-full" />
-            <h2 className="text-lg font-bold text-slate-900">ทรัพย์แนะนำ</h2>
+            <span className="w-1 h-5 bg-accent rounded-full" />
+            <h2 className="text-lg font-bold text-ink">ทรัพย์แนะนำ</h2>
           </div>
 
           {/* Tab Navigation - Visible on all screens with horizontal scroll on mobile */}
@@ -80,8 +80,8 @@ export default function PropertyTabsSection({ initialProperties, totalCount }: P
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
                 className={`flex w-1/3 items-center justify-center gap-1.5 px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 shrink-0 min-h-[44px] ${activeTab === tab.id
-                  ? 'bg-blue-900 text-white font-semibold shadow-md'
-                  : 'text-slate-600 hover:text-blue-900 hover:bg-white/70'
+                  ? 'bg-ink text-white font-semibold'
+                  : 'text-muted hover:text-ink hover:bg-white/70'
                   }`}
               >
                 <tab.icon className="h-4 w-4 shrink-0" />
@@ -122,7 +122,7 @@ export default function PropertyTabsSection({ initialProperties, totalCount }: P
         <div className="mt-6 text-center">
           <Link
             href="/properties"
-            className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-blue-900 text-white text-sm font-semibold hover:bg-blue-800 hover:shadow-lg transition-all duration-200 min-h-[48px]"
+            className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-ink text-white text-sm font-semibold hover:bg-slate-800 hover:shadow-lg transition-all duration-200 min-h-[48px]"
           >
             ดูทรัพย์ทั้งหมด ({totalCount}+)
           </Link>

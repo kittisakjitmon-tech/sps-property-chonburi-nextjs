@@ -505,7 +505,7 @@ export default function PortfolioPage() {
             </AnimatedSection>
             <AnimatedSection delay={100} className="text-center group">
               <div className="flex items-center justify-center gap-2 mb-2">
-                <Clock className="h-8 w-8 text-blue-600 group-hover:scale-125 transition-transform" />
+                <Clock className="h-8 w-8 text-accent group-hover:scale-125 transition-transform" />
                 <span className="text-4xl font-bold text-gray-900"><AnimatedCounter end={5} suffix=" ปี" /></span>
               </div>
               <p className="text-gray-600">ประสบการณ์</p>
@@ -542,8 +542,8 @@ export default function PortfolioPage() {
 
           <div className="grid md:grid-cols-3 gap-8">
             <AnimatedSection delay={0}>
-              <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-8 border border-blue-100 hover:shadow-xl hover:-translate-y-2 transition-all duration-300 h-full">
-                <div className="w-14 h-14 bg-blue-600 rounded-xl flex items-center justify-center mb-6 hover:scale-110 transition-transform">
+              <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-8 border border-line hover:shadow-xl hover:-translate-y-2 transition-all duration-300 h-full">
+                <div className="w-14 h-14 bg-accent rounded-xl flex items-center justify-center mb-6 hover:scale-110 transition-transform">
                   <Zap className="h-7 w-7 text-white" />
                 </div>
                 <h3 className="text-xl font-bold text-gray-900 mb-3">รวดเร็ว</h3>
@@ -597,7 +597,7 @@ export default function PortfolioPage() {
                     {item.step}
                   </div>
                   <div className="pt-4">
-                    <item.icon className="h-8 w-8 text-blue-600 mb-4" />
+                    <item.icon className="h-8 w-8 text-accent mb-4" />
                     <h3 className="text-lg font-bold text-gray-900 mb-2">{item.title}</h3>
                     <p className="text-gray-600 text-sm">{item.desc}</p>
                   </div>
@@ -747,7 +747,7 @@ export default function PortfolioPage() {
             {["อมตะ", "ชลบุรี", "ศรีราชา", "พานทอง"].map((area, index) => (
               <button
                 key={area}
-                className="px-4 py-4 bg-gradient-to-br from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 border border-blue-200 hover:border-blue-300 rounded-xl text-gray-700 hover:text-blue-700 font-medium transition-all hover:scale-105 flex items-center justify-center gap-2 shadow-sm hover:shadow-md"
+                className="px-4 py-4 bg-gradient-to-br from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 border border-line hover:border-accent rounded-xl text-gray-700 hover:text-accent font-medium transition-all hover:scale-105 flex items-center justify-center gap-2 shadow-sm hover:shadow-md"
                 style={{ animationDelay: `${index * 30}ms` }}
               >
                 <MapPin className="h-5 w-5 text-blue-500" />

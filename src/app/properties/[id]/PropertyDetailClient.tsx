@@ -107,7 +107,7 @@ export default function PropertyDetailClient({ property, loading = false }: Prop
               <div className="bg-white rounded-xl border border-slate-200 p-6">
                 <div className="flex flex-wrap gap-2 mb-4">
                   <div className="h-7 w-24 bg-slate-200 rounded-full animate-pulse" />
-                  <div className="h-7 w-16 bg-blue-100 rounded-full animate-pulse" />
+                  <div className="h-7 w-16 bg-accent-soft rounded-full animate-pulse" />
                 </div>
                 <div className="h-9 w-3/4 bg-slate-200 rounded-xl mb-3 animate-pulse" />
                 <div className="h-7 w-1/3 bg-yellow-100 rounded-xl mb-4 animate-pulse" />
@@ -132,7 +132,7 @@ export default function PropertyDetailClient({ property, loading = false }: Prop
                 {[1, 2, 3, 4].map((i) => (
                   <div key={i} className="h-10 bg-slate-100 rounded-xl animate-pulse" />
                 ))}
-                <div className="h-12 bg-blue-100 rounded-xl animate-pulse" />
+                <div className="h-12 bg-accent-soft rounded-xl animate-pulse" />
               </div>
             </div>
           </div>
@@ -149,7 +149,7 @@ export default function PropertyDetailClient({ property, loading = false }: Prop
           <p className="text-slate-500 mb-4">รายการที่คุณกำลังค้นหาอาจถูกลบหรือไม่มีอยู่ในระบบ</p>
           <Link 
             href="/properties" 
-            className="inline-flex items-center gap-2 px-6 py-3 bg-blue-900 text-white rounded-xl font-medium hover:bg-blue-800 transition"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-ink text-white rounded-xl font-medium hover:bg-slate-800 transition"
           >
             <ChevronLeft className="h-4 w-4" />
             กลับไปหน้ารายการ
@@ -186,9 +186,9 @@ export default function PropertyDetailClient({ property, loading = false }: Prop
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
         <nav aria-label="เส้นทางการนำทาง" className="mb-4 sm:mb-6">
           <ol className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-slate-500">
-            <li><Link href="/" className="inline-flex min-h-[32px] items-center hover:text-blue-800">หน้าแรก</Link></li>
+            <li><Link href="/" className="inline-flex min-h-[32px] items-center hover:text-ink">หน้าแรก</Link></li>
             <li aria-hidden="true">/</li>
-            <li><Link href="/properties" className="inline-flex min-h-[32px] items-center hover:text-blue-800">อสังหาริมทรัพย์</Link></li>
+            <li><Link href="/properties" className="inline-flex min-h-[32px] items-center hover:text-ink">อสังหาริมทรัพย์</Link></li>
             <li aria-hidden="true">/</li>
             <li aria-current="page" className="max-w-full truncate text-slate-700">{property.title || typeLabel}</li>
           </ol>
@@ -257,19 +257,19 @@ export default function PropertyDetailClient({ property, loading = false }: Prop
                   </div>
                 )}
                 {property.type && (
-                  <span className="px-3 py-1.5 rounded-full bg-blue-100 text-blue-800 text-sm font-medium">
+                  <span className="px-3 py-1.5 rounded-full bg-accent-soft text-ink text-sm font-medium">
                     {isRental ? 'เช่า' : 'ซื้อ'}
                   </span>
                 )}
                 {!isRental && property.propertySubStatus && (
-                  <span className="px-3 py-1.5 rounded-full bg-blue-900 text-white text-sm font-medium">
+                  <span className="px-3 py-1.5 rounded-full bg-ink text-white text-sm font-medium">
                     {property.propertySubStatus}
                   </span>
                 )}
               </div>
 
               {/* Title */}
-              <h1 className="text-2xl md:text-3xl font-bold text-blue-900 mb-2 leading-tight">
+              <h1 className="text-2xl md:text-3xl font-bold text-ink mb-2 leading-tight">
                 {highlightText(property.title || typeLabel, '')}
               </h1>
 
@@ -280,7 +280,7 @@ export default function PropertyDetailClient({ property, loading = false }: Prop
               </div>
 
               <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 mb-4">
-                <p className="text-2xl sm:text-3xl font-bold text-orange-700">
+                <p className="text-2xl sm:text-3xl font-bold text-ink">
                   {formatPrice(property.price, isRental)}
                 </p>
                 {isInstallment && property.price > 0 && (
@@ -292,25 +292,25 @@ export default function PropertyDetailClient({ property, loading = false }: Prop
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
                 {property.bedrooms != null && (
                   <div className="flex items-center gap-2 text-slate-700">
-                    <Bed className="h-5 w-5 text-blue-600" />
+                    <Bed className="h-5 w-5 text-accent" />
                     <span>{property.bedrooms} ห้องนอน</span>
                   </div>
                 )}
                 {property.bathrooms != null && (
                   <div className="flex items-center gap-2 text-slate-700">
-                    <Bath className="h-5 w-5 text-blue-600" />
+                    <Bath className="h-5 w-5 text-accent" />
                     <span>{property.bathrooms} ห้องน้ำ</span>
                   </div>
                 )}
                 {areaSqWa && (
                   <div className="flex items-center gap-2 text-slate-700">
-                    <Maximize2 className="h-5 w-5 text-blue-600" />
+                    <Maximize2 className="h-5 w-5 text-accent" />
                     <span>{areaSqWa} ตร.ว.</span>
                   </div>
                 )}
                 {property.totalFloors && (
                   <div className="flex items-center gap-2 text-slate-700">
-                    <Home className="h-5 w-5 text-blue-600" />
+                    <Home className="h-5 w-5 text-accent" />
                     <span>{property.totalFloors} ชั้น</span>
                   </div>
                 )}
@@ -334,7 +334,7 @@ export default function PropertyDetailClient({ property, loading = false }: Prop
                     href={mapEmbed.externalUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex min-h-[32px] items-center gap-1.5 text-sm font-medium text-blue-700 hover:text-blue-900"
+                    className="inline-flex min-h-[32px] items-center gap-1.5 text-sm font-medium text-accent hover:text-ink"
                   >
                     <MapPin className="h-4 w-4" aria-hidden="true" />
                     เปิดใน Google Maps
@@ -386,7 +386,7 @@ export default function PropertyDetailClient({ property, loading = false }: Prop
                     onClick={handleShare}
                     disabled={isSharing}
                     aria-label="แชร์ประกาศให้ลูกค้า"
-                    className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 min-h-[48px] rounded-xl bg-blue-600 text-white shadow-sm hover:bg-blue-700 active:scale-[0.98] transition-all font-semibold"
+                    className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 min-h-[48px] rounded-xl bg-accent text-white shadow-sm hover:bg-blue-700 active:scale-[0.98] transition-all font-semibold"
                   >
                     <Share2 className="h-5 w-5" aria-hidden="true" />
                     <span className="hidden sm:inline">แชร์ให้ลูกค้า</span>
@@ -395,7 +395,7 @@ export default function PropertyDetailClient({ property, loading = false }: Prop
                     type="button"
                     onClick={handleCopyLink}
                     aria-label={copied ? 'คัดลอกลิงก์สำเร็จ' : 'คัดลอกลิงก์ประกาศ'}
-                    className={`flex items-center justify-center gap-2 px-4 py-2.5 min-h-[48px] rounded-xl font-semibold transition-all border ${copied ? 'bg-emerald-50 border-emerald-200 text-emerald-700' : 'bg-white border-slate-200 text-slate-700 hover:border-blue-300'}`}
+                    className={`flex items-center justify-center gap-2 px-4 py-2.5 min-h-[48px] rounded-xl font-semibold transition-all border ${copied ? 'bg-emerald-50 border-emerald-200 text-emerald-700' : 'bg-white border-slate-200 text-slate-700 hover:border-accent'}`}
                   >
                     {copied ? <Check className="h-5 w-5" aria-hidden="true" /> : <Copy className="h-5 w-5" aria-hidden="true" />}
                     <span className="hidden sm:inline">{copied ? 'คัดลอกสำเร็จ' : 'คัดลอกลิงก์'}</span>
@@ -403,7 +403,7 @@ export default function PropertyDetailClient({ property, loading = false }: Prop
                 </div>
               </div>
 
-              <div className="bg-white rounded-xl border border-blue-100 p-4 sm:p-6 shadow-sm">
+              <div className="bg-white rounded-xl border border-line p-4 sm:p-6 shadow-sm">
                 <LeadForm
                   propertyId={property.displayId || property.propertyId || property.id}
                   propertyTitle={property.title}
@@ -417,7 +417,7 @@ export default function PropertyDetailClient({ property, loading = false }: Prop
                 <div className="bg-white rounded-xl border border-slate-200 p-4">
                   <p className="text-sm font-semibold text-slate-700 mb-3">ผู้ประกาศ</p>
                   <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center"><Home className="w-6 h-6 text-blue-600" aria-hidden="true" /></div>
+                    <div className="w-12 h-12 rounded-full bg-accent-soft flex items-center justify-center"><Home className="w-6 h-6 text-accent" aria-hidden="true" /></div>
                     <div><p className="font-semibold text-slate-900">{agent.name}</p>{agent.phone && <p className="text-sm text-slate-500">{agent.phone}</p>}</div>
                   </div>
                 </div>
@@ -431,10 +431,10 @@ export default function PropertyDetailClient({ property, loading = false }: Prop
 
       <div className="md:hidden fixed bottom-0 left-0 right-0 p-3 bg-white/95 backdrop-blur-sm border-t border-slate-200 z-40" style={{ paddingBottom: 'max(0.75rem, env(safe-area-inset-bottom))' }}>
         <div className="flex gap-2">
-          <a href={PRIMARY_CHAT_URL} target="_blank" rel="noopener noreferrer" className="flex-1 min-h-[52px] px-3 rounded-xl border border-blue-200 bg-white text-blue-900 font-bold flex items-center justify-center gap-2">
+          <a href={PRIMARY_CHAT_URL} target="_blank" rel="noopener noreferrer" className="flex-1 min-h-[52px] px-3 rounded-xl border border-line bg-white text-ink font-bold flex items-center justify-center gap-2">
             <MessageCircle className="w-5 h-5" aria-hidden="true" />{PRIMARY_CHAT_LABEL}
           </a>
-          <button type="button" onClick={() => setShowMobileForm(true)} className="flex-[1.4] min-h-[52px] px-3 rounded-xl bg-blue-700 text-white font-bold shadow-lg hover:bg-blue-800 active:scale-[0.98] transition-all flex items-center justify-center gap-2">
+          <button type="button" onClick={() => setShowMobileForm(true)} className="flex-[1.4] min-h-[52px] px-3 rounded-xl bg-blue-700 text-white font-bold shadow-lg hover:bg-slate-800 active:scale-[0.98] transition-all flex items-center justify-center gap-2">
             <Calendar className="w-5 h-5" aria-hidden="true" />นัดชมทรัพย์
           </button>
         </div>

@@ -264,10 +264,10 @@ export default function PropertiesClient({ initialProperties, loading = false }:
         className="relative h-[280px] sm:h-[300px] md:h-[320px] overflow-hidden"
         style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1600&q=80)', backgroundSize: 'cover', backgroundPosition: 'center' }}
       >
-        <div className="absolute inset-0 bg-gradient-to-b from-blue-900/80 via-blue-900/50 to-blue-900/80" />
+        <div className="absolute inset-0 bg-gradient-to-b from-ink/80 via-ink/55 to-ink/85" />
         <div className="relative h-full flex flex-col items-center justify-center px-4 py-4 max-w-5xl mx-auto">
           <h1 className="text-2xl md:text-4xl font-bold text-white mb-1 text-center">{searchIntent.title}</h1>
-          <p className="text-blue-100 text-sm md:text-base mb-3 text-center" aria-live="polite">พบ {filteredProperties.length} รายการตามเงื่อนไขที่เลือก</p>
+          <p className="text-slate-200 text-sm md:text-base mb-3 text-center" aria-live="polite">พบ {filteredProperties.length} รายการตามเงื่อนไขที่เลือก</p>
           <div className="w-full max-w-2xl">
             <div className="relative">
               <label htmlFor="properties-search" className="sr-only">ค้นหาทำเลหรือชื่อโครงการ</label>
@@ -278,7 +278,7 @@ export default function PropertiesClient({ initialProperties, loading = false }:
                 value={searchQuery}
                 onChange={(event) => setSearchQuery(event.target.value)}
                 placeholder="ทำเลหรือชื่อโครงการ"
-                className="[&::-webkit-search-cancel-button]:appearance-none w-full min-h-[52px] pl-12 pr-12 py-3 rounded-2xl border-2 border-white/50 bg-white text-slate-900 placeholder-slate-500 focus:outline-none focus:border-blue-300 transition-all text-base shadow-xl"
+                className="[&::-webkit-search-cancel-button]:appearance-none w-full min-h-[52px] pl-12 pr-12 py-3 rounded-2xl border-2 border-white/50 bg-white text-slate-900 placeholder-slate-500 focus:outline-none focus:border-accent transition-all text-base shadow-xl"
               />
               {searchQuery.length > 0 && (
                 <button type="button" onClick={() => setSearchQuery('')} aria-label="ล้างคำค้นหา" className="absolute right-1 top-1/2 -translate-y-1/2 w-11 h-11 flex items-center justify-center rounded-full hover:bg-slate-100 transition-colors">
@@ -293,7 +293,7 @@ export default function PropertiesClient({ initialProperties, loading = false }:
                   type="button"
                   aria-pressed={location === loc.value}
                   onClick={() => handleQuickLocation(loc.value)}
-                  className={`min-h-[44px] px-4 rounded-full text-sm font-medium transition-all ${location === loc.value ? 'bg-white text-blue-900 shadow-lg' : 'bg-white/20 text-white hover:bg-white/40 border border-white/30'}`}
+                  className={`min-h-[44px] px-4 rounded-full text-sm font-medium transition-all ${location === loc.value ? 'bg-white text-ink shadow-lg' : 'bg-white/20 text-white hover:bg-white/40 border border-white/30'}`}
                 >
                   {loc.label}
                 </button>
@@ -304,7 +304,7 @@ export default function PropertiesClient({ initialProperties, loading = false }:
       </div>
 
       {/* ===== FILTER BAR ===== */}
-      <div className="bg-white border-b border-slate-200 sticky top-[60px] z-30">
+      <div className="bg-white border-b border-line sticky top-[60px] z-30">
         <div className="max-w-7xl mx-auto px-4 py-2 sm:py-3">
           <div className="flex sm:hidden items-center justify-between gap-2">
             <button
@@ -314,7 +314,7 @@ export default function PropertiesClient({ initialProperties, loading = false }:
               aria-controls="property-filter-options"
               className="min-h-[44px] flex items-center gap-2 rounded-xl px-3 text-sm font-semibold text-slate-700 hover:bg-slate-50"
             >
-              ตัวกรอง{hasActiveFilters ? <span className="w-2 h-2 rounded-full bg-blue-600" aria-label="มีตัวกรองที่เลือก" /> : null}
+              ตัวกรอง{hasActiveFilters ? <span className="w-2 h-2 rounded-full bg-accent" aria-label="มีตัวกรองที่เลือก" /> : null}
               <ChevronDown className={`h-4 w-4 transition-transform ${showMobileFilters ? 'rotate-180' : ''}`} aria-hidden="true" />
             </button>
             {hasActiveFilters && <button type="button" onClick={clearAllFilters} className="min-h-[44px] px-3 text-sm text-red-600">ล้างตัวกรอง</button>}
@@ -370,15 +370,15 @@ export default function PropertiesClient({ initialProperties, loading = false }:
               onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
               aria-expanded={showAdvancedFilters}
               aria-controls="advanced-filter-options"
-              className={`col-span-2 sm:col-span-1 min-h-[44px] flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl border text-sm font-medium transition-all ${showAdvancedFilters ? 'border-blue-200 bg-blue-50 text-blue-700' : 'border-slate-200 text-slate-600 hover:border-blue-200 hover:text-blue-700'}`}
+              className={`col-span-2 sm:col-span-1 min-h-[44px] flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl border text-sm font-medium transition-all ${showAdvancedFilters ? 'border-line bg-accent-soft text-accent' : 'border-slate-200 text-slate-600 hover:border-line hover:text-accent'}`}
             >
               เพิ่มเติม<ChevronDown className={`h-4 w-4 transition-transform ${showAdvancedFilters ? 'rotate-180' : ''}`} aria-hidden="true" />
             </button>
             <div className="hidden sm:block flex-1" />
             <div className="hidden lg:flex items-center gap-1 bg-slate-100 rounded-xl p-1" role="group" aria-label="รูปแบบการแสดงผล">
-              <button type="button" onClick={() => handleViewMode('list')} aria-label="แสดงเฉพาะรายการ" aria-pressed={viewMode === 'list'} className={`min-w-[44px] min-h-[44px] p-2 rounded-lg transition-all ${viewMode === 'list' ? 'bg-white shadow text-blue-900' : 'text-slate-500 hover:text-slate-700'}`}><List className="h-4 w-4 mx-auto" aria-hidden="true" /></button>
-              <button type="button" onClick={() => handleViewMode('both')} aria-label="แสดงรายการและแผนที่" aria-pressed={viewMode === 'both'} className={`min-w-[44px] min-h-[44px] p-2 rounded-lg transition-all ${viewMode === 'both' ? 'bg-white shadow text-blue-900' : 'text-slate-500 hover:text-slate-700'}`}><Grid className="h-4 w-4 mx-auto" aria-hidden="true" /></button>
-              <button type="button" onClick={() => handleViewMode('map')} aria-label="แสดงเฉพาะแผนที่" aria-pressed={viewMode === 'map'} className={`min-w-[44px] min-h-[44px] p-2 rounded-lg transition-all ${viewMode === 'map' ? 'bg-white shadow text-blue-900' : 'text-slate-500 hover:text-slate-700'}`}><Map className="h-4 w-4 mx-auto" aria-hidden="true" /></button>
+              <button type="button" onClick={() => handleViewMode('list')} aria-label="แสดงเฉพาะรายการ" aria-pressed={viewMode === 'list'} className={`min-w-[44px] min-h-[44px] p-2 rounded-lg transition-all ${viewMode === 'list' ? 'bg-white shadow text-ink' : 'text-slate-500 hover:text-slate-700'}`}><List className="h-4 w-4 mx-auto" aria-hidden="true" /></button>
+              <button type="button" onClick={() => handleViewMode('both')} aria-label="แสดงรายการและแผนที่" aria-pressed={viewMode === 'both'} className={`min-w-[44px] min-h-[44px] p-2 rounded-lg transition-all ${viewMode === 'both' ? 'bg-white shadow text-ink' : 'text-slate-500 hover:text-slate-700'}`}><Grid className="h-4 w-4 mx-auto" aria-hidden="true" /></button>
+              <button type="button" onClick={() => handleViewMode('map')} aria-label="แสดงเฉพาะแผนที่" aria-pressed={viewMode === 'map'} className={`min-w-[44px] min-h-[44px] p-2 rounded-lg transition-all ${viewMode === 'map' ? 'bg-white shadow text-ink' : 'text-slate-500 hover:text-slate-700'}`}><Map className="h-4 w-4 mx-auto" aria-hidden="true" /></button>
             </div>
             {hasActiveFilters && <button type="button" onClick={clearAllFilters} className="hidden sm:block min-h-[44px] px-2 text-sm text-red-600 hover:text-red-700 hover:underline">ล้าง</button>}
           </div>
@@ -447,7 +447,7 @@ export default function PropertiesClient({ initialProperties, loading = false }:
               {/* Results Count & Sort */}
               <div className="flex items-center justify-between mb-4">
                 <p className="text-slate-600 text-sm">
-                  พบ <span className="font-semibold text-blue-900">{filteredProperties.length}</span> รายการ
+                  พบ <span className="font-semibold text-ink">{filteredProperties.length}</span> รายการ
                   <span className="text-slate-400 mx-1">|</span>
                   <span className="text-slate-500">แสดง {showingFrom}-{showingTo}</span>
                 </p>
@@ -493,7 +493,7 @@ export default function PropertiesClient({ initialProperties, loading = false }:
                   {hasActiveFilters && (
                     <button
                       onClick={clearAllFilters}
-                      className="mt-4 px-6 py-2.5 rounded-xl bg-blue-900 text-white font-medium hover:bg-blue-800 transition"
+                      className="mt-4 px-6 py-2.5 rounded-xl bg-ink text-white font-medium hover:bg-slate-800 transition"
                     >
                       ล้างตัวกรองทั้งหมด
                     </button>
@@ -506,7 +506,7 @@ export default function PropertiesClient({ initialProperties, loading = false }:
                 <div className="mt-6 flex flex-col items-center gap-3">
                   <button
                     onClick={handleLoadMore}
-                    className="w-full sm:w-auto px-8 py-3 rounded-xl bg-blue-900 text-white font-semibold hover:bg-blue-800 transition-all shadow-sm flex items-center justify-center gap-2"
+                    className="w-full sm:w-auto px-8 py-3 rounded-xl bg-ink text-white font-semibold hover:bg-slate-800 transition-all shadow-sm flex items-center justify-center gap-2"
                   >
                     แสดงทรัพย์เพิ่มเติม ({LOAD_MORE_INCREMENT} รายการ)
                   </button>
@@ -539,7 +539,7 @@ export default function PropertiesClient({ initialProperties, loading = false }:
             {/* Results Count & Sort */}
             <div className="flex items-center justify-between mb-4">
               <p className="text-slate-600 text-sm">
-                พบ <span className="font-semibold text-blue-900">{filteredProperties.length}</span> รายการ
+                พบ <span className="font-semibold text-ink">{filteredProperties.length}</span> รายการ
                 <span className="text-slate-400 mx-1">|</span>
                 <span className="text-slate-500">แสดง {showingFrom}-{showingTo}</span>
               </p>
@@ -590,7 +590,7 @@ export default function PropertiesClient({ initialProperties, loading = false }:
               <div className="mt-6 flex flex-col items-center gap-3">
                 <button
                   onClick={handleLoadMore}
-                  className="w-full sm:w-auto px-8 py-3 rounded-xl bg-blue-900 text-white font-semibold hover:bg-blue-800 transition-all shadow-sm flex items-center justify-center gap-2"
+                  className="w-full sm:w-auto px-8 py-3 rounded-xl bg-ink text-white font-semibold hover:bg-slate-800 transition-all shadow-sm flex items-center justify-center gap-2"
                 >
                   แสดงทรัพย์เพิ่มเติม ({LOAD_MORE_INCREMENT} รายการ)
                 </button>
@@ -619,7 +619,7 @@ export default function PropertiesClient({ initialProperties, loading = false }:
           <button
             type="button"
             onClick={() => handleViewMode(viewMode === 'map' ? 'list' : 'map')}
-            className="flex items-center gap-2 px-6 py-4 rounded-full bg-blue-900 text-white font-semibold shadow-xl hover:bg-blue-800 transition-all"
+            className="flex items-center gap-2 px-6 py-4 rounded-full bg-ink text-white font-semibold shadow-xl hover:bg-slate-800 transition-all"
           >
             {viewMode === 'map' ? (
               <>

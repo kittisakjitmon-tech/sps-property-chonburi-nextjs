@@ -88,10 +88,10 @@ export default async function HomePage() {
         {/* ── Hero Section (Compact) ── */}
         <HeroSlider>
           <div className="text-center mb-4">
-            <h1 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold text-white mb-2">
-              ค้นหาบ้านและคอนโด <span className="text-yellow-400 drop-shadow">อมตะซิตี้ ชลบุรี</span>
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white mb-2 [overflow-wrap:anywhere]">
+              ค้นหาบ้านและคอนโด <span className="text-blue-300">อมตะซิตี้ ชลบุรี</span>
             </h1>
-            <p className="text-sm sm:text-base text-blue-100">ซื้อ เช่า ผ่อนตรง พร้อมบริการปรึกษาสินเชื่อ</p>
+            <p className="text-sm sm:text-base text-slate-200">ซื้อ เช่า ผ่อนตรง พร้อมบริการปรึกษาสินเชื่อ</p>
           </div>
           <HomeSearch />
           <div className="hidden sm:block relative w-full max-w-4xl mx-auto mt-3">
@@ -99,8 +99,8 @@ export default async function HomePage() {
               {serviceHighlights.map((item) => {
                 const IconComponent = item.icon;
                 return (
-                  <div key={item.title} className="flex items-center gap-3 p-3 rounded-xl border border-white/10 bg-white/5 backdrop-blur-md">
-                    <IconComponent className="h-4 w-4 text-yellow-400 shrink-0" aria-hidden="true" />
+                  <div key={item.title} className="flex items-center gap-3 p-3 rounded-xl border border-white/15 bg-white/[0.07] backdrop-blur-md">
+                    <IconComponent className="h-4 w-4 text-blue-300 shrink-0" aria-hidden="true" />
                     <p className="text-white text-xs sm:text-sm font-medium leading-snug">{item.title}</p>
                   </div>
                 );
@@ -109,25 +109,25 @@ export default async function HomePage() {
           </div>
 
           {/* Location Tag */}
-          <div className="flex items-center justify-center gap-2 text-gray-300 text-xs mt-3">
+          <div className="flex items-center justify-center gap-2 text-slate-300 text-xs mt-3">
             <MapPin className="h-3.5 w-3.5" />
             <p>ชลบุรี ฉะเชิงเทรา ระยอง ปทุมธานี กทม.</p>
           </div>
         </HeroSlider>
 
         {/* ── Stats Strip (Compact) ── */}
-        <section className="bg-blue-900 py-4 sm:py-5">
+        <section className="bg-ink py-4 sm:py-5">
           <div className="max-w-7xl mx-auto px-4">
             <div className="grid grid-cols-4 gap-2 sm:gap-4 text-center">
               {stats.map((stat) => {
                 const Icon = stat.icon;
                 return (
                   <div key={stat.label} className="flex flex-col items-center gap-1 py-2 px-1">
-                    <Icon className="h-5 w-5 sm:h-6 sm:w-6 text-yellow-400 mb-1" />
-                    <span className="text-xl sm:text-3xl font-extrabold text-yellow-400 leading-none tracking-tight">
+                    <Icon className="h-5 w-5 sm:h-6 sm:w-6 text-blue-300 mb-1" />
+                    <span className="text-xl sm:text-3xl font-bold text-white leading-none tracking-tight">
                       {stat.value}
                     </span>
-                    <span className="text-[10px] sm:text-xs text-blue-200 font-medium mt-1">{stat.label}</span>
+                    <span className="text-[10px] sm:text-xs text-slate-400 font-medium mt-1">{stat.label}</span>
                   </div>
                 );
               })}
@@ -137,20 +137,20 @@ export default async function HomePage() {
 
         {/* ── Latest Properties Section (Featured) ── */}
         {newProperties.length > 0 && (
-          <section className="py-4 sm:py-6 bg-gradient-to-r from-cyan-50 to-blue-50 border-y border-cyan-100">
+          <section className="py-4 sm:py-6 bg-canvas border-y border-line">
             <div className="max-w-7xl mx-auto px-4">
               {/* Section Header */}
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
-                  <span className="text-xl">🆕</span>
+                  
                   <h2 className="text-lg font-bold text-slate-900">บ้านล่าสุด</h2>
-                  <span className="text-xs font-medium text-cyan-600 bg-cyan-100 px-2 py-0.5 rounded-full">
+                  <span className="text-xs font-medium text-accent bg-accent-soft px-2 py-0.5 rounded-full">
                     {newProperties.length} ทรัพย์
                   </span>
                 </div>
                 <Link
                   href="/properties"
-                  className="text-xs font-semibold text-blue-900 hover:text-blue-700"
+                  className="text-xs font-semibold text-accent hover:text-blue-700"
                 >
                   ดูทั้งหมด →
                 </Link>
@@ -166,7 +166,7 @@ export default async function HomePage() {
                   ))}
                 </div>
                 {/* Gradient fade indicator for scroll */}
-                <div className="absolute right-0 top-0 bottom-2 w-8 bg-gradient-to-l from-cyan-50 to-transparent pointer-events-none sm:hidden" />
+                <div className="absolute right-0 top-0 bottom-2 w-8 bg-gradient-to-l from-canvas to-transparent pointer-events-none sm:hidden" />
               </div>
             </div>
           </section>
@@ -181,7 +181,7 @@ export default async function HomePage() {
         </div>
 
         {/* ── CTA Banner (Compact) ── */}
-        <section className="relative overflow-hidden bg-blue-900 py-6 sm:py-8">
+        <section className="relative overflow-hidden bg-ink py-6 sm:py-8">
           <div className="absolute inset-0 opacity-[0.07]">
             <div
               className="absolute inset-0"
@@ -195,7 +195,7 @@ export default async function HomePage() {
           <div className="relative max-w-6xl mx-auto px-4">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
               <div className="md:max-w-xl">
-                <div className="inline-flex items-center gap-2 bg-yellow-400/20 border border-yellow-400/40 text-yellow-300 text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full mb-2">
+                <div className="inline-flex items-center gap-2 bg-white/10 border border-white/20 text-blue-200 text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full mb-2">
                   <MessageCircle className="h-3.5 w-3.5" />
                   ปรึกษาฟรี
                 </div>
@@ -224,18 +224,18 @@ export default async function HomePage() {
         <section className="py-4 sm:py-6 bg-slate-50">
           <div className="max-w-7xl mx-auto px-4">
             <div className="flex items-center gap-2 mb-3">
-              <span className="w-1 h-5 bg-yellow-400 rounded-full" />
+              <span className="w-1 h-5 bg-accent rounded-full" />
               <h2 className="text-lg font-bold text-slate-900">ทำไมต้อง SPS</h2>
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2 sm:gap-3">
               {[
-                { Icon: HomeIcon, title: "ทรัพย์ครบ", desc: "ทุกประเภท", color: "bg-blue-100 text-blue-700" },
-                { Icon: Wallet, title: "ปิดหนี้", desc: "รวมหนี้ได้", color: "bg-emerald-100 text-emerald-700" },
-                { Icon: BadgeCheck, title: "ครบวงจร", desc: "ดูแลจบ", color: "bg-purple-100 text-purple-700" },
-                { Icon: MapPin, title: "รู้ทำเล", desc: "ชลบุรี", color: "bg-amber-100 text-amber-700" },
-                { Icon: Zap, title: "ตอบเร็ว", desc: "24/7", color: "bg-cyan-100 text-cyan-700" },
-                { Icon: Trophy, title: "12 ปี", desc: "ประสบการณ์", color: "bg-rose-100 text-rose-700" },
+                { Icon: HomeIcon, title: "ทรัพย์ครบ", desc: "ทุกประเภท", color: "bg-accent-soft text-accent" },
+                { Icon: Wallet, title: "ปิดหนี้", desc: "รวมหนี้ได้", color: "bg-accent-soft text-accent" },
+                { Icon: BadgeCheck, title: "ครบวงจร", desc: "ดูแลจบ", color: "bg-accent-soft text-accent" },
+                { Icon: MapPin, title: "รู้ทำเล", desc: "ชลบุรี", color: "bg-accent-soft text-accent" },
+                { Icon: Zap, title: "ตอบเร็ว", desc: "24/7", color: "bg-accent-soft text-accent" },
+                { Icon: Trophy, title: "12 ปี", desc: "ประสบการณ์", color: "bg-accent-soft text-accent" },
               ].map(({ Icon, title, desc, color }) => (
                 <div
                   key={title}
@@ -258,10 +258,10 @@ export default async function HomePage() {
             <div className="max-w-7xl mx-auto px-4">
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
-                  <span className="w-1 h-5 bg-yellow-400 rounded-full" />
+                  <span className="w-1 h-5 bg-accent rounded-full" />
                   <h2 className="text-lg font-bold text-slate-900">ทำเลยอดฮิต</h2>
                 </div>
-                <Link href="/properties" className="text-xs font-semibold text-blue-900 hover:text-blue-700">
+                <Link href="/properties" className="text-xs font-semibold text-accent hover:text-blue-700">
                   ดูทั้งหมด →
                 </Link>
               </div>
@@ -284,7 +284,7 @@ export default async function HomePage() {
                       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
                       <div className="absolute bottom-3 left-3 right-3">
                         <span className="flex items-center gap-1.5 text-white text-sm font-bold drop-shadow">
-                          <MapPin className="h-4 w-4 text-yellow-400" />
+                          <MapPin className="h-4 w-4 text-blue-300" />
                           {loc.displayName}
                         </span>
                       </div>
@@ -304,10 +304,10 @@ export default async function HomePage() {
             <div className="max-w-7xl mx-auto px-4">
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
-                  <span className="w-1 h-5 bg-blue-600 rounded-full" />
+                  <span className="w-1 h-5 bg-accent rounded-full" />
                   <h2 className="text-lg font-bold text-slate-900">บทความน่าสนใจ</h2>
                 </div>
-                <Link href="/blogs" className="text-xs font-semibold text-blue-900 hover:text-blue-700">
+                <Link href="/blogs" className="text-xs font-semibold text-accent hover:text-blue-700">
                   ดูทั้งหมด →
                 </Link>
               </div>
@@ -329,7 +329,7 @@ export default async function HomePage() {
                       )}
                     </div>
                     <div className="p-3 sm:p-4">
-                      <h3 className="text-sm font-semibold text-slate-900 line-clamp-2 group-hover:text-blue-900 transition-colors leading-snug">
+                      <h3 className="text-sm font-semibold text-ink line-clamp-2 group-hover:text-accent transition-colors leading-snug">
                         {blog.title}
                       </h3>
                     </div>

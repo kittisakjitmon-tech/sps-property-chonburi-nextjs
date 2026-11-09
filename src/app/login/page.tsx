@@ -70,7 +70,7 @@ function LoginForm() {
       <div className="w-full max-w-md">
         {/* Logo/Brand */}
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-blue-900">SPS Property Solution</h1>
+          <h1 className="text-2xl font-bold text-ink">SPS Property Solution</h1>
           <p className="text-gray-500 text-sm mt-1">เข้าสู่ระบบเพื่อจัดการประกาศของคุณ</p>
         </div>
 
@@ -128,7 +128,7 @@ function LoginForm() {
             <button
               type="submit"
               disabled={submitting}
-              className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-blue-900 text-white font-semibold hover:bg-blue-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-ink text-white font-semibold hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               {submitting ? (
                 <>
@@ -148,7 +148,7 @@ function LoginForm() {
           <div className="mt-6 pt-6 border-t border-gray-100 text-center">
             <p className="text-sm text-gray-600">
               ยังไม่มีบัญชี?{' '}
-              <Link href="/register" className="text-blue-900 hover:underline font-medium">
+              <Link href="/register" className="text-ink hover:underline font-medium">
                 ลงทะเบียนใหม่
               </Link>
             </p>
@@ -157,7 +157,7 @@ function LoginForm() {
 
         {/* Back to Home */}
         <div className="mt-6 text-center">
-          <Link href="/" className="text-sm text-gray-500 hover:text-blue-900">
+          <Link href="/" className="text-sm text-gray-500 hover:text-ink">
             ← กลับหน้าหลัก
           </Link>
         </div>

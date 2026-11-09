@@ -107,7 +107,7 @@ export default function SharePageClient({ id, propertyData }: SharePageClientPro
         <div className="text-center px-4">
           <h1 className="text-2xl font-bold text-slate-800 mb-2">ไม่พบรายการนี้</h1>
           <p className="text-slate-500 mb-4">ลิงก์อาจหมดอายุหรือถูกลบแล้ว</p>
-          <Link href="/" className="inline-flex items-center gap-2 px-6 py-3 bg-blue-900 text-white rounded-xl font-medium hover:bg-blue-800 transition">
+          <Link href="/" className="inline-flex items-center gap-2 px-6 py-3 bg-ink text-white rounded-xl font-medium hover:bg-slate-800 transition">
             กลับหน้าหลัก
           </Link>
         </div>
@@ -272,12 +272,12 @@ export default function SharePageClient({ id, propertyData }: SharePageClientPro
                   {property.propertyId && (
                     <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-slate-100 text-slate-600 text-xs font-medium font-mono">
                       {property.propertyId}
-                      <button onClick={() => navigator.clipboard.writeText(property.propertyId)} className="hover:text-blue-600">
+                      <button onClick={() => navigator.clipboard.writeText(property.propertyId)} className="hover:text-accent">
                         <Copy className="h-3 w-3" />
                       </button>
                     </span>
                   )}
-                  <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${isRental ? 'bg-orange-100 text-orange-700' : 'bg-blue-100 text-blue-700'}`}>
+                  <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${isRental ? 'bg-orange-100 text-ink' : 'bg-accent-soft text-accent'}`}>
                     {isRental ? 'เช่า' : 'ขาย'}
                   </span>
                   {property.propertyCondition && (
@@ -306,8 +306,8 @@ export default function SharePageClient({ id, propertyData }: SharePageClientPro
                 {/* Quick Specs Grid */}
                 <div className="grid grid-cols-3 gap-3">
                   <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-50">
-                    <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
-                      <Bed className="w-5 h-5 text-blue-700" />
+                    <div className="w-10 h-10 rounded-lg bg-accent-soft flex items-center justify-center">
+                      <Bed className="w-5 h-5 text-accent" />
                     </div>
                     <div>
                       <p className="text-lg font-bold text-slate-900">{property.bedrooms || '-'}</p>
@@ -315,8 +315,8 @@ export default function SharePageClient({ id, propertyData }: SharePageClientPro
                     </div>
                   </div>
                   <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-50">
-                    <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
-                      <Bath className="w-5 h-5 text-blue-700" />
+                    <div className="w-10 h-10 rounded-lg bg-accent-soft flex items-center justify-center">
+                      <Bath className="w-5 h-5 text-accent" />
                     </div>
                     <div>
                       <p className="text-lg font-bold text-slate-900">{property.bathrooms || '-'}</p>
@@ -324,8 +324,8 @@ export default function SharePageClient({ id, propertyData }: SharePageClientPro
                     </div>
                   </div>
                   <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-50">
-                    <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
-                      <Maximize2 className="w-5 h-5 text-blue-700" />
+                    <div className="w-10 h-10 rounded-lg bg-accent-soft flex items-center justify-center">
+                      <Maximize2 className="w-5 h-5 text-accent" />
                     </div>
                     <div>
                       <p className="text-lg font-bold text-slate-900">{areaSqWa || '-'}</p>
@@ -345,7 +345,7 @@ export default function SharePageClient({ id, propertyData }: SharePageClientPro
                 </h2>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   {highlights.map((item: any, idx: number) => (
-                    <div key={idx} className="flex items-start gap-3 p-4 rounded-xl bg-gradient-to-br from-blue-50 to-slate-50 border border-blue-100">
+                    <div key={idx} className="flex items-start gap-3 p-4 rounded-xl bg-gradient-to-br from-blue-50 to-slate-50 border border-line">
                       <span className="text-2xl">{item.icon || '✓'}</span>
                       <p className="text-sm text-slate-700 font-medium leading-relaxed">{item.text}</p>
                     </div>
@@ -376,7 +376,7 @@ export default function SharePageClient({ id, propertyData }: SharePageClientPro
                       const IconComponent = amenityIcons[amenity] || CheckCircle2;
                       return (
                         <div key={idx} className="flex items-center gap-2 px-4 py-2 rounded-full bg-slate-50 border border-slate-200">
-                          <IconComponent className="w-4 h-4 text-blue-600" />
+                          <IconComponent className="w-4 h-4 text-accent" />
                           <span className="text-sm text-slate-700">{amenity}</span>
                         </div>
                       );
@@ -398,7 +398,7 @@ export default function SharePageClient({ id, propertyData }: SharePageClientPro
                       href={mapEmbed.externalUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex min-h-[32px] items-center gap-1.5 text-sm font-medium text-blue-700 hover:text-blue-900"
+                      className="inline-flex min-h-[32px] items-center gap-1.5 text-sm font-medium text-accent hover:text-ink"
                     >
                       <MapPin className="h-4 w-4" aria-hidden="true" />
                       เปิดใน Google Maps

@@ -4,11 +4,11 @@ import { useState, useEffect, memo } from 'react';
 import Link from 'next/link';
 import { MapPin, Heart, Bed, Bath, Maximize2 } from 'lucide-react';
 import { isFavorite, toggleFavorite } from '@/lib/favorites';
-import { formatPriceShort } from '@/lib/priceFormat';
+import { formatPriceShort, maskDigits } from '@/lib/priceFormat';
 import { getCloudinaryThumbUrl } from '@/lib/cloudinary';
 import { getPropertyLabel } from '@/constants/propertyTypes';
 import { generatePropertySlug } from '@/lib/propertySlug';
-import type { Property } from '@/lib/firestore';
+import type { Property, Timestamp } from '@/lib/firestore';
 import OptimizedImage from '@/components/OptimizedImage';
 
 interface PropertyCardCompactProps {
@@ -19,26 +19,40 @@ interface PropertyCardCompactProps {
   loading?: boolean;
 }
 
+function createdTimeValue(value: Property['createdAt']): number {
+  if (typeof value === 'number') return value;
+  if (typeof value === 'string') {
+    const parsed = Date.parse(value);
+    return Number.isFinite(parsed) ? parsed : 0;
+  }
+  const timestamp = value as Timestamp | undefined;
+  return timestamp?.toMillis?.() || 0;
+}
+
 function PropertyCardSkeleton() {
   return (
-    <article className="flex flex-col h-full w-full bg-white overflow-hidden rounded-xl shadow-sm" aria-label="กำลังโหลดข้อมูลทรัพย์">
-      <div className="aspect-[4/3] bg-slate-200 animate-pulse" />
-      <div className="flex flex-col flex-1 min-w-0 p-3 space-y-2">
-        <div className="h-4 bg-slate-200 rounded animate-pulse w-3/4" />
-        <div className="h-3 bg-slate-100 rounded animate-pulse w-1/2" />
-        <div className="h-9 bg-slate-100 rounded-lg animate-pulse w-full mt-auto" />
+    <article className="flex h-full w-full flex-col overflow-hidden rounded-card border border-line bg-surface" aria-label="กำลังโหลดข้อมูลทรัพย์">
+      <div className="aspect-[4/3] animate-pulse bg-slate-200" />
+      <div className="flex min-w-0 flex-1 flex-col space-y-2 p-3">
+        <div className="h-4 w-3/4 animate-pulse rounded bg-slate-200" />
+        <div className="h-3 w-1/2 animate-pulse rounded bg-slate-100" />
+        <div className="mt-auto h-4 w-1/3 animate-pulse rounded bg-slate-100" />
       </div>
     </article>
   );
 }
 
-function PropertyCardCompact({ property, featured = false, hotDeal = false, isNew = false, loading = false }: PropertyCardCompactProps) {
+function PropertyCardCompact({ property, featured = false, hotDeal = false, isNew: isNewProp = false, loading = false }: PropertyCardCompactProps) {
   const propertyId = property?.id ?? null;
   const [favorited, setFavorited] = useState(false);
+  const [renderedAt, setRenderedAt] = useState<number | null>(null);
 
   useEffect(() => {
     if (!propertyId) return;
-    const timer = window.setTimeout(() => setFavorited(isFavorite(propertyId)), 0);
+    const timer = window.setTimeout(() => {
+      setRenderedAt(Date.now());
+      setFavorited(isFavorite(propertyId));
+    }, 0);
     return () => window.clearTimeout(timer);
   }, [propertyId]);
 
@@ -56,129 +70,84 @@ function PropertyCardCompact({ property, featured = false, hotDeal = false, isNe
   const areaSqWa = property.area != null && Number(property.area) > 0 ? (Number(property.area) / 4).toFixed(0) : null;
   const installmentPerMonth = isInstallment && property.price != null && Number(property.price) > 0 ? Math.round(Number(property.price) / 120) : null;
 
-  const handleFavorite = () => {
-    setFavorited(toggleFavorite(propertyId));
-  };
+  const createdAt = createdTimeValue(property.createdAt);
+  const isNew = isNewProp || (renderedAt !== null && createdAt > 0 && renderedAt - createdAt < 7 * 24 * 60 * 60 * 1000);
 
+  const handleFavorite = () => setFavorited(toggleFavorite(propertyId));
   const propertyPath = generatePropertySlug(property)
     ? `/properties/${generatePropertySlug(property)}`
     : `/properties/${property.id}`;
-
   const coverImage = property.coverImageUrl || property.images?.[0] || 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=400';
 
-  // Badge logic
-  const badgeColor = isInstallment 
-    ? 'bg-emerald-500' 
-    : listingType === 'rent' 
-      ? 'bg-orange-500' 
-      : 'bg-blue-600';
-
-  const badgeLabel = isInstallment 
-    ? 'ผ่อนตรง' 
-    : listingType === 'rent' 
-      ? 'เช่า' 
-      : 'ขาย';
-
-  // Featured card size
-  const isFeaturedSize = featured || hotDeal;
+  const badgeLabel = isInstallment ? 'ผ่อนตรง' : listingType === 'rent' ? 'เช่า' : 'ขาย';
+  const badgeTone = isInstallment
+    ? 'bg-accent-soft text-accent border-accent/25'
+    : 'bg-white/95 text-ink border-line';
 
   return (
-    <article
-      className={`group flex flex-col h-full w-full bg-white overflow-hidden rounded-xl transition-all duration-300 ${
-        isFeaturedSize 
-          ? 'shadow-md hover:shadow-xl hover:-translate-y-1' 
-          : 'shadow-sm hover:shadow-lg hover:-translate-y-1'
-      } ${hotDeal ? 'ring-2 ring-amber-400' : ''}`}
-    >
-      <div className="relative aspect-[4/3] overflow-hidden bg-slate-100 shrink-0">
-        <Link href={propertyPath} className="block absolute inset-0" aria-label={`ดูรายละเอียด${titleText}`}>
+    <article className="group flex h-full w-full flex-col overflow-hidden rounded-card border border-line bg-surface transition-all duration-200 hover:-translate-y-0.5 hover:border-slate-300">
+      {/* Image */}
+      <div className="relative aspect-[4/3] shrink-0 overflow-hidden bg-slate-100">
+        <Link href={propertyPath} className="absolute inset-0 z-[1] block" aria-label={`ดูรายละเอียด${titleText}`}>
           <OptimizedImage
             src={getCloudinaryThumbUrl(coverImage) || coverImage}
             alt={titleText}
             fill
             sizes="(max-width: 640px) 256px, 288px"
-            className="object-cover transition-transform duration-500 group-hover:scale-110"
+            className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
           />
-          <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-          <div className="absolute top-2.5 left-2.5 flex flex-wrap gap-1.5 pr-12">
-            <span className={`inline-flex items-center py-1 px-2.5 text-[10px] font-bold text-white rounded-md shadow-lg ${badgeColor}`}>{badgeLabel}</span>
-            {isNew && <span className="inline-flex items-center py-1 px-2.5 text-[10px] font-bold text-white rounded-md shadow-lg bg-cyan-500">ใหม่</span>}
-            {hotDeal && <span className="inline-flex items-center py-1 px-2.5 text-[10px] font-bold text-white rounded-md shadow-lg bg-amber-500">ดีลร้อน</span>}
-          </div>
-          <div className="absolute bottom-0 left-0 right-0 p-3">
-            <span className="text-white font-bold text-xl sm:text-2xl leading-tight drop-shadow-lg">
-              {formatPriceShort(property.price, listingType === 'rent', property.showPrice !== false)}
-            </span>
-            {property.showPrice !== false && installmentPerMonth != null && (
-              <div className="text-white/95 text-xs mt-0.5 font-medium">≈ ฿{installmentPerMonth.toLocaleString('th-TH')}/เดือน</div>
-            )}
-          </div>
         </Link>
+        <div className="pointer-events-none absolute left-2.5 top-2.5 z-[2] flex flex-wrap gap-1.5">
+          <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-semibold backdrop-blur-sm ${badgeTone}`}>{badgeLabel}</span>
+          {isNew && <span className="inline-flex items-center rounded-full bg-accent px-2 py-0.5 text-[10px] font-semibold text-white">ใหม่</span>}
+          {hotDeal && <span className="inline-flex items-center rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-[10px] font-semibold text-amber-700">ดีลร้อน</span>}
+        </div>
         <button
           type="button"
           onClick={handleFavorite}
           aria-pressed={favorited}
-          className="absolute top-2 right-2 z-10 w-11 h-11 flex items-center justify-center rounded-full bg-white/95 backdrop-blur-sm shadow-lg hover:bg-white active:scale-95 transition-all duration-200"
+          className="absolute right-2 top-2 z-[2] flex h-8 w-8 items-center justify-center rounded-full border border-line bg-white/95 text-ink backdrop-blur-sm transition-all hover:bg-white active:scale-95"
           aria-label={favorited ? 'ลบออกจากรายการโปรด' : 'เพิ่มในรายการโปรด'}
         >
-          <Heart className={`w-5 h-5 transition-colors ${favorited ? 'fill-red-500 text-red-500' : 'text-slate-500'}`} aria-hidden="true" />
+          <Heart className={`h-4 w-4 transition-colors ${favorited ? 'fill-accent text-accent' : 'text-slate-500'}`} aria-hidden="true" />
         </button>
       </div>
 
-      {/* Content Section - Compact */}
-      <div className="flex flex-col flex-1 min-w-0 p-3">
-        {/* Title */}
-        <Link href={propertyPath} className="block mb-1.5">
-          <h3 className="font-semibold text-slate-900 leading-snug line-clamp-2 group-hover:text-blue-600 transition-colors text-sm">
+      {/* Body */}
+      <div className="flex min-w-0 flex-1 flex-col gap-1.5 p-3">
+        <Link href={propertyPath} className="block">
+          <h3 className="line-clamp-2 min-h-[38px] font-medium leading-snug text-ink transition-colors text-sm group-hover:text-accent">
             {titleText}
           </h3>
         </Link>
 
-        <div className="flex items-center gap-1.5 text-slate-500 text-xs mb-2.5">
-          <MapPin className="w-3.5 h-3.5 shrink-0 text-slate-400" aria-hidden="true" />
+        <div className="flex items-center gap-1 text-[11px] text-muted">
+          <MapPin className="h-3 w-3 shrink-0 text-slate-400" aria-hidden="true" />
           <span className="truncate">{district || '—'}</span>
         </div>
 
-        {/* Specs Row - Compact */}
-        <div className="flex items-center gap-3 text-slate-600 text-xs mb-2.5">
-          <div className="flex items-center gap-1">
-            <Bed className="w-3.5 h-3.5 text-slate-400" />
-            <span>{property.bedrooms ?? '-'}</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <Bath className="w-3.5 h-3.5 text-slate-400" />
-            <span>{property.bathrooms ?? '-'}</span>
-          </div>
+        <div className="flex items-center gap-2.5 text-[11px] text-muted">
+          <span className="inline-flex items-center gap-1"><Bed className="h-3 w-3 text-slate-400" aria-hidden="true" />{property.bedrooms ?? '-'}</span>
+          <span className="inline-flex items-center gap-1"><Bath className="h-3 w-3 text-slate-400" aria-hidden="true" />{property.bathrooms ?? '-'}</span>
           {areaSqWa != null && (
-            <div className="flex items-center gap-1">
-              <Maximize2 className="w-3.5 h-3.5 text-slate-400" />
-              <span>{areaSqWa}</span>
+            <span className="inline-flex items-center gap-1"><Maximize2 className="h-3 w-3 text-slate-400" aria-hidden="true" />{areaSqWa}</span>
+          )}
+        </div>
+
+        <div className="mt-auto flex items-end justify-between gap-2 border-t border-line pt-2.5">
+          <div className="min-w-0">
+            <div className="truncate text-[17px] font-bold tracking-tight text-ink">
+              {formatPriceShort(property.price, listingType === 'rent', property.showPrice !== false)}
             </div>
-          )}
+            {installmentPerMonth != null && (
+              <div className="mt-0.5 text-[10px] text-muted">≈ {maskDigits(installmentPerMonth)} บาท/เดือน</div>
+            )}
+          </div>
+          <span className={`inline-flex shrink-0 items-center gap-1 text-[10px] font-medium ${property.availability === 'available' ? 'text-accent' : 'text-amber-600'}`}>
+            <span className={`h-1 w-1 rounded-full ${property.availability === 'available' ? 'bg-accent' : 'bg-amber-500'}`} />
+            {property.availability === 'available' ? 'พร้อมอยู่' : 'ติดจอง'}
+          </span>
         </div>
-
-        {/* Availability Badge */}
-        <div className="flex items-center gap-2 mb-2.5">
-          {property.availability === 'available' ? (
-            <span className="inline-flex items-center gap-1 text-xs font-medium text-emerald-600">
-              <span className="w-2 h-2 rounded-full bg-emerald-500" />
-              ว่าง
-            </span>
-          ) : (
-            <span className="inline-flex items-center gap-1 text-xs font-medium text-amber-600">
-              <span className="w-2 h-2 rounded-full bg-amber-500" />
-              ติดจอง
-            </span>
-          )}
-        </div>
-
-        {/* CTA Button - Larger Touch Target (min 44px) */}
-        <Link
-          href={propertyPath}
-          className="mt-auto inline-flex items-center justify-center rounded-xl bg-blue-900 text-white font-semibold text-sm hover:bg-blue-800 active:scale-[0.98] transition-all duration-200 py-3 px-4 min-h-[44px]"
-        >
-          ดูรายละเอียด
-        </Link>
       </div>
     </article>
   );

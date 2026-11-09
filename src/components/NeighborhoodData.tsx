@@ -87,7 +87,7 @@ export default function NeighborhoodData({ property }: NeighborhoodDataProps) {
   if (!hasMapUrl) {
     return (
       <div className="bg-slate-100 rounded-xl border border-slate-200 p-6">
-        <h3 className="text-lg font-bold text-ink mb-4">สถานที่สำคัญใกล้เคียง</h3>
+        <h3 className="text-lg font-bold text-blue-900 mb-4">สถานที่สำคัญใกล้เคียง</h3>
         <div className="flex flex-col items-center justify-center py-8 text-slate-500">
           <MapPin className="h-12 w-12 mb-3 opacity-50" />
           <p className="text-sm font-medium">ยังไม่มี Map</p>
@@ -99,7 +99,7 @@ export default function NeighborhoodData({ property }: NeighborhoodDataProps) {
 
   return (
     <div className="bg-white rounded-xl border border-slate-200 p-6">
-      <h3 className="text-lg font-bold text-ink mb-4">สถานที่สำคัญใกล้เคียง</h3>
+      <h3 className="text-lg font-bold text-blue-900 mb-4">สถานที่สำคัญใกล้เคียง</h3>
       
       {loading ? (
         <div className="flex flex-col items-center justify-center py-8 text-slate-500">
@@ -121,10 +121,10 @@ export default function NeighborhoodData({ property }: NeighborhoodDataProps) {
             return (
               <div key={type} className="rounded-xl border border-slate-200 bg-gradient-to-br from-white to-slate-50 p-4">
                 <div className="flex items-center gap-2 mb-3">
-                  <div className="w-8 h-8 rounded-xl bg-accent-soft flex items-center justify-center">
-                    <Icon className="h-4 w-4 text-ink" />
+                  <div className="w-8 h-8 rounded-xl bg-blue-100 flex items-center justify-center">
+                    <Icon className="h-4 w-4 text-blue-900" />
                   </div>
-                  <h4 className="font-semibold text-ink">{TYPE_TITLES[type]}</h4>
+                  <h4 className="font-semibold text-blue-900">{TYPE_TITLES[type]}</h4>
                 </div>
                 <div className="space-y-2">
                   {groupedPlaces[type].map((place: any, index: number) => (

@@ -99,19 +99,19 @@ export default function Navbar() {
   if (pathname?.startsWith('/share')) return null;
 
   return (
-    <header className="sticky top-0 z-[100] w-full bg-white/95 backdrop-blur-sm border-b border-line">
+    <header className="sticky top-0 z-[100] w-full bg-white border-b border-gray-200">
       <nav className="w-full mx-auto px-3 sm:px-4 md:px-6 lg:px-8 lg:max-w-7xl min-h-[60px] flex flex-wrap items-center justify-between gap-3 py-2">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 shrink min-w-0 max-w-[calc(100%-56px)] lg:max-w-none">
           <OptimizedImage src="/logo.png" alt="SPS Property Solution" width={40} height={40} priority className="w-10 h-10 object-contain rounded-xl" />
-          <span className="text-base font-semibold text-ink whitespace-nowrap truncate hidden sm:inline">
+          <span className="text-base font-semibold text-gray-900 whitespace-nowrap truncate hidden sm:inline">
             SPS Property Solution
           </span>
         </Link>
 
         {/* Desktop Menu */}
         <div ref={desktopMenuRef} className="hidden lg:flex items-center gap-6 flex-1 justify-center min-w-0">
-          <Link href="/" className="nav-link text-[15px] font-medium text-muted hover:text-ink transition-colors duration-200 whitespace-nowrap no-underline py-2">
+          <Link href="/" className="nav-link text-[15px] font-medium text-gray-600 hover:text-blue-600 transition-colors duration-200 whitespace-nowrap no-underline py-2">
             หน้าหลัก
           </Link>
 
@@ -123,12 +123,12 @@ export default function Navbar() {
               onClick={() => { setBuyMenuOpen(!buyMenuOpen); setServiceMenuOpen(false); }}
               onMouseEnter={handleBuyMouseEnter}
               onMouseLeave={handleBuyMouseLeave}
-              className="nav-link inline-flex items-center gap-1 text-[15px] font-medium text-muted hover:text-ink transition-colors duration-200 whitespace-nowrap bg-transparent border-0 cursor-pointer py-2"
+              className="nav-link inline-flex items-center gap-1 text-[15px] font-medium text-gray-600 hover:text-blue-600 transition-colors duration-200 whitespace-nowrap bg-transparent border-0 cursor-pointer py-2"
             >
               ซื้อบ้าน<ChevronDown className={`h-4 w-4 transition-transform ${buyMenuOpen ? "rotate-180" : ""}`} aria-hidden="true" />
             </button>
             {buyMenuOpen && (
-              <div id="buy-home-menu" onMouseEnter={handleBuyMouseEnter} onMouseLeave={handleBuyMouseLeave} className="absolute left-0 top-full mt-2 w-72 bg-surface rounded-card shadow-lg shadow-slate-900/5 border border-line py-2 z-50">
+              <div id="buy-home-menu" onMouseEnter={handleBuyMouseEnter} onMouseLeave={handleBuyMouseLeave} className="absolute left-0 top-full mt-2 w-72 bg-white rounded-xl shadow-lg border border-slate-200 py-2 z-50">
                 {buyHomeLinks.map(({ href, label, icon: Icon, highlight, npaHighlight }) => (
                   <Link key={href} href={href} className={`flex items-center gap-2 px-4 py-2.5 text-sm transition ${highlight ? "font-semibold text-red-600 hover:bg-red-50" : npaHighlight ? "font-semibold text-indigo-700 hover:bg-indigo-50" : "text-slate-700 hover:bg-slate-50"}`} onClick={() => setBuyMenuOpen(false)}>
                     <Icon className={`h-4 w-4 ${highlight ? "text-red-500" : npaHighlight ? "text-indigo-500" : "text-slate-500"}`} aria-hidden="true" />
@@ -139,11 +139,11 @@ export default function Navbar() {
             )}
           </div>
 
-          <Link href="/properties?listingType=rent" className="nav-link text-[15px] font-medium text-muted hover:text-ink transition-colors duration-200 whitespace-nowrap no-underline py-2">
+          <Link href="/properties?listingType=rent" className="nav-link text-[15px] font-medium text-gray-600 hover:text-blue-600 transition-colors duration-200 whitespace-nowrap no-underline py-2">
             เช่า
           </Link>
 
-          <Link href="/portfolio" className="nav-link text-[15px] font-medium text-muted hover:text-ink transition-colors duration-200 whitespace-nowrap no-underline py-2">
+          <Link href="/portfolio" className="nav-link text-[15px] font-medium text-gray-600 hover:text-blue-600 transition-colors duration-200 whitespace-nowrap no-underline py-2">
             ผลงาน
           </Link>
 
@@ -155,12 +155,12 @@ export default function Navbar() {
               onClick={() => { setServiceMenuOpen(!serviceMenuOpen); setBuyMenuOpen(false); }}
               onMouseEnter={handleServiceMouseEnter}
               onMouseLeave={handleServiceMouseLeave}
-              className="nav-link inline-flex items-center gap-1 text-[15px] font-medium text-muted hover:text-ink transition-colors duration-200 whitespace-nowrap bg-transparent border-0 cursor-pointer py-2"
+              className="nav-link inline-flex items-center gap-1 text-[15px] font-medium text-gray-600 hover:text-blue-600 transition-colors duration-200 whitespace-nowrap bg-transparent border-0 cursor-pointer py-2"
             >
               บริการของเรา<ChevronDown className={`h-4 w-4 transition-transform ${serviceMenuOpen ? "rotate-180" : ""}`} aria-hidden="true" />
             </button>
             {serviceMenuOpen && (
-              <div id="service-menu" onMouseEnter={handleServiceMouseEnter} onMouseLeave={handleServiceMouseLeave} className="absolute left-0 top-full mt-2 w-72 bg-surface rounded-card shadow-lg shadow-slate-900/5 border border-line py-2 z-50">
+              <div id="service-menu" onMouseEnter={handleServiceMouseEnter} onMouseLeave={handleServiceMouseLeave} className="absolute left-0 top-full mt-2 w-72 bg-white rounded-xl shadow-lg border border-slate-200 py-2 z-50">
                 {serviceLinks.map(({ href, label, icon: Icon }) => (
                   <Link key={href} href={href} className="flex items-center gap-2 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 transition" onClick={() => setServiceMenuOpen(false)}>
                     <Icon className="h-4 w-4 text-slate-500" aria-hidden="true" />{label}
@@ -170,13 +170,13 @@ export default function Navbar() {
             )}
           </div>
 
-          <Link href="/contact" className="nav-link text-[15px] font-medium text-muted hover:text-ink transition-colors duration-200 whitespace-nowrap no-underline py-2">
+          <Link href="/contact" className="nav-link text-[15px] font-medium text-gray-600 hover:text-blue-600 transition-colors duration-200 whitespace-nowrap no-underline py-2">
             ติดต่อเรา
           </Link>
 
           <Link
             href="/favorites"
-            className="nav-link text-[15px] font-medium text-muted hover:text-ink transition-colors duration-200 flex items-center gap-1.5 whitespace-nowrap no-underline py-2"
+            className="nav-link text-[15px] font-medium text-gray-600 hover:text-blue-600 transition-colors duration-200 flex items-center gap-1.5 whitespace-nowrap no-underline py-2"
           >
             <Heart className="h-4 w-4" />
             รายการโปรด
@@ -187,13 +187,13 @@ export default function Navbar() {
         <div className="hidden lg:flex items-center gap-3 shrink-0">
           <Link
             href="/login"
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium text-muted hover:bg-slate-100 transition-colors"
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100 transition-colors"
           >
             เข้าสู่ระบบ
           </Link>
           <Link
             href="/post"
-            className="inline-flex items-center px-4 py-2 rounded-xl bg-accent text-white text-sm font-semibold whitespace-nowrap hover:bg-blue-700 transition-colors"
+            className="inline-flex items-center px-4 py-2 rounded-xl bg-amber-500 text-white text-sm font-semibold whitespace-nowrap hover:bg-amber-600 transition-colors"
           >
             ลงประกาศฟรี
           </Link>
@@ -202,7 +202,7 @@ export default function Navbar() {
         <button
           type="button"
           onClick={() => setMobileOpen((open) => !open)}
-          className="lg:hidden min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-accent/20"
+          className="lg:hidden min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-200"
           aria-label={mobileOpen ? "ปิดเมนู" : "เปิดเมนู"}
           aria-expanded={mobileOpen}
           aria-controls="mobile-navigation"
@@ -293,11 +293,11 @@ export default function Navbar() {
                 รายการโปรด
               </Link>
 
-              <Link href="/login" onClick={() => setMobileOpen(false)} className="w-full px-4 py-3 rounded-xl text-ink hover:bg-slate-100 font-medium flex items-center gap-2 min-h-[44px]">
+              <Link href="/login" onClick={() => setMobileOpen(false)} className="w-full px-4 py-3 rounded-xl text-blue-900 hover:bg-blue-50 font-medium flex items-center gap-2 min-h-[44px]">
                 เข้าสู่ระบบ
               </Link>
 
-              <Link href="/post" onClick={() => setMobileOpen(false)} className="w-full mt-2 inline-flex items-center justify-center px-4 py-3.5 rounded-xl bg-accent text-white text-sm font-semibold hover:bg-blue-700 min-h-[48px]">
+              <Link href="/post" onClick={() => setMobileOpen(false)} className="w-full mt-2 inline-flex items-center justify-center px-4 py-3.5 rounded-xl bg-amber-500 text-white text-sm font-semibold hover:bg-amber-600 min-h-[48px]">
                 ลงประกาศฟรี
               </Link>
             </div>

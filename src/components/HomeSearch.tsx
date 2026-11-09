@@ -100,7 +100,7 @@ export default function HomeSearch() {
             type="button"
             aria-pressed={activeTab === tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`min-h-[44px] flex items-center gap-1.5 px-4 sm:px-5 rounded-t-xl font-bold transition-colors text-sm ${activeTab === tab.id ? "bg-white text-ink shadow-sm" : "bg-ink/60 text-white hover:bg-ink/80"}`}
+            className={`min-h-[44px] flex items-center gap-1.5 px-4 sm:px-5 rounded-t-xl font-bold transition-colors text-sm ${activeTab === tab.id ? "bg-white text-blue-900 shadow-sm" : "bg-blue-900/50 text-white hover:bg-blue-900/70"}`}
           >
             <tab.icon className="h-4 w-4" aria-hidden="true" />{tab.label}
           </button>
@@ -121,7 +121,7 @@ export default function HomeSearch() {
               value={searchQuery}
               onChange={(event) => setSearchQuery(event.target.value)}
               placeholder="ทำเลหรือชื่อโครงการ"
-              className="w-full min-h-[48px] pl-10 pr-3 py-3 rounded-xl bg-slate-50 border-2 border-transparent focus:border-accent/40 focus:bg-white focus:outline-none transition-all text-base sm:text-sm font-medium"
+              className="w-full min-h-[48px] pl-10 pr-3 py-3 rounded-xl bg-slate-50 border-2 border-transparent focus:border-blue-200 focus:bg-white focus:outline-none transition-all text-base sm:text-sm font-medium"
             />
           </div>
 
@@ -130,7 +130,7 @@ export default function HomeSearch() {
             id="home-property-type"
             value={propertyType}
             onChange={(event) => setPropertyType(event.target.value)}
-            className="min-w-0 sm:w-36 min-h-[48px] px-3 rounded-xl bg-slate-50 border-2 border-transparent text-sm font-medium text-slate-700 focus:border-accent/40 focus:outline-none"
+            className="min-w-0 sm:w-36 min-h-[48px] px-3 rounded-xl bg-slate-50 border-2 border-transparent text-sm font-medium text-slate-700 focus:border-blue-200 focus:outline-none"
           >
             <option value="">ทุกประเภท</option>
             {PROPERTY_TYPES.map((type) => <option key={type.id} value={type.id}>{type.label}</option>)}
@@ -144,12 +144,12 @@ export default function HomeSearch() {
               const selected = PRICE_RANGES.find((range) => `${range.min}-${range.max}` === event.target.value);
               if (selected) setPriceRange(selected);
             }}
-            className="min-w-0 sm:w-36 min-h-[48px] px-3 rounded-xl bg-slate-50 border-2 border-transparent text-sm font-medium text-slate-700 focus:border-accent/40 focus:outline-none"
+            className="min-w-0 sm:w-36 min-h-[48px] px-3 rounded-xl bg-slate-50 border-2 border-transparent text-sm font-medium text-slate-700 focus:border-blue-200 focus:outline-none"
           >
             {PRICE_RANGES.map((range) => <option key={range.label} value={`${range.min}-${range.max}`}>{range.label}</option>)}
           </select>
 
-          <button type="submit" className="col-span-2 sm:col-span-1 min-h-[48px] flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-ink text-white font-bold hover:bg-slate-800 transition-colors shadow-sm text-sm">
+          <button type="submit" className="col-span-2 sm:col-span-1 min-h-[48px] flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-blue-900 text-white font-bold hover:bg-blue-800 transition-colors shadow-sm text-sm">
             <Search className="h-4 w-4" aria-hidden="true" />ค้นหา
           </button>
         </div>

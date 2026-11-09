@@ -55,14 +55,14 @@ export default function AdvancedFiltersPanel({
         onClick={() => setIsExpanded(!isExpanded)}
         className={`w-full flex items-center justify-between px-5 py-3 rounded-xl border-2 transition-all duration-200 ${
           isExpanded
-            ? 'bg-accent-soft border-blue-500 text-ink'
-            : 'bg-white border-slate-200 text-slate-700 hover:border-accent hover:bg-slate-50'
+            ? 'bg-blue-50 border-blue-500 text-blue-900'
+            : 'bg-white border-slate-200 text-slate-700 hover:border-blue-300 hover:bg-slate-50'
         }`}
       >
         <div className="flex items-center gap-2">
           <span className="font-semibold text-sm">ตัวกรองเพิ่มเติม</span>
           {activeCount > 0 && (
-            <span className="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full bg-accent text-white text-xs font-bold">
+            <span className="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full bg-blue-600 text-white text-xs font-bold">
               {activeCount}
             </span>
           )}
@@ -76,7 +76,7 @@ export default function AdvancedFiltersPanel({
 
       {/* Expandable Panel */}
       {isExpanded && (
-        <div className="mt-3 p-6 bg-white border-2 border-line rounded-2xl shadow-sm animate-in fade-in slide-in-from-top-2 duration-200">
+        <div className="mt-3 p-6 bg-white border-2 border-blue-100 rounded-2xl shadow-sm animate-in fade-in slide-in-from-top-2 duration-200">
           <div className="space-y-6">
             {/* ราคา */}
             <div>
@@ -133,7 +133,7 @@ export default function AdvancedFiltersPanel({
             {/* ห้องนอน */}
             <div>
               <label className="flex items-center gap-2 text-sm font-semibold text-slate-700 mb-3">
-                <div className="p-1.5 rounded-xl bg-accent-soft text-accent">
+                <div className="p-1.5 rounded-xl bg-blue-100 text-blue-700">
                   <Bed className="h-4 w-4" />
                 </div>
                 จำนวนห้องนอน
@@ -146,7 +146,7 @@ export default function AdvancedFiltersPanel({
                     onClick={() => onUpdateFilters({ bedrooms: val })}
                     className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
                       filters.bedrooms === val
-                        ? 'bg-ink text-white'
+                        ? 'bg-blue-900 text-white'
                         : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                     }`}
                   >
@@ -172,7 +172,7 @@ export default function AdvancedFiltersPanel({
                     onClick={() => onUpdateFilters({ bathrooms: val })}
                     className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
                       filters.bathrooms === val
-                        ? 'bg-ink text-white'
+                        ? 'bg-blue-900 text-white'
                         : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                     }`}
                   >
@@ -195,7 +195,7 @@ export default function AdvancedFiltersPanel({
               <button
                 type="button"
                 onClick={handleApplyFilters}
-                className="flex-1 px-4 py-2.5 rounded-xl bg-ink text-white font-semibold hover:bg-slate-800 transition-colors"
+                className="flex-1 px-4 py-2.5 rounded-xl bg-blue-900 text-white font-semibold hover:bg-blue-800 transition-colors"
               >
                 ค้นหา
               </button>

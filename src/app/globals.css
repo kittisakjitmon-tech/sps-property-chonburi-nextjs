@@ -8,31 +8,19 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-ibm-thai), -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-sans: var(--font-prompt), sans-serif;
   --font-mono: var(--font-geist-mono);
-
-  /* ── Modern Minimal (A2) design tokens ───────────────────────── */
-  --color-canvas: #f5f6f7;
-  --color-surface: #ffffff;
-  --color-ink: #0b1220;
-  --color-muted: #64748b;
-  --color-line: #e2e8f0;
-  --color-accent: #2563eb;
-  --color-accent-soft: #eff6ff;
-  --radius-card: 10px;
 }
 
 body {
-  background: var(--color-canvas);
-  color: var(--color-ink);
-  font-family: var(--font-sans);
-  overflow-x: clip;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-prompt), sans-serif;
 }
 
 /* Thai font styling */
 html {
-  font-family: var(--font-sans);
-  -webkit-text-size-adjust: 100%;
+  font-family: var(--font-prompt), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
 /* Disable image drag for property images */
@@ -44,24 +32,6 @@ img {
 /* Smooth transitions */
 a, button {
   transition: all 0.2s ease-in-out;
-}
-
-/* Modern Minimal base */
-::selection {
-  background: color-mix(in srgb, var(--color-accent) 22%, transparent);
-}
-
-:focus-visible {
-  outline: 2px solid var(--color-accent);
-  outline-offset: 2px;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
 }
 
 /* Line clamp utilities */

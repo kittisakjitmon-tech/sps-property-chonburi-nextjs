@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { IBM_Plex_Sans_Thai } from "next/font/google";
+import { Prompt } from "next/font/google";
 import { FirebaseProvider } from "@/lib/providers/FirebaseProvider";
 import { CONTACT } from "@/constants/contact";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL, absoluteUrl } from "@/lib/site";
@@ -8,11 +8,10 @@ import Footer from "@/components/Footer";
 import JsonLd from "@/components/JsonLd";
 import "./globals.css";
 
-const ibmThai = IBM_Plex_Sans_Thai({
+const prompt = Prompt({
   weight: ["300", "400", "500", "600", "700"],
   subsets: ["thai", "latin"],
-  variable: "--font-ibm-thai",
-  display: "swap",
+  variable: "--font-prompt",
 });
 
 export const metadata: Metadata = {
@@ -76,7 +75,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="th" className="h-full antialiased">
-      <body className={`${ibmThai.variable} font-sans min-h-full flex flex-col`}>
+      <body className={`${prompt.variable} font-sans min-h-full flex flex-col`}>
         <FirebaseProvider>
           <JsonLd data={businessJsonLd} />
           <Navbar />

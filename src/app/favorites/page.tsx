@@ -69,7 +69,7 @@ export default function FavoritesPage() {
         <div className="max-w-4xl mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-ink flex items-center gap-2">
+              <h1 className="text-2xl font-bold text-blue-900 flex items-center gap-2">
                 <Heart className="h-7 w-7 text-red-500" />
                 รายการโปรด
               </h1>
@@ -132,7 +132,7 @@ export default function FavoritesPage() {
                   {/* Content */}
                   <div className="flex-1 min-w-0">
                     <Link href={getPropertyPath(property)} className="block">
-                      <h3 className="font-semibold text-gray-900 truncate hover:text-ink">
+                      <h3 className="font-semibold text-gray-900 truncate hover:text-blue-900">
                         {typeLabel}
                       </h3>
                       <p className="text-sm text-gray-500 flex items-center gap-1 mt-1">
@@ -171,7 +171,7 @@ export default function FavoritesPage() {
             <p className="text-gray-500 mb-6">เริ่มต้นเพิ่มทรัพย์ที่สนใจลงในรายการโปรด</p>
             <Link
               href="/properties"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-ink text-white font-semibold rounded-xl hover:bg-slate-800 transition"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-blue-900 text-white font-semibold rounded-xl hover:bg-blue-800 transition"
             >
               <ChevronLeft className="h-5 w-5" />
               ดูรายการทรัพย์สิน

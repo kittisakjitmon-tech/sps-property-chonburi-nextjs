@@ -91,15 +91,15 @@ export default function ContactPage() {
             <div className="space-y-6">
               {/* Contact Info Card */}
               <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 sm:p-8">
-                <h2 className="text-xl font-bold text-ink mb-2">SPS Property Solutions</h2>
+                <h2 className="text-xl font-bold text-blue-900 mb-2">SPS Property Solutions</h2>
                 <p className="text-gray-500 text-sm mb-6">ผู้เชี่ยวชาญด้านอสังหาริมทรัพย์ อมตะซิตี้ ชลบุรี</p>
 
                 {/* Contact Details */}
                 <div className="space-y-4 mb-6">
                   {/* Address */}
                   <div className="flex gap-4">
-                    <div className="w-10 h-10 rounded-xl bg-accent-soft flex items-center justify-center shrink-0">
-                      <MapPin className="w-5 h-5 text-ink" />
+                    <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center shrink-0">
+                      <MapPin className="w-5 h-5 text-blue-900" />
                     </div>
                     <div>
                       <p className="font-semibold text-gray-900 mb-1">ที่อยู่</p>
@@ -117,8 +117,8 @@ export default function ContactPage() {
 
                   {/* Service Area */}
                   <div className="flex gap-4">
-                    <div className="w-10 h-10 rounded-xl bg-accent-soft flex items-center justify-center shrink-0">
-                      <Globe className="w-5 h-5 text-ink" />
+                    <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center shrink-0">
+                      <Globe className="w-5 h-5 text-blue-900" />
                     </div>
                     <div>
                       <p className="font-semibold text-gray-900 mb-1">พื้นที่บริการ</p>
@@ -135,8 +135,8 @@ export default function ContactPage() {
                   {contactMethods.map((method, idx) => {
                     const Icon = method.icon;
                     const content = (
-                      <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border border-gray-200 hover:border-line transition-colors">
-                        <div className="w-10 h-10 rounded-xl bg-ink flex items-center justify-center shrink-0">
+                      <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border border-gray-200 hover:border-blue-200 transition-colors">
+                        <div className="w-10 h-10 rounded-xl bg-blue-900 flex items-center justify-center shrink-0">
                           <Icon className="w-5 h-5 text-white" />
                         </div>
                         <div>
@@ -172,7 +172,7 @@ export default function ContactPage() {
 
             {/* Right Column - Contact Form */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 sm:p-8">
-              <h2 className="text-xl font-bold text-ink mb-2">ส่งข้อความถึงเรา</h2>
+              <h2 className="text-xl font-bold text-blue-900 mb-2">ส่งข้อความถึงเรา</h2>
               <p className="text-gray-500 text-sm mb-6">กรอกข้อมูลด้านล่าง ทีมงานจะติดต่อกลับโดยเร็ว</p>
 
               {submitted ? (
@@ -184,7 +184,7 @@ export default function ContactPage() {
                   <p className="text-gray-600 mb-6">ขอบคุณที่ติดต่อ ทีมงานจะติดต่อกลับภายใน 24 ชั่วโมง</p>
                   <button
                     onClick={() => setSubmitted(false)}
-                    className="px-6 py-2 bg-ink text-white rounded-xl hover:bg-slate-800 transition"
+                    className="px-6 py-2 bg-blue-900 text-white rounded-xl hover:bg-blue-800 transition"
                   >
                     ส่งข้อความใหม่
                   </button>
@@ -242,7 +242,7 @@ export default function ContactPage() {
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full mt-6 py-3 bg-ink hover:bg-slate-800 disabled:bg-blue-300 text-white font-semibold rounded-xl transition-colors flex items-center justify-center gap-2"
+                    className="w-full mt-6 py-3 bg-blue-900 hover:bg-blue-800 disabled:bg-blue-300 text-white font-semibold rounded-xl transition-colors flex items-center justify-center gap-2"
                   >
                     {isSubmitting ? (
                       <>
@@ -266,7 +266,7 @@ export default function ContactPage() {
                   {CONTACT.phone && (
                     <a
                       href={`tel:${CONTACT.phone}`}
-                      className="flex-1 flex items-center justify-center gap-2 py-3 bg-ink hover:bg-slate-800 text-white font-medium rounded-xl transition-colors"
+                      className="flex-1 flex items-center justify-center gap-2 py-3 bg-blue-900 hover:bg-blue-800 text-white font-medium rounded-xl transition-colors"
                     >
                       <Phone className="w-5 h-5" />
                       โทร {CONTACT.phone}
@@ -276,7 +276,7 @@ export default function ContactPage() {
                     href={PRIMARY_CHAT_URL}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className={`flex-1 flex items-center justify-center gap-2 py-3 text-white font-medium rounded-xl transition-colors ${CONTACT.lineUrl ? 'bg-green-600 hover:bg-green-700' : 'bg-accent hover:bg-blue-700'}`}
+                    className={`flex-1 flex items-center justify-center gap-2 py-3 text-white font-medium rounded-xl transition-colors ${CONTACT.lineUrl ? 'bg-green-600 hover:bg-green-700' : 'bg-blue-600 hover:bg-blue-700'}`}
                   >
                     <MessageCircle className="w-5 h-5" />
                     แชท {PRIMARY_CHAT_LABEL}

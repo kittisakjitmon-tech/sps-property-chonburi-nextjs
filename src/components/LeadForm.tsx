@@ -36,7 +36,7 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(function InputF
         aria-invalid={Boolean(error)}
         aria-describedby={error ? `${id}-error` : undefined}
         className={`w-full min-h-[44px] px-4 py-2.5 rounded-xl border text-sm bg-white transition-colors focus:ring-2 focus:outline-none ${
-          error ? 'border-red-500 focus:ring-red-200' : 'border-slate-300 focus:ring-accent/20'
+          error ? 'border-red-500 focus:ring-red-200' : 'border-slate-300 focus:ring-blue-200'
         }`}
       />
       {error && <p id={`${id}-error`} className="mt-1.5 text-xs text-red-600">{error}</p>}
@@ -189,7 +189,7 @@ export default function LeadForm({ propertyId = '', propertyTitle = '', onSucces
           aria-pressed={activeTab === 'customer'}
           onClick={() => changeTab('customer')}
           className={`flex-1 min-h-[44px] px-4 py-2.5 text-sm font-medium rounded-t-lg transition-colors ${
-            activeTab === 'customer' ? 'bg-ink text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+            activeTab === 'customer' ? 'bg-blue-900 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
           }`}
         >
           สำหรับลูกค้า
@@ -200,7 +200,7 @@ export default function LeadForm({ propertyId = '', propertyTitle = '', onSucces
             aria-pressed={activeTab === 'agent'}
             onClick={() => changeTab('agent')}
             className={`flex-1 min-h-[44px] px-4 py-2.5 text-sm font-medium rounded-t-lg transition-colors ${
-              activeTab === 'agent' ? 'bg-ink text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+              activeTab === 'agent' ? 'bg-blue-900 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
             }`}
           >
             สำหรับเอเจนท์
@@ -210,7 +210,7 @@ export default function LeadForm({ propertyId = '', propertyTitle = '', onSucces
 
       <form onSubmit={handleSubmit} className="space-y-4" noValidate aria-busy={isLoading}>
         <div>
-          <h4 className="text-base font-bold text-ink">
+          <h4 className="text-base font-bold text-blue-900">
             {activeTab === 'customer' ? 'นัดเข้าชมทรัพย์' : 'เอเจนท์พาลูกค้าเข้าชม'}
           </h4>
           <p className="text-xs text-slate-600 mt-1">กรอกชื่อและเบอร์โทรเพื่อให้เจ้าหน้าที่ติดต่อกลับ สามารถเลือกวันและเวลาภายหลังได้</p>
@@ -241,7 +241,7 @@ export default function LeadForm({ propertyId = '', propertyTitle = '', onSucces
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full min-h-[48px] py-3 rounded-xl bg-ink text-white text-sm font-semibold hover:bg-slate-800 disabled:opacity-60 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
+          className="w-full min-h-[48px] py-3 rounded-xl bg-blue-900 text-white text-sm font-semibold hover:bg-blue-800 disabled:opacity-60 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
         >
           {isLoading ? <><span className="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" aria-hidden="true" />กำลังส่งข้อมูล…</> : 'ส่งคำขอนัดชม'}
         </button>

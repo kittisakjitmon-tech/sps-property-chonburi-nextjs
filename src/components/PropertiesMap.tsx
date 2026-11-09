@@ -165,12 +165,12 @@ export default function PropertiesMap({ properties, className = '' }: Properties
               ×
             </button>
           </div>
-          <p style="margin: 0 0 6px 0; font-size: 16px; font-weight: 700; color: #0b1220;">
+          <p style="margin: 0 0 6px 0; font-size: 16px; font-weight: 700; color: #dc2626;">
             ${priceText}
           </p>
           ${locationText ? `<p style="margin: 0 0 4px 0; font-size: 13px; color: #64748b;">📍 ${escapeHtml(locationText)}</p>` : ''}
           ${property.bedrooms ? `<p style="margin: 0 0 8px 0; font-size: 13px; color: #64748b;">🛏️ ${Number(property.bedrooms)} ห้องนอน</p>` : ''}
-          <a href="${escapeHtml(detailUrl)}" aria-label="ดูรายละเอียด ${safeTitle}" style="display: block; margin-top: 12px; padding: 12px 16px; min-height: 44px; box-sizing: border-box; background: #2563eb; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 15px; text-align: center; touch-action: manipulation; -webkit-tap-highlight-color: transparent;">
+          <a href="${escapeHtml(detailUrl)}" aria-label="ดูรายละเอียด ${safeTitle}" style="display: block; margin-top: 12px; padding: 12px 16px; min-height: 44px; box-sizing: border-box; background: #fbbf24; color: #78350f; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 15px; text-align: center; touch-action: manipulation; -webkit-tap-highlight-color: transparent;">
             ดูรายละเอียด →
           </a>
         </div>

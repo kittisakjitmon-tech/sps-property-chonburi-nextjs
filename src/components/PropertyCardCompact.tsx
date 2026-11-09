@@ -51,7 +51,8 @@ function PropertyCardCompact({ property, featured = false, hotDeal = false, isNe
   const district = loc ? [loc.district, loc.province].filter(Boolean).join(', ') : (property.district || property.province || '');
   const subDistrict = loc?.subDistrict || '';
   const typeLabel = getPropertyLabel(property.type || property.propertyType || '') || 'อสังหาริมทรัพย์';
-  const titleText = subDistrict ? `${typeLabel} ${subDistrict}` : typeLabel;
+  // ใช้ชื่อที่ผู้ใช้ตั้งไว้ (property.title) ก่อนเสมอ ให้ตรงกับหน้ารายละเอียด
+  const titleText = property.title?.trim() || (subDistrict ? `${typeLabel} ${subDistrict}` : typeLabel);
   const areaSqWa = property.area != null && Number(property.area) > 0 ? (Number(property.area) / 4).toFixed(0) : null;
   const installmentPerMonth = isInstallment && property.price != null && Number(property.price) > 0 ? Math.round(Number(property.price) / 120) : null;
 

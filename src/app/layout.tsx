@@ -22,6 +22,11 @@ export const metadata: Metadata = {
   },
   description: SITE_DESCRIPTION,
   applicationName: SITE_NAME,
+  verification: {
+    other: {
+      'facebook-domain-verification': 'yr4rw96bkeyvnch52llk316ny6y3zd',
+    },
+  },
   openGraph: {
     title: `${SITE_NAME} | บ้าน คอนโด อมตะซิตี้ ชลบุรี`,
     description: SITE_DESCRIPTION,

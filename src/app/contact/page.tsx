@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { MapPin, Globe, Mail, Clock, Phone, MessageCircle, Send } from 'lucide-react';
 import { createInquiry } from '@/lib/firestore';
-import { CONTACT, PRIMARY_CHAT_LABEL, PRIMARY_CHAT_URL } from '@/constants/contact';
+import { COMPANY, CONTACT, PRIMARY_CHAT_LABEL, PRIMARY_CHAT_URL } from '@/constants/contact';
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -104,9 +104,13 @@ export default function ContactPage() {
                     <div>
                       <p className="font-semibold text-gray-900 mb-1">ที่อยู่</p>
                       <p className="text-sm text-gray-600">
-                        99/199 หมู่บ้านกิตติพรพอร์ต ซอยอมตะพัฒน์ 15<br />
-                        ตำบลอมตะ อำเภอเมืองชลบุรี<br />
-                        จังหวัดชลบุรี 20000
+                        {COMPANY.legalName}<br />
+                        {COMPANY.addressLines.map((line, index) => (
+                          <span key={line}>
+                            {line}
+                            {index < COMPANY.addressLines.length - 1 && <br />}
+                          </span>
+                        ))}
                       </p>
                     </div>
                   </div>

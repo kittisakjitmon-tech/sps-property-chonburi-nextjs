@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Mail, Clock, MapPin, MessageCircle } from "lucide-react";
-import { CONTACT, PRIMARY_CHAT_LABEL, PRIMARY_CHAT_URL } from "@/constants/contact";
+import { COMPANY, COMPANY_ADDRESS, CONTACT, PRIMARY_CHAT_LABEL, PRIMARY_CHAT_URL } from "@/constants/contact";
 import OptimizedImage from "@/components/OptimizedImage";
 
 const popularSearches = [
@@ -56,7 +56,7 @@ export default function Footer() {
           <div className="mt-6 pt-6 border-t border-blue-800">
             <div className="flex items-center gap-2 text-blue-200 text-sm">
               <MapPin className="h-4 w-4 shrink-0" />
-              <span>นิคมอุตสาหกรรมอมตะซิตี้ ชลบุรี</span>
+              <span>{COMPANY.legalName} · {COMPANY_ADDRESS}</span>
             </div>
           </div>
 

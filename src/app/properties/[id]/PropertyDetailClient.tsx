@@ -5,7 +5,7 @@ import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { MapPin, Bed, Bath, Maximize2, Share2, Copy, Check, Home, ChevronLeft, ChevronRight, X, Calendar, MessageCircle } from 'lucide-react';
 import { createSpoomeShortUrl } from '@/lib/spoo';
-import { formatPrice } from '@/lib/priceFormat';
+import { formatPrice, maskDigits } from '@/lib/priceFormat';
 import { highlightText } from '@/lib/textHighlight';
 import { getPropertyLabel } from '@/constants/propertyTypes';
 import { getPropertyMapEmbed } from '@/lib/propertyMap';
@@ -281,10 +281,10 @@ export default function PropertyDetailClient({ property, loading = false }: Prop
 
               <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 mb-4">
                 <p className="text-2xl sm:text-3xl font-bold text-orange-700">
-                  {formatPrice(property.price, isRental, property.showPrice !== false)}
+                  {formatPrice(property.price, isRental)}
                 </p>
-                {property.showPrice !== false && isInstallment && property.price > 0 && (
-                  <p className="text-base text-green-700 font-medium">≈ {Math.round(property.price / 120).toLocaleString('th-TH')} บาท/เดือน</p>
+                {isInstallment && property.price > 0 && (
+                  <p className="text-base text-green-700 font-medium">≈ {maskDigits(Math.round(property.price / 120))} บาท/เดือน</p>
                 )}
               </div>
 
@@ -411,7 +411,7 @@ export default function PropertyDetailClient({ property, loading = false }: Prop
                 />
               </div>
 
-              {!isRental && property.price > 0 && property.showPrice !== false && <MortgageCalculator price={property.price} />}
+              {!isRental && property.price > 0 && <MortgageCalculator price={property.price} />}
 
               {agent.name && (
                 <div className="bg-white rounded-xl border border-slate-200 p-4">

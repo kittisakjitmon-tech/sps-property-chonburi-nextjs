@@ -5,6 +5,7 @@ import { usePathname, useSearchParams } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import { Search, X, Map, Grid, List, ChevronDown } from 'lucide-react';
 import type { Property } from '@/lib/firestore';
+import { toPropertyCardPayload, type PropertyCardPayload } from '@/lib/propertyCardPayload';
 import { PROPERTY_TYPES } from '@/constants/propertyTypes';
 import { getPropertySearchIntent } from '@/lib/searchIntent';
 import { readPropertyPriceRange, propertyPriceOptions, mergePropertySearchParams, matchesPropertyText, matchesPropertyLocation, propertyListingType, propertySubListingType, propertyCreatedTime } from '@/lib/propertySearch';
@@ -31,7 +32,7 @@ const QUICK_LOCATIONS = [
 ];
 
 interface PropertiesClientProps {
-  initialProperties: Property[];
+  initialProperties: PropertyCardPayload[];
   loading?: boolean;
 }
 
@@ -50,7 +51,7 @@ export default function PropertiesClient({ initialProperties, loading = false }:
     return params.toString();
   }, [searchParams]);
 
-  const [properties, setProperties] = useState<Property[]>(initialProperties || []);
+  const [properties, setProperties] = useState<PropertyCardPayload[]>(initialProperties || []);
   const [loadError, setLoadError] = useState('');
   const [retry, setRetry] = useState(0);
   const [isInitialLoad, setIsInitialLoad] = useState(loading);
@@ -118,7 +119,7 @@ export default function PropertiesClient({ initialProperties, loading = false }:
       try {
         const { getPropertiesOnce } = await import('@/lib/firestore');
         const props = await getPropertiesOnce(true, true);
-        if (!cancelled) setProperties(props);
+        if (!cancelled) setProperties(props.map(toPropertyCardPayload));
       } catch (error) {
         console.error('Error fetching properties:', error);
         if (!cancelled) setLoadError('โหลดรายการทรัพย์ไม่สำเร็จ กรุณาลองใหม่');

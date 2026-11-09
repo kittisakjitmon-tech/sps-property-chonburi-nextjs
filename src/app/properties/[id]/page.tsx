@@ -7,6 +7,7 @@ export const dynamic = 'force-dynamic';
 import { extractIdFromSlug, getPropertyPath } from '@/lib/propertySlug';
 import { withResolvedMapUrl } from '@/lib/propertyMapServer';
 import { getPropertyLabel } from '@/constants/propertyTypes';
+import { formatMaskedPrice } from '@/lib/priceFormat';
 import { SITE_URL, absoluteUrl } from '@/lib/site';
 import JsonLd from '@/components/JsonLd';
 import PropertyDetailClient from './PropertyDetailClient';
@@ -39,14 +40,15 @@ export async function generateMetadata({ params }: PropertyDetailPageProps): Pro
 
   const typeLabel = getPropertyLabel(property.type || property.propertyType || '') || 'อสังหาริมทรัพย์';
   const location = getLocationString(property.location) || property.province || 'ชลบุรี';
-  const listingLabel = property.isRental || property.listingType === 'rent' ? 'ให้เช่า' : 'ขาย';
+  const isRental = property.isRental || property.listingType === 'rent';
+  const listingLabel = isRental ? 'ให้เช่า' : 'ขาย';
   const title = property.title || `${listingLabel}${typeLabel} ${location}`;
   const facts = [
     `${listingLabel}${typeLabel} ${location}`,
     property.bedrooms != null ? `${property.bedrooms} ห้องนอน` : '',
     property.bathrooms != null ? `${property.bathrooms} ห้องน้ำ` : '',
     property.area > 0 ? `พื้นที่ ${Math.round(property.area / 4)} ตารางวา` : '',
-    property.showPrice !== false && property.price > 0 ? `ราคา ${property.price.toLocaleString('th-TH')} บาท` : '',
+    property.price > 0 ? `ราคา ${formatMaskedPrice(property.price, isRental)}` : '',
   ].filter(Boolean).join(' • ');
   const description = `${facts} ดูรูปภาพ รายละเอียด และนัดชมทรัพย์กับ SPS Property Solution`;
   const canonicalPath = getPropertyPath(property);
@@ -117,14 +119,7 @@ export default async function PropertyDetailPage({ params }: PropertyDetailPageP
           addressCountry: 'TH',
         },
       },
-      ...(property.showPrice !== false && property.price > 0 ? [{
-        '@type': 'Offer',
-        priceCurrency: 'THB',
-        price: Number(property.price),
-        url: absoluteUrl(canonicalPath),
-        availability: property.availability === 'available' && property.status === 'available' ? 'https://schema.org/InStock' : 'https://schema.org/LimitedAvailability',
-        itemOffered: { '@id': residenceId },
-      }] : []),
+      // ราคาจริงไม่ถูกส่งออกใน structured data เพื่อไม่ให้ค้นหาเจอจากภายนอก
       {
         '@type': 'BreadcrumbList',
         itemListElement: [

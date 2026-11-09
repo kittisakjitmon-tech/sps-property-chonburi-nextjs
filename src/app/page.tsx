@@ -19,9 +19,11 @@ import {
   Handshake,
 } from "lucide-react";
 import {
-  getPropertiesOnce,
   getFeaturedBlogs,
+  getFeaturedProperties,
   getPopularLocationsOnce,
+  getPropertiesCount,
+  getRecentProperties,
 } from "@/lib/firestore";
 import { generateBlogSlug } from "@/lib/blogSlug";
 import HeroSlider from "@/components/HeroSlider";
@@ -56,15 +58,24 @@ const serviceHighlights = [
 ];
 
 export default async function HomePage() {
-  const [properties, blogs, locations] = await Promise.all([
-    getPropertiesOnce(false),
+  // ดึงเท่าที่ใช้จริง: ล่าสุด 30 รายการ (ใช้ทั้ง section "บ้านล่าสุด" และ fallback ของ "ทรัพย์แนะนำ")
+  const [recentProperties, featuredProperties, propertyCount, blogs, locations] = await Promise.all([
+    getRecentProperties(30),
+    getFeaturedProperties(6),
+    getPropertiesCount(),
     getFeaturedBlogs(3),
     getPopularLocationsOnce(),
   ]);
-  const featuredProperties = properties.slice(0, 200).filter((property) => property.featured === true).slice(0, 6);
-  const newProperties = properties.filter((property) => property.createdAt).slice(0, 6);
+
+  const newProperties = recentProperties.slice(0, 6);
+  const latestIds = new Set(newProperties.map((property) => property.id));
+  // ถ้ามีทรัพย์ที่ตั้ง featured ไว้ให้ใช้ชุดนั้น ถ้าไม่มีให้ใช้รายการถัดไปที่ไม่ซ้ำกับ "บ้านล่าสุด"
+  const recommendedProperties = featuredProperties.length > 0
+    ? featuredProperties
+    : recentProperties.filter((property) => !latestIds.has(property.id)).slice(0, 18);
+
   const stats = [
-    { icon: Building2, value: properties.length.toLocaleString('th-TH'), label: "ทรัพย์ในระบบ" },
+    { icon: Building2, value: propertyCount.toLocaleString('th-TH'), label: "ทรัพย์ในระบบ" },
     { icon: Award, value: "12+", label: "ปีประสบการณ์" },
     { icon: Users, value: "1,200+", label: "ลูกค้า" },
     { icon: Clock, value: "24/7", label: "บริการ" },
@@ -164,8 +175,8 @@ export default async function HomePage() {
         {/* ── Main Property Section with Tabs ── */}
         <div className="border-t border-slate-200">
           <PropertyTabsSection
-            initialProperties={featuredProperties.length > 0 ? featuredProperties : properties.slice(0, 24)}
-            totalCount={properties.length}
+            initialProperties={recommendedProperties}
+            totalCount={propertyCount}
           />
         </div>
 

@@ -2,7 +2,8 @@ import { Suspense } from 'react';
 import type { Metadata } from 'next';
 
 export const dynamic = 'force-dynamic';
-import { getPropertiesOnce, type Property } from '@/lib/firestore';
+import { getPropertiesForListing, type Property } from '@/lib/firestore';
+import { toPropertyCardPayload } from '@/lib/propertyCardPayload';
 import { filterPropertiesForSeo, getPropertySearchIntent } from '@/lib/searchIntent';
 import { getPropertyPath } from '@/lib/propertySlug';
 import { absoluteUrl } from '@/lib/site';
@@ -43,7 +44,7 @@ export default async function PropertiesPage({ searchParams }: { searchParams: P
   let loading = true;
 
   try {
-    properties = await getPropertiesOnce(true, true);
+    properties = await getPropertiesForListing();
     loading = false;
   } catch (error) {
     console.error('Error fetching properties:', error);
@@ -89,7 +90,7 @@ export default async function PropertiesPage({ searchParams }: { searchParams: P
           </div>
         </div>
       }>
-        <PropertiesClient initialProperties={properties} loading={loading} />
+        <PropertiesClient initialProperties={properties.map(toPropertyCardPayload)} loading={loading} />
       </Suspense>
     </>
   );

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { maskDigits } from '@/lib/priceFormat';
 
 interface MortgageCalculatorProps {
   price: number;
@@ -95,7 +96,7 @@ export default function MortgageCalculator({ price, directInstallment = false }:
             className="w-full h-2 bg-slate-200 rounded-xl appearance-none cursor-pointer accent-blue-900"
           />
           <span className="text-sm text-slate-600">
-            {downPercent}% = {(down / 1_000_000).toFixed(1)} ล้านบาท
+            {downPercent}% ≈ {maskDigits(down)} บาท
           </span>
         </div>
 
@@ -142,10 +143,10 @@ export default function MortgageCalculator({ price, directInstallment = false }:
         <div className="pt-4 border-t border-slate-200">
           <p className="text-slate-600 text-sm mb-1">ค่างวดโดยประมาณ</p>
           <p className="text-2xl font-bold text-amber-700">
-            {monthlyPayment.toLocaleString('th-TH', { maximumFractionDigits: 0 })} บาท/เดือน
+            {maskDigits(monthlyPayment)} บาท/เดือน
           </p>
           <p className="text-xs text-slate-500 mt-1">
-            รวมทั้งสิ้น {((monthlyPayment * numPayments) / 1_000_000).toFixed(1)} ล้านบาท ({years} ปี)
+            รวมทั้งสิ้น ≈ {maskDigits(monthlyPayment * numPayments)} บาท ({years} ปี)
           </p>
         </div>
 
@@ -168,16 +169,16 @@ export default function MortgageCalculator({ price, directInstallment = false }:
                   <tr key={row.month} className="hover:bg-slate-50">
                     <td className="px-2 py-2 text-slate-600">{row.month}</td>
                     <td className="px-2 py-2 text-right font-medium text-blue-900">
-                      {row.payment.toLocaleString('th-TH', { maximumFractionDigits: 0 })}
+                      {maskDigits(row.payment)}
                     </td>
                     <td className="px-2 py-2 text-right text-slate-600">
-                      {row.principal.toLocaleString('th-TH', { maximumFractionDigits: 0 })}
+                      {maskDigits(row.principal)}
                     </td>
                     <td className="px-2 py-2 text-right text-amber-600">
-                      {row.interest.toLocaleString('th-TH', { maximumFractionDigits: 0 })}
+                      {maskDigits(row.interest)}
                     </td>
                     <td className="px-2 py-2 text-right text-slate-600">
-                      {row.balance.toLocaleString('th-TH', { maximumFractionDigits: 0 })}
+                      {maskDigits(row.balance)}
                     </td>
                   </tr>
                 ))}

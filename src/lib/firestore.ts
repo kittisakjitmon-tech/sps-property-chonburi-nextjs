@@ -3,6 +3,7 @@ import {
   doc,
   getDoc,
   getDocs,
+  getCountFromServer,
   addDoc,
   query,
   where,
@@ -159,6 +160,53 @@ export async function getPropertiesOnce(includeHidden = false, throwOnError = fa
     if (throwOnError) throw error;
     return [];
   }
+}
+
+/** ดึงเฉพาะทรัพย์ล่าสุด (ไม่ดึงทั้ง collection) — ใช้กับหน้าแรก/ส่วนแนะนำ */
+export async function getRecentProperties(limitCount = 6): Promise<Property[]> {
+  try {
+    const q = query(
+      collection(db, "properties"),
+      where("status", "==", "available"),
+      orderBy("createdAt", "desc"),
+      limit(limitCount)
+    );
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map((doc) =>
+      serializeProperty({
+        id: doc.id,
+        ...doc.data(),
+      })
+    ) as Property[];
+  } catch (error) {
+    console.error("Error fetching recent properties:", error);
+    return [];
+  }
+}
+
+/** นับจำนวนทรัพย์ที่ประกาศอยู่ โดยไม่ดึงเอกสารทั้งหมด (aggregation query) */
+export async function getPropertiesCount(): Promise<number> {
+  try {
+    const q = query(collection(db, "properties"), where("status", "==", "available"));
+    const snapshot = await getCountFromServer(q);
+    return snapshot.data().count;
+  } catch (error) {
+    console.error("Error counting properties:", error);
+    return 0;
+  }
+}
+
+/** รายการทรัพย์สำหรับหน้า listing — cache ใน memory 60 วินาที ลด Firestore reads ต่อ request */
+const LISTING_CACHE_TTL_MS = 60_000;
+let listingCache: { data: Property[]; expiresAt: number } | null = null;
+
+export async function getPropertiesForListing(forceRefresh = false): Promise<Property[]> {
+  if (!forceRefresh && listingCache && listingCache.expiresAt > Date.now()) {
+    return listingCache.data;
+  }
+  const data = await getPropertiesOnce(true, true);
+  listingCache = { data, expiresAt: Date.now() + LISTING_CACHE_TTL_MS };
+  return data;
 }
 
 export async function getPropertyById(id: string): Promise<Property | null> {

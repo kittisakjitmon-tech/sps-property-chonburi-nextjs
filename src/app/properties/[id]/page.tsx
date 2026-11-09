@@ -5,6 +5,7 @@ import { getLocationString, getPropertyById, recordPropertyView } from '@/lib/fi
 
 export const dynamic = 'force-dynamic';
 import { extractIdFromSlug, getPropertyPath } from '@/lib/propertySlug';
+import { withResolvedMapUrl } from '@/lib/propertyMapServer';
 import { getPropertyLabel } from '@/constants/propertyTypes';
 import { SITE_URL, absoluteUrl } from '@/lib/site';
 import JsonLd from '@/components/JsonLd';
@@ -138,7 +139,7 @@ export default async function PropertyDetailPage({ params }: PropertyDetailPageP
   return (
     <>
       <JsonLd data={structuredData} />
-      <PropertyDetailClient property={property} />
+      <PropertyDetailClient property={await withResolvedMapUrl(property)} />
     </>
   );
 }

@@ -2,7 +2,7 @@
  * Nearby Places Service – ใช้ Longdo POI API
  * ดึงสถานที่ใกล้เคียงจาก Longdo → cache ลง Firestore (nearbyPlaces)
  */
-import { parseCoordinatesFromUrl } from './googleMapsUrl'
+import { getMapCoords } from './propertyMap'
 import { doc, updateDoc } from 'firebase/firestore'
 import { db } from './firebase'
 
@@ -46,14 +46,7 @@ export function haversineDistance(lat1: number, lng1: number, lat2: number, lng2
 }
 
 export function getCoordsFromProperty(property: any): { lat: number; lng: number } | null {
-  const lat = property.lat != null ? Number(property.lat) : null
-  const lng = property.lng != null ? Number(property.lng) : null
-  if (lat != null && lng != null && !Number.isNaN(lat) && !Number.isNaN(lng)) return { lat, lng }
-  if (property.mapUrl) return parseCoordinatesFromUrl(property.mapUrl)
-  if (property.location?.lat && property.location?.lng) {
-    return { lat: Number(property.location.lat), lng: Number(property.location.lng) }
-  }
-  return null
+  return getMapCoords(property)
 }
 
 /** เรียก Longdo POI search ตาม tag */

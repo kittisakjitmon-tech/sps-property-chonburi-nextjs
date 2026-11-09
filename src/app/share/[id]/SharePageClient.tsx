@@ -14,6 +14,7 @@ import { formatPrice, formatPriceShort } from '@/lib/priceFormat';
 import { getPropertyLabel } from '@/constants/propertyTypes';
 import NeighborhoodData from '@/components/NeighborhoodData';
 import { getCloudinaryLargeUrl, getCloudinaryThumbUrl, isValidImageUrl } from '@/lib/cloudinary';
+import { getPropertyMapEmbed } from '@/lib/propertyMap';
 
 // Amenities icons mapping
 const amenityIcons: Record<string, typeof Car> = {
@@ -116,6 +117,7 @@ export default function SharePageClient({ id, propertyData }: SharePageClientPro
 
   // Parse property data
   const loc = typeof property.location === 'object' ? property.location : {};
+  const mapEmbed = getPropertyMapEmbed(property);
   const isRental = property.isRental || property.listingType === 'rent';
   const isInstallment = property.subListingType === 'installment_only' || property.directInstallment;
   const typeLabel = getPropertyLabel(property.type || property.propertyType || '');
@@ -389,17 +391,42 @@ export default function SharePageClient({ id, propertyData }: SharePageClientPro
             {/* Map Section */}
             <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
               <div className="p-5">
-                <h2 className="text-lg font-bold text-slate-900 mb-3">ตำแหน่งที่ตั้ง</h2>
-                <div className="aspect-video rounded-xl overflow-hidden">
-                  <iframe
-                    src={`https://maps.google.com/maps?q=${encodeURIComponent(`${loc.subDistrict || ''}, ${loc.district || ''}, ${loc.province || ''}`)}&output=embed`}
-                    className="w-full h-full border-0"
-                    allowFullScreen
-                    loading="lazy"
-                    referrerPolicy="no-referrer-when-downgrade"
-                    title="Property Location"
-                  />
+                <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+                  <h2 className="text-lg font-bold text-slate-900">ตำแหน่งที่ตั้ง</h2>
+                  {mapEmbed.externalUrl && (
+                    <a
+                      href={mapEmbed.externalUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex min-h-[32px] items-center gap-1.5 text-sm font-medium text-blue-700 hover:text-blue-900"
+                    >
+                      <MapPin className="h-4 w-4" aria-hidden="true" />
+                      เปิดใน Google Maps
+                    </a>
+                  )}
                 </div>
+                {mapEmbed.url ? (
+                  <div className="aspect-video rounded-xl overflow-hidden">
+                    <iframe
+                      src={mapEmbed.url}
+                      className="w-full h-full border-0"
+                      allowFullScreen
+                      loading="lazy"
+                      referrerPolicy="no-referrer-when-downgrade"
+                      title="แผนที่ตำแหน่งที่ตั้งของทรัพย์"
+                    />
+                  </div>
+                ) : (
+                  <div className="aspect-video rounded-xl bg-slate-100 flex items-center justify-center px-6 text-center text-sm text-slate-500">
+                    ยังไม่มีข้อมูลตำแหน่งที่ตั้งสำหรับทรัพย์นี้
+                  </div>
+                )}
+                {mapEmbed.mode === 'area' && (
+                  <p className="mt-3 text-xs text-slate-500">
+                    แผนที่นี้แสดงตำแหน่งโดยประมาณจากพื้นที่/ลิงก์ที่บันทึกไว้{mapEmbed.areaQuery ? ` (${mapEmbed.areaQuery})` : ''} —
+                    ตำแหน่งจริงดูได้จากปุ่ม “เปิดใน Google Maps”
+                  </p>
+                )}
               </div>
             </div>
 

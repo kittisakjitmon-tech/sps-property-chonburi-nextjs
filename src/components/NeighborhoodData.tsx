@@ -30,8 +30,9 @@ export default function NeighborhoodData({ property }: NeighborhoodDataProps) {
   const [error, setError] = useState<string | null>(null);
 
   const coords = getCoordsFromProperty(property || {});
-  const hasMapUrl = !!(property?.mapUrl);
   const hasCoords = !!coords;
+  // มีพิกัดก็ค้นหาสถานที่ใกล้เคียงได้ ไม่จำเป็นต้องมีลิงก์แผนที่
+  const hasMapUrl = !!(property?.mapUrl) || hasCoords;
 
   useEffect(() => {
     if (!property) return;

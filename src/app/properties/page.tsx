@@ -43,12 +43,11 @@ export default async function PropertiesPage({ searchParams }: { searchParams: P
   let loading = true;
 
   try {
-    properties = await getPropertiesOnce(true);
+    properties = await getPropertiesOnce(true, true);
+    loading = false;
   } catch (error) {
     console.error('Error fetching properties:', error);
     properties = [];
-  } finally {
-    loading = false;
   }
 
   const filteredProperties = filterPropertiesForSeo(properties, intent.filters);

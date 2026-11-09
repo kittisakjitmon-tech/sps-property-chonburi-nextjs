@@ -56,7 +56,7 @@ export default function HomeSearch() {
     if (query) params.set("q", query);
     if (propertyType) params.set("propertyType", propertyType);
     if (priceRange.min || priceRange.max) {
-      params.set("priceRange", `${priceRange.min}-${priceRange.max}`);
+      params.set("priceRange", `${priceRange.min || "0"}-${priceRange.max}`);
     }
 
     const queryString = params.toString();

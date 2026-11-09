@@ -8,6 +8,7 @@ import { createSpoomeShortUrl } from '@/lib/spoo';
 import { formatPrice } from '@/lib/priceFormat';
 import { highlightText } from '@/lib/textHighlight';
 import { getPropertyLabel } from '@/constants/propertyTypes';
+import { getPropertyMapEmbed } from '@/lib/propertyMap';
 import { getCloudinaryLargeUrl, getCloudinaryThumbUrl, isValidImageUrl } from '@/lib/cloudinary';
 import { PRIMARY_CHAT_LABEL, PRIMARY_CHAT_URL } from '@/constants/contact';
 import type { Property } from '@/lib/firestore';
@@ -26,7 +27,6 @@ interface PropertyDetail extends Property {
   displayId?: string;
   propertyId?: string;
   propertySubStatus?: string;
-  mapUrl?: string;
   totalFloors?: number;
 }
 
@@ -178,28 +178,8 @@ export default function PropertyDetailClient({ property, loading = false }: Prop
   // Area
   const areaSqWa = property.area != null && Number(property.area) > 0 ? (Number(property.area) / 4).toFixed(0) : null;
 
-  // Map URL
-  const getMapEmbedUrl = (mapUrl: string | undefined) => {
-    if (!mapUrl) return null;
-    if (mapUrl.includes('maps.app.goo.gl') || mapUrl.includes('goo.gl/maps')) return null;
-    if (mapUrl.includes('/embed')) return mapUrl;
-    if (mapUrl.includes('google.') && mapUrl.includes('/maps')) {
-      const coordMatch = mapUrl.match(/@(-?\d+\.?\d*),(-?\d+\.?\d*)/);
-      if (coordMatch) {
-        return `https://maps.google.com/maps?q=${coordMatch[1]},${coordMatch[2]}&output=embed`;
-      }
-    }
-    if (loc.district && loc.province) {
-      return `https://maps.google.com/maps?q=${encodeURIComponent(`${loc.district}, ${loc.province}`)}&output=embed`;
-    }
-    return null;
-  };
-  
-  const mapEmbedUrl = getMapEmbedUrl(property.mapUrl);
-  const isShortMapLink = property.mapUrl && (
-    property.mapUrl.includes('maps.app.goo.gl') || 
-    property.mapUrl.includes('goo.gl/maps')
-  );
+  // Map: พิกัดจริง → ลิงก์ที่บันทึกไว้ → แผนที่ระดับพื้นที่
+  const mapEmbed = getPropertyMapEmbed(property);
 
   return (
     <div className="min-h-screen bg-slate-50 pb-24 md:pb-8">
@@ -347,38 +327,44 @@ export default function PropertyDetailClient({ property, loading = false }: Prop
             </div>
 
             <div className="order-3 bg-white rounded-xl border border-slate-200 overflow-hidden">
-              <div className="p-4 border-b border-slate-100">
+              <div className="flex flex-wrap items-center justify-between gap-2 p-4 border-b border-slate-100">
                 <h3 className="font-bold text-slate-900">ตำแหน่งที่ตั้ง</h3>
-              </div>
-              {mapEmbedUrl ? (
-                <div className="aspect-video">
-                  <iframe
-                    title="แผนที่"
-                    src={mapEmbedUrl}
-                    className="w-full h-full border-0"
-                    allowFullScreen
-                    loading="lazy"
-                    referrerPolicy="no-referrer-when-downgrade"
-                  />
-                </div>
-              ) : isShortMapLink ? (
-                <div className="aspect-video flex flex-col items-center justify-center gap-4 bg-slate-50 px-6">
-                  <MapPin className="h-12 w-12 text-blue-600" />
-                  <p className="text-slate-600 text-center">ลิงก์สั้นไม่รองรับการแสดงแผนที่ในหน้า</p>
+                {mapEmbed.externalUrl && (
                   <a
-                    href={property.mapUrl}
+                    href={mapEmbed.externalUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-900 text-white font-medium hover:bg-blue-800 transition-colors"
+                    className="inline-flex min-h-[32px] items-center gap-1.5 text-sm font-medium text-blue-700 hover:text-blue-900"
                   >
+                    <MapPin className="h-4 w-4" aria-hidden="true" />
                     เปิดใน Google Maps
                   </a>
-                </div>
+                )}
+              </div>
+              {mapEmbed.url ? (
+                <>
+                  <div className="aspect-video">
+                    <iframe
+                      title="แผนที่ตำแหน่งที่ตั้งของทรัพย์"
+                      src={mapEmbed.url}
+                      className="w-full h-full border-0"
+                      allowFullScreen
+                      loading="lazy"
+                      referrerPolicy="no-referrer-when-downgrade"
+                    />
+                  </div>
+                  {mapEmbed.mode === 'area' && (
+                    <p className="border-t border-slate-100 px-4 py-3 text-xs text-slate-500">
+                      แผนที่นี้แสดงตำแหน่งโดยประมาณจากพื้นที่/ลิงก์ที่บันทึกไว้{mapEmbed.areaQuery ? ` (${mapEmbed.areaQuery})` : ''} —
+                      ตำแหน่งจริงดูได้จากปุ่ม “เปิดใน Google Maps”
+                    </p>
+                  )}
+                </>
               ) : (
                 <div className="h-64 bg-slate-200 flex items-center justify-center text-slate-500">
-                  <div className="text-center">
+                  <div className="text-center px-6">
                     <MapPin className="h-12 w-12 mx-auto mb-2 opacity-50" />
-                    <p>แผนที่ Google Maps</p>
+                    <p>ยังไม่มีข้อมูลตำแหน่งที่ตั้ง</p>
                     <p className="text-sm">{loc.district || 'ไม่ระบุ'}, {loc.province || 'ไม่ระบุ'}</p>
                   </div>
                 </div>

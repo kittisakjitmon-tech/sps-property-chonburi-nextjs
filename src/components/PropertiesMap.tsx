@@ -1,11 +1,13 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { MapPin } from 'lucide-react';
 import { formatPrice } from '@/lib/priceFormat';
 import { loadLongdoMap } from '@/lib/longdoMapLoader';
 import { getPropertyPath } from '@/lib/propertySlug';
 import type { Property } from '@/lib/firestore';
+
+const escapeHtml = (value: string) => value.replace(/[&<>"']/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[character]!);
 
 interface PropertiesMapProps {
   properties: Property[];
@@ -19,9 +21,11 @@ export default function PropertiesMap({ properties, className = '' }: Properties
   const [isMapReady, setIsMapReady] = useState(false);
   const [mapLoadError, setMapLoadError] = useState('');
 
-  const propertiesWithCoords = properties.filter(
-    (p) => p.lat != null && p.lng != null && !isNaN(p.lat as number) && !isNaN(p.lng as number)
-  );
+  const propertiesWithCoords = useMemo(() => properties.filter(
+    (p) => typeof p.lat === 'number' && typeof p.lng === 'number'
+      && Number.isFinite(p.lat) && Number.isFinite(p.lng)
+      && Math.abs(p.lat) <= 90 && Math.abs(p.lng) <= 180
+  ), [properties]);
 
   useEffect(() => {
     let mounted = true;
@@ -142,14 +146,14 @@ export default function PropertiesMap({ properties, className = '' }: Properties
       const lon = Number(property.lng);
       const lat = Number(property.lat);
       const isRental = property.isRental || property.listingType === 'rent';
-      const priceText = formatPrice(property.price, isRental);
+      const priceText = formatPrice(property.price, isRental, property.showPrice !== false);
       
       const loc = typeof property.location === 'object' ? property.location : null;
       const locationText = loc
         ? `${loc.district || ''}, ${loc.province || ''}`.trim()
         : '';
       const detailUrl = getPropertyPath(property);
-      const safeTitle = (property.title || 'ทรัพย์สิน').replace(/</g, '&lt;');
+      const safeTitle = escapeHtml(property.title || 'ทรัพย์สิน');
       
       const infoContent = `
         <div style="min-width: 230px; max-width: 280px; padding: 12px 12px 10px; background: #ffffff; border-radius: 14px; box-shadow: 0 10px 30px rgba(15,23,42,0.35); font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
@@ -164,9 +168,9 @@ export default function PropertiesMap({ properties, className = '' }: Properties
           <p style="margin: 0 0 6px 0; font-size: 16px; font-weight: 700; color: #dc2626;">
             ${priceText}
           </p>
-          ${locationText ? `<p style="margin: 0 0 4px 0; font-size: 13px; color: #64748b;">📍 ${locationText}</p>` : ''}
-          ${property.bedrooms ? `<p style="margin: 0 0 8px 0; font-size: 13px; color: #64748b;">🛏️ ${property.bedrooms} ห้องนอน</p>` : ''}
-          <a href="${detailUrl}" aria-label="ดูรายละเอียด ${(property.title || 'ทรัพย์สิน').replace(/"/g, '&quot;')}" style="display: block; margin-top: 12px; padding: 12px 16px; min-height: 44px; box-sizing: border-box; background: #fbbf24; color: #78350f; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 15px; text-align: center; touch-action: manipulation; -webkit-tap-highlight-color: transparent;">
+          ${locationText ? `<p style="margin: 0 0 4px 0; font-size: 13px; color: #64748b;">📍 ${escapeHtml(locationText)}</p>` : ''}
+          ${property.bedrooms ? `<p style="margin: 0 0 8px 0; font-size: 13px; color: #64748b;">🛏️ ${Number(property.bedrooms)} ห้องนอน</p>` : ''}
+          <a href="${escapeHtml(detailUrl)}" aria-label="ดูรายละเอียด ${safeTitle}" style="display: block; margin-top: 12px; padding: 12px 16px; min-height: 44px; box-sizing: border-box; background: #fbbf24; color: #78350f; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 15px; text-align: center; touch-action: manipulation; -webkit-tap-highlight-color: transparent;">
             ดูรายละเอียด →
           </a>
         </div>

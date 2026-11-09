@@ -39,6 +39,8 @@ export interface Property {
   // Location coordinates (for map)
   lat?: number;
   lng?: number;
+  // Google Maps link (full URL, embed URL, or short link)
+  mapUrl?: string;
   // Location details
   address?: string;
   locationText?: string;
@@ -134,7 +136,7 @@ export function serializeProperty<T extends Record<string, any>>(data: T): T {
 
 // ─── Properties ───────────────────────────────────────────────────────────────
 
-export async function getPropertiesOnce(includeHidden = false): Promise<Property[]> {
+export async function getPropertiesOnce(includeHidden = false, throwOnError = false): Promise<Property[]> {
   try {
     const propertiesRef = collection(db, "properties");
     const q = includeHidden
@@ -154,6 +156,7 @@ export async function getPropertiesOnce(includeHidden = false): Promise<Property
     ) as Property[];
   } catch (error) {
     console.error("Error fetching properties:", error);
+    if (throwOnError) throw error;
     return [];
   }
 }

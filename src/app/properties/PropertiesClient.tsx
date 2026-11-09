@@ -1,12 +1,13 @@
 'use client';
 
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import { Search, X, Map, Grid, List, ChevronDown } from 'lucide-react';
 import type { Property } from '@/lib/firestore';
 import { PROPERTY_TYPES } from '@/constants/propertyTypes';
 import { getPropertySearchIntent } from '@/lib/searchIntent';
+import { readPropertyPriceRange, propertyPriceOptions, mergePropertySearchParams, matchesPropertyText, matchesPropertyLocation, propertyListingType, propertySubListingType, propertyCreatedTime } from '@/lib/propertySearch';
 import PropertyCard from '@/components/PropertyCard';
 import Dropdown from '@/components/ui/Dropdown';
 
@@ -36,24 +37,22 @@ interface PropertiesClientProps {
 
 type ViewMode = 'both' | 'list' | 'map';
 
-const readPriceRange = (params: { get: (name: string) => string | null }) => {
-  const current = params.get('priceRange');
-  if (current) return current;
-  const min = params.get('priceMin') || '';
-  const max = params.get('priceMax') || '';
-  return min || max ? `${min}-${max}` : '';
-};
-
 const readViewMode = (value: string | null): ViewMode =>
   value === 'list' || value === 'map' ? value : 'both';
 
 export default function PropertiesClient({ initialProperties, loading = false }: PropertiesClientProps) {
   const searchParams = useSearchParams();
   const pathname = usePathname();
-  const router = useRouter();
   const lastUrlQueryRef = useRef(searchParams.get('q') || '');
+  const resultFilterKey = useMemo(() => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete('view');
+    return params.toString();
+  }, [searchParams]);
 
   const [properties, setProperties] = useState<Property[]>(initialProperties || []);
+  const [loadError, setLoadError] = useState('');
+  const [retry, setRetry] = useState(0);
   const [isInitialLoad, setIsInitialLoad] = useState(loading);
   const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '');
   const [debouncedQuery, setDebouncedQuery] = useState(searchParams.get('q') || '');
@@ -63,7 +62,7 @@ export default function PropertiesClient({ initialProperties, loading = false }:
 
   const [propertyType, setPropertyType] = useState(searchParams.get('propertyType') || '');
   const [location, setLocation] = useState(searchParams.get('location') || '');
-  const [priceRange, setPriceRange] = useState(readPriceRange(searchParams));
+  const [priceRange, setPriceRange] = useState(readPropertyPriceRange(searchParams));
   const [bedrooms, setBedrooms] = useState(searchParams.get('bedrooms') || '');
   const [listingType, setListingType] = useState(searchParams.get('listingType') || '');
   const [propertyCondition, setPropertyCondition] = useState(searchParams.get('propertyCondition') || '');
@@ -73,16 +72,13 @@ export default function PropertiesClient({ initialProperties, loading = false }:
   const [showMobileFilters, setShowMobileFilters] = useState(false);
 
   const updateUrl = useCallback((updates: Record<string, string>) => {
-    const params = new URLSearchParams(searchParams.toString());
-    Object.entries(updates).forEach(([key, value]) => {
-      if (value) params.set(key, value);
-      else params.delete(key);
-    });
-    params.delete('priceMin');
-    params.delete('priceMax');
+    // Read the latest URL so consecutive filter changes preserve each other.
+    const params = mergePropertySearchParams(window.location.search, updates);
     const query = params.toString();
-    router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
-  }, [pathname, router, searchParams]);
+    // Filtering is local. Avoid an asynchronous route response overwriting newer input.
+    if ('q' in updates) lastUrlQueryRef.current = updates.q;
+    window.history.replaceState(null, '', `${pathname}${query ? `?${query}` : ''}${window.location.hash}`);
+  }, [pathname]);
 
   useEffect(() => {
     const query = searchParams.get('q') || '';
@@ -97,71 +93,61 @@ export default function PropertiesClient({ initialProperties, loading = false }:
     setProject(searchParams.get('project') || '');
     setLocation(searchParams.get('location') || '');
     setPropertyType(searchParams.get('propertyType') || '');
-    setPriceRange(readPriceRange(searchParams));
+    setPriceRange(readPropertyPriceRange(searchParams));
     setBedrooms(searchParams.get('bedrooms') || '');
     setSortBy(searchParams.get('sort') || 'latest');
     setViewMode(readViewMode(searchParams.get('view')));
-    setDisplayedCount(ITEMS_PER_PAGE);
   }, [searchParams]);
 
-  // If no initial properties (SSR failed), fetch client-side
   useEffect(() => {
-    if (initialProperties.length === 0 && !isInitialLoad) {
-      const fetchProperties = async () => {
-        setIsInitialLoad(true);
-        try {
-          const { getPropertiesOnce } = await import('@/lib/firestore');
-          const props = await getPropertiesOnce(true);
-          setProperties(props);
-        } catch (error) {
-          console.error('Error fetching properties:', error);
-        } finally {
-          setIsInitialLoad(false);
-        }
-      };
-      fetchProperties();
+    setDisplayedCount(ITEMS_PER_PAGE);
+  }, [resultFilterKey]);
+
+  // A successful empty catalogue is valid; only retry a failed initial load once.
+  useEffect(() => {
+    let cancelled = false;
+    setProperties(initialProperties);
+    setLoadError('');
+    if (!loading && retry === 0) {
+      setIsInitialLoad(false);
+      return;
     }
-  }, [initialProperties, isInitialLoad]);
+    const fetchProperties = async () => {
+      setIsInitialLoad(true);
+      setLoadError('');
+      try {
+        const { getPropertiesOnce } = await import('@/lib/firestore');
+        const props = await getPropertiesOnce(true, true);
+        if (!cancelled) setProperties(props);
+      } catch (error) {
+        console.error('Error fetching properties:', error);
+        if (!cancelled) setLoadError('โหลดรายการทรัพย์ไม่สำเร็จ กรุณาลองใหม่');
+      } finally {
+        if (!cancelled) setIsInitialLoad(false);
+      }
+    };
+    fetchProperties();
+    return () => { cancelled = true; };
+  }, [initialProperties, loading, retry]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      setDebouncedQuery(searchQuery.trim());
+      const query = searchQuery.trim();
+      setDebouncedQuery(query);
+      if (query !== (new URLSearchParams(window.location.search).get('q') || '')) {
+        setDisplayedCount(ITEMS_PER_PAGE);
+        updateUrl({ q: query });
+      }
     }, 500);
     return () => clearTimeout(timer);
-  }, [searchQuery]);
-
-  useEffect(() => {
-    const currentQuery = searchParams.get('q') || '';
-    if (debouncedQuery !== currentQuery && debouncedQuery !== lastUrlQueryRef.current) {
-      updateUrl({ q: debouncedQuery });
-    }
-  }, [debouncedQuery, searchParams, updateUrl]);
+  }, [searchQuery, updateUrl]);
 
   // Filter properties
   const filteredProperties = useMemo(() => {
     return properties.filter((p) => {
-      if (debouncedQuery) {
-        const query = debouncedQuery.toLowerCase();
-        const loc = typeof p.location === 'object' ? p.location : null;
-        const searchable = [
-          p.title,
-          typeof p.location === 'string' ? p.location : '',
-          loc?.subDistrict,
-          loc?.district,
-          loc?.province,
-          p.district,
-          p.province,
-          p.propertyType,
-          p.type,
-        ].filter(Boolean).join(' ').toLowerCase();
-        if (!searchable.includes(query)) return false;
-      }
+      if (!matchesPropertyText(p, debouncedQuery)) return false;
       if (propertyType && p.propertyType !== propertyType && p.type !== propertyType) return false;
-      if (location) {
-        const loc = typeof p.location === 'object' ? p.location : null;
-        const locStr = [typeof p.location === 'string' ? p.location : '', loc?.subDistrict, loc?.district, loc?.province, p.district, p.province].filter(Boolean).join(' ');
-        if (!locStr.includes(location)) return false;
-      }
+      if (location && !matchesPropertyLocation(p, location)) return false;
       if (priceRange) {
         const [min, max] = priceRange.split('-').map(Number);
         if (min && p.price < min) return false;
@@ -172,15 +158,15 @@ export default function PropertiesClient({ initialProperties, loading = false }:
         if (p.bedrooms == null || p.bedrooms < minBeds) return false;
       }
       if (listingType) {
-        const isRental = p.listingType === 'rent' || p.isRental;
+        const isRental = propertyListingType(p) === 'rent';
         if (listingType === 'sale' && isRental) return false;
         if (listingType === 'rent' && !isRental) return false;
       }
       if (propertyCondition) {
-        if (p.propertyCondition !== propertyCondition) return false;
+        if ((p.propertyCondition || (p as Property & { propertySubStatus?: string }).propertySubStatus) !== propertyCondition) return false;
       }
       if (subListingType) {
-        if (p.subListingType !== subListingType) return false;
+        if (propertySubListingType(p) !== subListingType) return false;
       }
       if (project) {
         const propertyProject = (p as Property & { project?: string }).project;
@@ -200,7 +186,7 @@ export default function PropertiesClient({ initialProperties, loading = false }:
         return sorted.sort((a, b) => b.price - a.price);
       case 'latest':
       default:
-        return sorted;
+        return sorted.sort((a, b) => propertyCreatedTime(b) - propertyCreatedTime(a));
     }
   }, [filteredProperties, sortBy]);
 
@@ -208,7 +194,7 @@ export default function PropertiesClient({ initialProperties, loading = false }:
   const mapProperties = useMemo(() => {
     return sortedProperties.filter(
       (p) => typeof p.lat === 'number' && typeof p.lng === 'number' && 
-             !isNaN(p.lat) && !isNaN(p.lng)
+             Number.isFinite(p.lat) && Number.isFinite(p.lng) && Math.abs(p.lat) <= 90 && Math.abs(p.lng) <= 180
     );
   }, [sortedProperties]);
 
@@ -228,7 +214,8 @@ export default function PropertiesClient({ initialProperties, loading = false }:
   const changeFilter = (key: string, value: string, setter: (value: string) => void) => {
     setter(value);
     setDisplayedCount(ITEMS_PER_PAGE);
-    updateUrl({ [key]: value });
+    updateUrl(key === 'listingType' && value !== 'rent'
+      ? { [key]: value, subListingType: '' } : { [key]: value });
   };
 
   const clearAllFilters = () => {
@@ -290,7 +277,7 @@ export default function PropertiesClient({ initialProperties, loading = false }:
                 value={searchQuery}
                 onChange={(event) => setSearchQuery(event.target.value)}
                 placeholder="ทำเลหรือชื่อโครงการ"
-                className="w-full min-h-[52px] pl-12 pr-12 py-3 rounded-2xl border-2 border-white/50 bg-white text-slate-900 placeholder-slate-500 focus:outline-none focus:border-blue-300 transition-all text-base shadow-xl"
+                className="[&::-webkit-search-cancel-button]:appearance-none w-full min-h-[52px] pl-12 pr-12 py-3 rounded-2xl border-2 border-white/50 bg-white text-slate-900 placeholder-slate-500 focus:outline-none focus:border-blue-300 transition-all text-base shadow-xl"
               />
               {searchQuery.length > 0 && (
                 <button type="button" onClick={() => setSearchQuery('')} aria-label="ล้างคำค้นหา" className="absolute right-1 top-1/2 -translate-y-1/2 w-11 h-11 flex items-center justify-center rounded-full hover:bg-slate-100 transition-colors">
@@ -343,6 +330,7 @@ export default function PropertiesClient({ initialProperties, loading = false }:
             {/* พื้นที่/ทำเล */}
             <Dropdown
               options={[
+                ...(location && !['ชลบุรี', 'พานทอง', 'บ้านบึง', 'ศรีราชา', 'ฉะเชิงเทรา', 'ระยอง'].includes(location) ? [{ value: location, label: location }] : []),
                 { value: 'ชลบุรี', label: 'ชลบุรี' },
                 { value: 'พานทอง', label: 'พานทอง' },
                 { value: 'บ้านบึง', label: 'บ้านบึง' },
@@ -357,13 +345,7 @@ export default function PropertiesClient({ initialProperties, loading = false }:
 
             {/* ช่วงราคา */}
             <Dropdown
-              options={[
-                { value: '0-1000000', label: 'ต่ำกว่า 1 ล้าน' },
-                { value: '1000000-3000000', label: '1-3 ล้าน' },
-                { value: '3000000-5000000', label: '3-5 ล้าน' },
-                { value: '5000000-10000000', label: '5-10 ล้าน' },
-                { value: '10000000-', label: 'มากกว่า 10 ล้าน' },
-              ]}
+              options={propertyPriceOptions(priceRange)}
               value={priceRange}
               onChange={(val) => changeFilter('priceRange', val, setPriceRange)}
               placeholder="ราคา"
@@ -401,7 +383,7 @@ export default function PropertiesClient({ initialProperties, loading = false }:
           </div>
 
           {showAdvancedFilters && (
-            <div id="advanced-filter-options" className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2 sm:gap-3 mt-3 pt-3 border-t border-slate-100">
+            <div id="advanced-filter-options" className={`${showMobileFilters ? 'grid' : 'hidden'} grid-cols-2 sm:flex sm:flex-wrap gap-2 sm:gap-3 mt-3 pt-3 border-t border-slate-100`}>
               <Dropdown
                 options={[
                   { value: '', label: 'ทั้งหมด' },
@@ -428,13 +410,19 @@ export default function PropertiesClient({ initialProperties, loading = false }:
                   { value: 'installment_only', label: 'ผ่อนตรงเท่านั้น' },
                 ]}
                 value={subListingType}
-                onChange={(val) => changeFilter('subListingType', val, setSubListingType)}
+                onChange={(val) => {
+                  setSubListingType(val);
+                  setDisplayedCount(ITEMS_PER_PAGE);
+                  if (val) setListingType('rent');
+                  updateUrl(val ? { subListingType: val, listingType: 'rent' } : { subListingType: '' });
+                }}
                 placeholder="ผ่อนตรง"
               />
               <Dropdown
                 options={[
                   { value: '', label: 'ทั้งหมด' },
                   { value: 'NPA', label: 'บ้าน NPA' },
+                  ...(project && project !== 'NPA' ? [{ value: project, label: project }] : []),
                 ]}
                 value={project}
                 onChange={(val) => changeFilter('project', val, setProject)}
@@ -447,6 +435,9 @@ export default function PropertiesClient({ initialProperties, loading = false }:
 
       {/* ===== MAIN CONTENT ===== */}
       <div className="max-w-7xl mx-auto px-4 py-6">
+        {loadError && <div role="alert" className="mb-4 rounded-xl border border-red-200 bg-red-50 p-4 text-red-800">
+          {loadError}<button type="button" onClick={() => setRetry((value) => value + 1)} className="ml-3 min-h-11 underline">ลองใหม่</button>
+        </div>}
         {/* View Mode: Both (Default) */}
         {viewMode === 'both' && (
           <div className="flex gap-6">

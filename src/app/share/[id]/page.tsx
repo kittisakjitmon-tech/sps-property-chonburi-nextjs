@@ -2,6 +2,7 @@ import { Metadata } from 'next';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { getPropertyById } from '@/lib/firestore';
+import { withResolvedMapUrl } from '@/lib/propertyMapServer';
 import { formatPriceShort } from '@/lib/priceFormat';
 import SharePageClient from './SharePageClient';
 
@@ -127,5 +128,6 @@ export default async function SharePage({ params }: SharePageProps) {
     console.error('Error fetching property in server:', error);
   }
   
-  return <SharePageClient id={id} propertyData={property} />;
+  const propertyWithMap = property ? await withResolvedMapUrl(property) : property;
+  return <SharePageClient id={id} propertyData={propertyWithMap} />;
 }

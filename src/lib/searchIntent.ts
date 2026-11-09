@@ -1,5 +1,6 @@
 import { PROPERTY_TYPES, getPropertyLabel } from '@/constants/propertyTypes';
 import type { Property } from '@/lib/firestore';
+import { matchesPropertyLocation, propertyListingType, propertySubListingType } from './propertySearch';
 
 const INDEXABLE_PARAMS = new Set(['listingType', 'subListingType', 'location', 'propertyType']);
 const INDEXABLE_LOCATIONS = new Set(['ชลบุรี', 'เมืองชลบุรี', 'อมตะ', 'อมตะซิตี้', 'พานทอง', 'ศรีราชา', 'บ้านบึง', 'ฉะเชิงเทรา', 'ระยอง']);
@@ -50,24 +51,13 @@ export function getPropertySearchIntent(params: URLSearchParams) {
 export function filterPropertiesForSeo(properties: Property[], filters: ReturnType<typeof getPropertySearchIntent>['filters']) {
   return properties.filter((property) => {
     if (filters.listingType) {
-      const isRental = property.listingType === 'rent' || property.isRental;
+      const isRental = propertyListingType(property) === 'rent';
       if (filters.listingType === 'sale' && isRental) return false;
       if (filters.listingType === 'rent' && !isRental) return false;
     }
-    if (filters.subListingType && property.subListingType !== filters.subListingType) return false;
+    if (filters.subListingType && propertySubListingType(property) !== filters.subListingType) return false;
     if (filters.propertyType && property.propertyType !== filters.propertyType && property.type !== filters.propertyType) return false;
-    if (filters.location) {
-      const location = typeof property.location === 'object' ? property.location : null;
-      const searchable = [
-        typeof property.location === 'string' ? property.location : '',
-        location?.subDistrict,
-        location?.district,
-        location?.province,
-        property.district,
-        property.province,
-      ].filter(Boolean).join(' ');
-      if (!searchable.includes(filters.location)) return false;
-    }
+    if (filters.location && !matchesPropertyLocation(property, filters.location)) return false;
     return true;
   });
 }
